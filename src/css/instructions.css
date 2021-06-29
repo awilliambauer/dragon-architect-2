@@ -1,0 +1,199 @@
+#instructions-display {
+    display: flex;
+    /*flex-direction: column;*/
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+}
+
+#instructions-header {
+    overflow: auto;
+}
+
+#instructions > p {
+    margin: 2px;
+}
+
+#instructions-goal {
+    padding: 0px;
+    background: #1c2b2d;
+    border-radius:6px;
+    color: white;
+    font-size: 12pt;
+    width: 100%!important;
+    pointer-events: all;
+}
+
+/*#instructions-goal:after {*/
+    /*content: ' ';*/
+    /*position: absolute;*/
+    /*width: 0;*/
+    /*height: 0;*/
+    /*left: 13px;*/
+    /*top: 42px;*/
+    /*border: 20px solid;*/
+    /*border-color: rgba(59,54,36,0.50) transparent transparent transparent;*/
+/*}*/
+
+#instructions-goal > p {
+    -webkit-transition: font-size 0.5s, padding-top 1s ease;
+    transition: font-size 0.5s, padding-top 1s ease;
+    /*transition: font-size 0.5s, padding-top 1s ease;*/
+    height: 30px;
+    font-size: 12pt;
+    padding-left: 7px;
+    /* overflow: hidden; */
+}
+
+#instructions-detail {
+    font-size: 14pt;
+    height: 0px;
+    overflow: hidden;
+    padding: 0;
+
+    transition: none 1.0s;
+    transition-property: padding-top, height;
+}
+
+#instructions-display.expanded #instructions-detail {
+    height: 170px;
+    padding-top: 20px;
+}
+
+#instructions-errors {
+    font-size: 16pt;
+    height: 0px;
+    overflow: hidden;
+    padding: 0;
+
+    transition: none 1.0s;
+    transition-property: padding-top, height;
+}
+
+#instructions-display.expanded #instructions-errors {
+    height: 300px;
+    padding-top: 20px;
+}
+
+#instructions-errors-title.populated {
+    padding-top: 10px;
+    background-color: rgba(0, 72, 244, 0.3);
+}
+
+#instructions-errors-list.populated {
+    padding-top: 20px;
+    margin: 0;
+    padding-bottom: 10px;
+    background-color: rgba(0, 72, 244, 0.3);
+}
+
+#instructions-reminder {
+    float: right;
+    color: #bbb;
+    cursor: pointer;
+}
+
+#instructions-display button {
+    display: block;
+    color: black;
+    font-size: 18pt;
+    text-align: center;
+    padding: 15px;
+    margin: 40px auto;
+    border-radius: 8px;
+}
+
+#btn-instructions-hide.notTitle {
+    margin: 10px auto;
+}
+
+#instructions-icon {
+    float: left;
+    padding-right: 10px;
+    position: relative;
+    height: 75px;
+    box-sizing: content-box;
+}
+
+.instructions-img {
+    height: 20px;
+    height: 38px;
+}
+
+@-webkit-keyframes speechBubble {
+/*    0% {
+        opacity: 0;
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }
+
+    25% {
+        opacity: 1;
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }*/
+
+    35%, 50%, 65%, 80%, 95% {
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }
+
+    72% {
+        -webkit-transform: translateY(-30px);
+        -ms-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
+
+    88% {
+        -webkit-transform: translateY(-15px);
+        -ms-transform: translateY(-15px);
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes speechBubble {
+/*    0% {
+        opacity: 0;
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }
+
+    25% {
+        opacity: 1;
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }*/
+
+    35%, 50%, 65%, 80%, 95% {
+        -webkit-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        transform: translateY(0px);
+    }
+
+    72% {
+        -webkit-transform: translateY(-30px);
+        -ms-transform: translateY(-30px);
+        transform: translateY(-30px);
+    }
+
+    88% {
+        -webkit-transform: translateY(-15px);
+        -ms-transform: translateY(-15px);
+        transform: translateY(-15px);
+    }
+}
+
+.speech-bubble {
+    -webkit-animation-name: speechBubble;
+    animation-name: speechBubble;
+    -webkit-animation-duration: 1.2s;
+    animation-duration: 1.2s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+

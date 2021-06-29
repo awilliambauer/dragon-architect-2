@@ -1,0 +1,78 @@
+<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" class="blocklySvg" height="30px" version="1.1" width="40px"><defs><style type="text/css"><![CDATA[
+.blocklySvg { overflow: hidden; background-color: rgb(255, 255, 255, 0.0); }
+.blocklyWidgetDiv { position: absolute; display: none; z-index: 999; }
+
+.blocklyResizeSE { fill: rgb(170, 170, 170); cursor: se-resize; }
+.blocklyResizeSW { fill: rgb(170, 170, 170); cursor: sw-resize; }
+.blocklyResizeLine { stroke-width: 1px; stroke: rgb(136, 136, 136); }
+.blocklyHighlightedConnectionPath { stroke-width: 4px; stroke: rgb(255, 204, 51); fill: none; }
+.blocklyPathLight { fill: none; stroke-width: 2px; stroke-linecap: round; }
+.blocklyText { cursor: default; font-family: sans-serif; font-size: 11pt; fill: rgb(255, 255, 255); }
+.blocklyNonEditableText>rect,.blocklyEditableText>rect { fill: #fff; fill-opacity: .6; }
+.blocklyNonEditableText>text,.blocklyEditableText>text { fill: #000 }
+.blocklyNonEditableText&gt;rect,.blocklyEditableText&gt;rect { fill: #fff; fill-opacity: .6; }
+.blocklyNonEditableText&gt;text,.blocklyEditableText&gt;text { fill: #000 }
+.blocklyBubbleText { fill: rgb(0, 0, 0); }
+.blocklySvg text { -webkit-user-select: none; cursor: inherit; }
+.blocklyHidden { display: none; }
+.blocklyFieldDropdown:not(.blocklyHidden) { display: block; }
+.blocklyTooltipBackground { fill: rgb(255, 255, 199); stroke-width: 1px; stroke: rgb(216, 216, 216); }
+.blocklyTooltipShadow, .blocklyDropdownMenuShadow { fill: rgb(187, 187, 187); filter: url(#blocklyShadowFilter); }
+.blocklyTooltipText { font-family: sans-serif; font-size: 9pt; fill: rgb(0, 0, 0); }
+.blocklyIconShield { cursor: default; fill: rgb(0, 0, 204); stroke-width: 1px; stroke: rgb(204, 204, 204); }
+.blocklyIconMark { font-family: sans-serif; font-size: 9pt; font-weight: bold; fill: rgb(204, 204, 204); text-anchor: middle; cursor: default !important; }
+.blocklyWarningBody { }
+.blocklyMinimalBody { margin: 0px; padding: 0px; }
+.blocklyCommentTextarea { margin: 0px; padding: 2px; border: 0px; resize: none; background-color: rgb(255, 255, 204); }
+.blocklyHtmlInput { font-family: sans-serif; font-size: 11pt; border: none; outline: none; width: 100%; }
+.blocklyMutatorBackground { fill: rgb(255, 255, 255); stroke-width: 1px; stroke: rgb(221, 221, 221); }
+.blocklyFlyoutBackground { fill: rgb(221, 221, 221); fill-opacity: 0.8; }
+.blocklyColourBackground { fill: rgb(102, 102, 102); }
+.blocklyScrollbarBackground { fill: rgb(255, 255, 255); stroke-width: 1px; stroke: rgb(228, 228, 228); }
+.blocklyScrollbarKnob { fill: rgb(204, 204, 204); }
+.blocklyScrollbarBackground:hover + .blocklyScrollbarKnob, .blocklyScrollbarKnob:hover { fill: rgb(187, 187, 187); }
+.blocklyInvalidInput { background: rgb(255, 170, 170); }
+.blocklyAngleCircle { stroke: rgb(68, 68, 68); stroke-width: 1px; fill: rgb(221, 221, 221); fill-opacity: 0.8; }
+.blocklyAngleMarks { stroke: rgb(68, 68, 68); stroke-width: 1px; }
+.blocklyAngleGauge { fill: rgb(255, 136, 136); fill-opacity: 0.8; }
+.blocklyAngleLine { stroke: rgb(255, 0, 0); stroke-width: 2px; stroke-linecap: round; }
+.blocklyContextMenu { border-top-left-radius: 4px; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; }
+.blocklyDropdownMenu { padding: 0px !important; }
+.goog-option-selected .goog-menuitem-checkbox, .goog-option-selected .goog-menuitem-icon { background: url(file:///Users/awb/Documents/Research/ruthefjord/html/media/sprites.png) 0px 0px no-repeat !important; }
+.blocklyToolboxDiv { display: none; overflow-x: visible; overflow-y: auto; position: absolute; background-color: rgb(221, 221, 221); }
+.blocklyTreeRoot { padding: 4px 0px; }
+.blocklyTreeRoot:focus { outline: none; }
+.blocklyTreeRow { line-height: 22px; height: 22px; padding-right: 1em; white-space: nowrap; }
+.blocklyToolboxDiv[dir="RTL"] .blocklyTreeRow { padding-right: 0px; padding-left: 1em !important; }
+.blocklyTreeRow:hover { background-color: rgb(228, 228, 228); }
+.blocklyTreeIcon { height: 16px; width: 16px; vertical-align: middle; background-image: url(file:///Users/awb/Documents/Research/ruthefjord/html/media/tree.png); }
+.blocklyTreeIconClosedLtr { background-position: -32px -1px; }
+.blocklyTreeIconClosedRtl { background-position: 0px -1px; }
+.blocklyTreeIconOpen { background-position: -16px -1px; }
+.blocklyTreeIconNone { background-position: -48px -1px; }
+.blocklyTreeLabel { cursor: default; font-family: sans-serif; font-size: 16px; padding: 0px 3px; vertical-align: middle; }
+.blocklyTreeSelected { background-color: rgb(85, 119, 238) !important; }
+.blocklyTreeSelected .blocklyTreeLabel { color: rgb(255, 255, 255); }
+.goog-palette { outline: none; cursor: default; }
+.goog-palette-table { border: 1px solid rgb(102, 102, 102); border-collapse: collapse; }
+.goog-palette-cell { height: 13px; width: 15px; margin: 0px; border-width: 0px 1px 0px 0px; text-align: center; vertical-align: middle; border-right-style: solid; border-right-color: rgb(102, 102, 102); font-size: 1px; }
+.goog-palette-colorswatch { position: relative; height: 13px; width: 15px; border: 1px solid rgb(102, 102, 102); }
+.goog-palette-cell-hover .goog-palette-colorswatch { border: 1px solid rgb(255, 255, 255); }
+.goog-palette-cell-selected .goog-palette-colorswatch { border: 1px solid rgb(0, 0, 0); color: rgb(255, 255, 255); }
+.goog-menu { border-color: rgb(204, 204, 204) rgb(102, 102, 102) rgb(102, 102, 102) rgb(204, 204, 204); border-style: solid; border-width: 1px; cursor: default; font-style: normal; font-variant: normal; font-weight: normal; font-size: 13px; line-height: normal; font-family: Arial, sans-serif; margin: 0px; outline: none; padding: 4px 0px; position: absolute; z-index: 20000; background: rgb(255, 255, 255); }
+.goog-menuitem { color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; font-size: 13px; line-height: normal; font-family: Arial, sans-serif; list-style: none; margin: 0px; padding: 4px 7em 4px 28px; white-space: nowrap; }
+.goog-menuitem.goog-menuitem-rtl { padding-left: 7em; padding-right: 28px; }
+.goog-menu-nocheckbox .goog-menuitem, .goog-menu-noicon .goog-menuitem { padding-left: 12px; }
+.goog-menu-noaccel .goog-menuitem { padding-right: 20px; }
+.goog-menuitem-content { color: rgb(0, 0, 0); font-style: normal; font-variant: normal; font-weight: normal; font-size: 13px; line-height: normal; font-family: Arial, sans-serif; }
+.goog-menuitem-disabled .goog-menuitem-accel, .goog-menuitem-disabled .goog-menuitem-content { color: rgb(204, 204, 204) !important; }
+.goog-menuitem-disabled .goog-menuitem-icon { opacity: 0.3; }
+.goog-menuitem-highlight, .goog-menuitem-hover { border-color: rgb(214, 233, 248); border-style: dotted; border-width: 1px 0px; padding-bottom: 3px; padding-top: 3px; background-color: rgb(214, 233, 248); }
+.goog-menuitem-checkbox, .goog-menuitem-icon { height: 16px; left: 6px; position: absolute; right: auto; vertical-align: middle; width: 16px; background-repeat: no-repeat; }
+.goog-menuitem-rtl .goog-menuitem-checkbox, .goog-menuitem-rtl .goog-menuitem-icon { left: auto; right: 6px; }
+.goog-option-selected .goog-menuitem-checkbox, .goog-option-selected .goog-menuitem-icon { background: url(file://ssl.gstatic.com/editor/editortoolbar.png) -512px 0px no-repeat; }
+.goog-menuitem-accel { color: rgb(153, 153, 153); direction: ltr; left: auto; padding: 0px 6px; position: absolute; right: 0px; text-align: right; }
+.goog-menuitem-rtl .goog-menuitem-accel { left: 0px; right: auto; text-align: left; }
+.goog-menuitem-mnemonic-hint { text-decoration: underline; }
+.goog-menuitem-mnemonic-separator { color: rgb(153, 153, 153); font-size: 12px; padding-left: 4px; }
+.goog-menuseparator { border-top-width: 1px; border-top-style: solid; border-top-color: rgb(204, 204, 204); margin: 4px 0px; padding: 0px; }]]></style></defs><g><rect fill-opacity="0" height="30" width="40" x="16" y="116" /><g class="blocklyDraggable" transform=""><path class="blocklyPathDark" d="m 0,8 A 8,8 0 0,1 8,0 H 15 l 6,4 3,0 6,-4 H 40 v 25 H 30 l -6,4 -3,0 -6,-4 H 8 a 8,8 0 0,1 -8,-8 z " fill="#5c3764" transform="translate(1, 1)" /><path class="blocklyPath" d="m 0,8 A 8,8 0 0,1 8,0 H 15 l 6,4 3,0 6,-4 H 40 v 25 H 30 l -6,4 -3,0 -6,-4 H 8 a 8,8 0 0,1 -8,-8 z " fill="#995ba6" /><path class="blocklyPathLight" d="m 1,7 A 7,7 0 0,1 8,1 H 15 l 6.5,4 2,0 6.5,-4 H 40 M 39,1 M 3.050252531694167,21.949747468305834 A 7,7 0 0,1 1,17 V 8 " stroke="#b88cc1" /><text class="blocklyText" transform="translate(10, 18)">F3</text></g></g></svg>

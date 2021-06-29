@@ -1,24 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import BlocklyComp from './BlocklyComp';
+import Display from './Display';
 
+// TODO convert App to a class, it's where the game's 
+// global state will be stored
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {/* Navigation bar */}
+      {/* Code area
+            Blockly
+            Control buttons  */}
+      <BlocklyComp/>
+      <Display/>
+      {/* Game area
+            Camera controls
+            3D view
+            Other controls
+            Instructions   */}
     </div>
   );
 }
