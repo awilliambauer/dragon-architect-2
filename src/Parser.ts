@@ -20,7 +20,7 @@ type Position = {
     column: number
 }
 
-class FileLocation {
+export class FileLocation {
     start: Position
     end: Position
 
@@ -94,6 +94,73 @@ export class SyntaxError extends Error {
 
     }
 }
+
+export type Meta = {
+    location: FileLocation
+    // attributes: [string, string][] // array of (string, string) tuples
+    // leaving attributes unimplemented for now
+    // potentially useful for special modes where execution should differ in some way
+};
+
+export type Invocation = {
+    name: string
+    args: Expression[]
+};
+
+// have a separate Ident type to differentiate it from a keyword
+export type Ident = {
+    name: string
+};
+
+export enum ExpressionType {
+    Number = "number",
+    Ident = "ident"
+};
+
+export type Expression = {
+    kind: ExpressionType,
+    meta: Meta,
+    expression: number | Ident,
+};
+
+export type Command = {
+    invoke: Invocation
+};
+
+export type Execute = {
+    invoke: Invocation
+};
+
+export type Repeat = {
+    number: Expression
+    body: Statement[]
+};
+
+export enum StatementType {
+    Repeat = "repeat",
+    Execute = "execute",
+    Command = "command"
+};
+
+export type Statement = {
+    kind: StatementType
+    meta: Meta,
+    stmt: Repeat | Execute | Command,
+};
+
+export type Procedure = {
+    kind: string
+    meta: Meta
+    name: string
+    params: string[]
+    body: Statement[]
+};
+
+export type TopLevelStatement = Procedure | Statement;
+
+export type Program = {
+    body: TopLevelStatement[]
+};
 
 export class Lexer {
     source: string;
@@ -546,6 +613,7 @@ export class Parser {
             return body;
         }
         return {
+            kind: "procedure",
             meta: this.new_meta(start),
             name: name,
             params: params,
@@ -561,7 +629,7 @@ export class Parser {
             if (stmt instanceof SyntaxError) {
                 if (stmt.code === SyntaxErrorCode.InvalidStatement) {
                     // overwrite the statement message with a better one for top-level statements
-                    return new SyntaxError(stmt.code, stmt.location, "Expected a top-level statement, which must start with define, if, repeat, command, or an identifier" );
+                    return new SyntaxError(stmt.code, stmt.location, "Expected a top-level statement, which must start with define, if, repeat, command, or an identifier");
                 } else {
                     return stmt;
                 }
@@ -585,90 +653,13 @@ export class Parser {
     }
 }
 
-export function parse(program: string): Program | SyntaxError {
+export default function parse(program: string): Program | SyntaxError {
     const lexer = new Lexer(program);
     const tokens = lexer.lex_all();
     if (tokens instanceof SyntaxError) {
+        console.error(`[SyntaxError] ${tokens}`);
         return tokens;
     }
     const parser = new Parser(tokens);
     return parser.match_program();
-}
-
-type Meta = {
-    location: FileLocation
-    // attributes: [string, string][] // array of (string, string) tuples
-    // leaving attributes unimplemented for now
-    // potentially useful for special modes where execution should differ in some way
-}
-
-type Invocation = {
-    name: string
-    args: Expression[]
-}
-
-// have a separate Ident type to differentiate it from a keyword
-type Ident = {
-    name: string
-}
-
-enum ExpressionType {
-    Number = "number",
-    Ident = "ident"
-}
-
-type Expression = {
-    kind: ExpressionType,
-    meta: Meta,
-    expression: number | Ident,
-}
-
-type Command = {
-    invoke: Invocation
-}
-
-type Execute = {
-    invoke: Invocation
-}
-
-type Repeat = {
-    number: Expression
-    body: Statement[]
-}
-
-enum StatementType {
-    Repeat = "repeat",
-    Execute = "execute",
-    Command = "command"
-}
-
-type Statement = {
-    kind: StatementType
-    meta: Meta,
-    stmt: Repeat | Execute | Command,
-}
-
-type Procedure = {
-    meta: Meta
-    name: string
-    params: string[]
-    body: Statement[]
-}
-
-type TopLevelStatement = Procedure | Statement;
-
-type Program = {
-    body: TopLevelStatement[]
-}
-
-type Environment = {
-
-}
-
-export default class Interpreter {
-    run_program(source: string) {
-
-    }
-
-
 }

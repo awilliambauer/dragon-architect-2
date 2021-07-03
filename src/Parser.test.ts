@@ -1,4 +1,5 @@
-import { Lexer, SyntaxError, parse } from './Interpreter';
+import parse, { Lexer, SyntaxError } from './Parser';
+import { StdLibText } from './StdLib';
 
 test("lexer-empty", () => {
     let lexer = new Lexer(``);
@@ -45,6 +46,11 @@ test("lexer-comment", () => {
 command x()     # happy
 command y(2,3,4)
 # more command with no newline    `);
+    expect(lexer.lex_all() instanceof SyntaxError).toBe(false);
+});
+
+test("lexer-stdlib", () => {
+    let lexer = new Lexer(StdLibText);
     expect(lexer.lex_all() instanceof SyntaxError).toBe(false);
 });
 
@@ -98,6 +104,12 @@ test("parse-comment", () => {
 command x()     # happy
 command y(2,3,4)
 # more command with no newline    `);
+    // console.log(JSON.stringify(result, null, 2));
+    expect(result instanceof SyntaxError).toBe(false);
+});
+
+test("parse-stdlib", () => {
+    let result = parse(StdLibText);
     // console.log(JSON.stringify(result, null, 2));
     expect(result instanceof SyntaxError).toBe(false);
 });
