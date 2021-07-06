@@ -253,8 +253,12 @@ export class Lexer {
         if (c instanceof SyntaxError) {
             return c;
         }
-        if (is_alpha(c)) {
-            const string = this.build_string(c, (x: string) => is_alpha(x) || is_digit(x));
+        // identifiers start with alphabetic character or underscore
+        // primary motivation for allowing underscores is to be able to add them
+        // to user-defined procedure names to avoid collisions with stdlib
+        if (is_alpha(c) || c === '_') {
+            // can contain alphabetic, digits, and underscores
+            const string = this.build_string(c, (x: string) => is_alpha(x) || is_digit(x) || x === '_');
             if (KEYWORDS.includes(string)) {
                 return this.token(TokenType.Keyword, string, start);
             }
@@ -535,7 +539,6 @@ export class Parser {
                     default:
                         return this.error(SyntaxErrorCode.InvalidStatement, `Keyword ${next.value} not recognized`);
                 }
-                break;
             case TokenType.Ident: // statement is calling a user-defined function (Execute)
                 const invoke = this.match_invocation((next.value as Ident).name);
                 if (invoke instanceof SyntaxError) {

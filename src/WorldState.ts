@@ -76,7 +76,6 @@ export default class WorldState {
             default:
                 return runtime_error(RuntimeErrorCode.CustomError, 
                     `Unknown command ${command.name}`, command.meta);
-                break;
         }
         this.dirty = true;
     }

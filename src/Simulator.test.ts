@@ -34,6 +34,18 @@ test("stdlib-Forward", () => {
     expect(_.isEqual(ws, ws_expected)).toBe(true);
 });
 
+test("stdlib-Forward1M", () => {
+    load_stdlib();
+    let prog = parse("Forward(1000000)");
+    expect(prog instanceof SyntaxError).toBe(false);
+    let ws = new WorldState();
+    expect(run(ws, prog as Program) instanceof RuntimeError).toBe(false);
+    let ws_expected = new WorldState();
+    ws_expected.dragon_pos.add(ws_expected.dragon_dir.clone().multiplyScalar(1000000));
+    ws_expected.dirty = true;
+    expect(_.isEqual(ws, ws_expected)).toBe(true);
+});
+
 test("stdlib-Up", () => {
     load_stdlib();
     let prog = parse("Up(5)");
