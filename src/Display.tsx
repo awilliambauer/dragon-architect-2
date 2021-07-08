@@ -26,7 +26,6 @@ export default class Display extends React.Component {
         // Without this, the image doesn't show
         this.divRef.current?.appendChild(renderer.domElement);
 
-        // Camera
         camera.position.copy(relativeCamPos);
         camera.lookAt(new THREE.Vector3(0,0,0));
         camera.rotateZ(270 * Math.PI / 180);
@@ -54,6 +53,11 @@ export default class Display extends React.Component {
         light.position.set(-0.56,-0.32,0.77);
         scene.add(light);
         scene.add(new THREE.AmbientLight("#404040"));
+
+        // Camera init
+        camera.position.copy(relativeCamPos);
+        camera.lookAt(new THREE.Vector3(0,0,0));
+        // camera.rotateX(-10);
 
         // Moves the camera up 2 so that it's not in the center of the image
         camera.position.z = 10;
@@ -106,13 +110,18 @@ export default class Display extends React.Component {
             cube.rotation.y += .01;
             cube.rotation.z += .01;
             if (robot.position.x <= Math.abs(3)) {
-                robot.translateX( getRandomArbitrary(-.1, .1) );
+                const randNum = getRandomArbitrary(-.1, .1);
+                robot.translateX( randNum );
+                zCuePlane.translateX( randNum );
             }
             if (robot.position.y <= Math.abs(3)) {
-                robot.translateY( getRandomArbitrary(-.1, .1) );
+                const randNum = getRandomArbitrary(-.1, .1);
+                robot.translateY( randNum );
+                zCuePlane.translateY( randNum );
             }
             if (robot.position.z <= Math.abs(3)) {
-                robot.translateZ( getRandomArbitrary(-.1, .1) );
+                const randNum = getRandomArbitrary(-.1, .1);
+                robot.translateZ( randNum );
             }
             renderer.render( scene, camera );
         };
