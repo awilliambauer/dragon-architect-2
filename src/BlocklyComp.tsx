@@ -3,10 +3,10 @@ import React from 'react';
 import _ from 'lodash';
 
 const COLOR_MOVE_1 = '#0075A6';
-//const COLOR_MOVE_2 = '#B84B26';
+// const COLOR_MOVE_2 = '#B84B26';
 // const COLOR_BLOCK = '#978B63';
 // const COLOR_LOOPS = '#00711C';
-// const COLOR_PROCS = '#7C478B';
+const COLOR_PROCS = '#7C478B';
 // const COLOR_UNUSED_1 = '#B63551';
 // const COLOR_UNUSED_2 = '#A88217';
 // const COLOR_TEASER = '#707070';
@@ -68,12 +68,12 @@ function makeShadowNum(num: number, id?: string) {
 };
 
 const COMMANDS = {
-    move2: { block: '<block type="Forward"><value name="VALUE">' + makeShadowNum(1) + '</value></block><block type="Up"><value name="VALUE">' + makeShadowNum(1) + '</value></block><block type="Down"><value name="VALUE">' + makeShadowNum(1) + '</value></block><block type="Left"></block><block type="Right"></block><block type="PlaceCube"></block><block type="RemoveCube"></block>' },
-    // set: { block: '<block type="Set"><value name="VALUE">' + makeShadowNum(1) + '</value></block>' },
-    // place: { block: '<block type="PlaceCube"></block>' },
-    // remove: { block: '<block type="RemoveCube"></block>', teaser: '<block type="RemoveCube_teaser"></block>', pack: 'remove' },
-    // up: { block: '<block type="Up"><value name="VALUE">' + makeShadowNum(1) + '</value></block>', teaser: '<block type="Up_teaser"><value name="VALUE">' + makeShadowNum(1) + '</value></block>', pack: 'up' },
-    // down: { block: '<block type="Down"><value name="VALUE">' + makeShadowNum(1) + '</value></block>', teaser: '<block type="Down_teaser"><value name="VALUE">' + makeShadowNum(1) + '</value></block>', pack: 'up' },
+    move2: { block: '<block type="Forward"><value name="VALUE">' + makeShadowNum(1) + '</value></block>' },
+    //set: { block: '<block type="Set"><value name="VALUE">' + makeShadowNum(1) + '</value></block>' },
+    place: { block: '<block type="PlaceCube"></block>' },
+    remove: { block: '<block type="RemoveCube"></block>', teaser: '<block type="RemoveCube_teaser"></block>', pack: 'remove' },
+    up: { block: '<block type="Up"><value name="VALUE">' + makeShadowNum(1) + '</value></block>', teaser: '<block type="Up_teaser"><value name="VALUE">' + makeShadowNum(1) + '</value></block>', pack: 'up' },
+    down: { block: '<block type="Down"><value name="VALUE">' + makeShadowNum(1) + '</value></block>', teaser: '<block type="Down_teaser"><value name="VALUE">' + makeShadowNum(1) + '</value></block>', pack: 'up' },
     repeat: {
         block: '<block type="controls_repeat_ext"><value name="TIMES">' + makeShadowNum(10) + '</value></block>',
         // teaser: '<block type="controls_repeat_teaser"><value name="TIMES">' + makeShadowNum(10) + '</value></block>', pack: 'repeat'
@@ -86,10 +86,109 @@ const COMMANDS = {
     //         '</block>'
     // },
     // defproc_noargs: { block: '<block type="procedures_noargs_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures' },
-    // defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures' },
+    defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures' },
 };
 
+
 function customBlocklyInit() {
+
+    // Blockly.Blocks['PlaceCube'] = {
+    //     init: function (this: Blockly.Block) {
+    //         this.setColour(COLOR_MOVE_1);
+    //         this.appendDummyInput()
+    //             .appendField("place cube")
+    //             .appendField(new Blockly.FieldColour(Blockly.FieldColour.COLOURS[0]), 'VALUE');
+    //         this.setPreviousStatement(true);
+    //         this.setNextStatement(true);
+    //     }
+    // };
+
+    Blockly.Blocks['procedures_defnoreturn'] = {
+        init: function (this: Blockly.Block) {
+            // this.jsonInit({
+            //     message0: "set %1 to %2",
+            //     args0: [
+            //         {
+            //             type: "field_variable",
+            //             name: "VAR",
+            //             variable: "item",
+            //             variableTypes: [""]
+            //         },
+            //         {
+            //             type:"input_value",
+            //             name: "VALUE"
+            //         }
+            //     ],
+            // });
+            this.setColour(COLOR_PROCS);
+
+            var name = Blockly.Procedures.findLegalName(
+                Blockly.Msg.PROCEDURES_DEFNORETURN_PROCEDURE, this);
+            var nameField = new Blockly.FieldTextInput(name,
+                    Blockly.Procedures.rename);
+            nameField.setSpellcheck(false);
+
+            // this.appendDummyInput()
+            //     // .appendField(Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE)
+            //     // .appendField(nameField, 'NAME');
+            //     .appendField("Procedure")
+            //     .appendField(nameField)
+            //     .appendField("is");
+                this.jsonInit({
+                    type: "procedures_defnoreturn",
+
+                    message0: "Procedure %1",
+                    args0: [
+                    {
+                        type: "field_input",
+                        name: "NAME"
+                    }
+                    ],
+                    message1: "is %1",
+                    args1: [
+                        {
+                            type: "input_statement",
+                            name: "DO"
+                        }
+                    ]
+                });
+            
+            
+            this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
+            this.setPreviousStatement(false);
+            this.setNextStatement(true);
+            this.setInputsInline(true);
+            
+            // this.statementConnection_ = null;
+
+            // var inputs = this.inputList.filter(function (input) { return input.type === Blockly.NEXT_STATEMENT; });
+            // _.forEach(function (input) { input.connection.neverFrozen = true; });
+        },
+        // function dispose(){
+        //     var flyout = this.isInFlyout;
+        //     Blockly.Blocks['procedures_defnoreturn'].dispose.apply(this, arguments);
+        //     if (Blockly.dragMode_ === 0 && !flyout) {
+        //         Blockly.Blocks.updateToolbox();
+        // }
+        // var flyout = this.BlockSvg.isInFlyout
+        // let 
+        // Blockly.WorkspaceSvg.updateToolbox('<block type="Up"><value name="VALUE">')
+        
+        
+        
+        // updateParams_: Blockly.Blocks['procedures_defnoreturn'].updateParams_,
+        // KoboldConvert.set(this.getInput("NAME")?.connection?, (block: Blockly.Block) => {
+        //     return `()`
+        // });
+    };
+    
+    let name = Blockly.Block.getInput("NAME")? // not sure how to fix this
+    KoboldConvert.set(name, (block: Blockly.Block) => {
+        return `def: ` + name + ` \n \t (${block.getInput("DO")?.connection?.targetBlock()?.getFieldValue("STATEMENT")})`
+    });
+
+
+    
     Blockly.Blocks['Up'] = {
         init: function (this: Blockly.Block) {
             this.jsonInit({
@@ -210,7 +309,7 @@ function customBlocklyInit() {
         init: function (this: Blockly.Block) {
             this.setColour(COLOR_MOVE_1);
             this.appendDummyInput()
-                .appendField("Remove cube");
+                .appendField("remove cube");
             this.setPreviousStatement(true);
             this.setNextStatement(true);
         }
