@@ -16,6 +16,8 @@ const COLOR_PROCS = '#7C478B';
 //     block_to_kobold: Map<string, ()>
 // }
 
+
+
 declare module "blockly" {
     interface Block {
         getNested(): Blockly.Block[]
@@ -52,6 +54,39 @@ function print_block(indent: string, block: Blockly.Block) {
     }
 }
 
+export function block_to_text(str: string, indent: string, block: Blockly.Block): string{
+    let convert_fn = KoboldConvert.get(block.type);
+    let children = block.getNested();
+    if(convert_fn){
+        str += indent + convert_fn(block) + "\n";
+    }
+    if (children.length > 0) {
+        for(var child of children){
+            str = block_to_text(str, (indent+"\t"), child);   
+        }
+    }
+    if (block.getNextBlock() && convert_fn) {
+        str = block_to_text(str, indent, block.getNextBlock());
+    }
+    return str;
+}
+
+
+export function blocks_to_text(): string{
+    var text = "";
+    let top = Blockly.getMainWorkspace().getTopBlocks(true);
+    _.forEach(top, (block) =>{
+        text += (block_to_text("","", block) + "\n");
+    });
+    return text;
+}
+// export function print_blocks(){ //just to test block(s)_to_text
+//     let top = Blockly.getMainWorkspace().getTopBlocks(true);
+//     _.forEach(top, (block) =>{
+//         console.log(blocks_to_text());
+//     });
+// }
+
 export function print_blocks() {
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
     _.forEach(top, (block) => {
@@ -59,6 +94,8 @@ export function print_blocks() {
         print_block("", block);
     });
 }
+
+
 
 function makeShadowNum(num: number, id?: string) {
     if (id) {
@@ -86,7 +123,7 @@ const COMMANDS = {
     //         '</block>'
     // },
     // defproc_noargs: { block: '<block type="procedures_noargs_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures' },
-    defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures' },
+    // defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures' },
 };
 
 
@@ -181,11 +218,11 @@ function customBlocklyInit() {
         //     return `()`
         // });
     };
-    
-    let name = Blockly.Block.getInput("NAME")? // not sure how to fix this
-    KoboldConvert.set(name, (block: Blockly.Block) => {
-        return `def: ` + name + ` \n \t (${block.getInput("DO")?.connection?.targetBlock()?.getFieldValue("STATEMENT")})`
-    });
+
+    // let name = Blockly.Block.getInput("NAME")? // not sure how to fix this
+    // KoboldConvert.set(name, (block: Blockly.Block) => {
+    //     return `def: ` + name + ` \n \t (${block.getInput("DO")?.connection?.targetBlock()?.getFieldValue("STATEMENT")})`
+    // });
 
 
     
