@@ -1,16 +1,45 @@
 import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import * as THREE from 'three';
+import { IncrementalSimulator } from './Simulator';
+import WorldState from './WorldState';
 
-export default class Display extends React.Component {
+type DisplayState = {
+    world: WorldState,
+    simulator: IncrementalSimulator
+}
+
+type DisplayProps = {
+    world: WorldState,
+    simulator: IncrementalSimulator
+}
+
+export default class Display extends React.Component<DisplayProps, DisplayState> {
     divRef: React.RefObject<HTMLDivElement>;
 
-    constructor(props: {}) {
+    constructor(props: DisplayProps) {
         super(props);
         this.divRef = React.createRef();
+        this.state = {
+            world: props.world,
+            simulator: props.simulator
+        }
     }
 
     componentDidMount() {
+        //animation
+        let animStatus = "";
+        let animTime, waitTime, finalBotPos: THREE.Vector3, finalBotQ: THREE.Quaternion;
+        let dirty = false;
+
+        // Constants
+        const WOBBLE_PERIOD = 4.0;
+        const WOBBLE_MAGNITUDE = 0.05;
+        const TRANSLATION_SMOOTHNESS = 1.5; // The relative speed at which the camera will catch up.
+        const ROTATION_SMOOTHNESS = 5.0; // The relative speed at which the camera will catch up.
+        const MAX_ANIMATION_TIME = 0.2; // if animation would take longer than this, take this time and then just sit idle
+        const MIN_ANIMATION_TIME = 0.1; // if animation would take less than this, just don't bother animating anything
+
         // Camera positioning
         let relativeCamPos = new THREE.Vector3(-15,0,12);
         let relativeCamPosMag = relativeCamPos.length() - 0.5; // -0.5 is an undocumented part of unity version, preserving it here
@@ -21,6 +50,10 @@ export default class Display extends React.Component {
         let scene = new THREE.Scene();
         let camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 1500);
         let renderer = new THREE.WebGLRenderer();
+        let clock = new THREE.Clock();
+        let oldTime = 0;
+        finalBotPos = new THREE.Vector3();
+        finalBotQ = new THREE.Quaternion();
         // Makes renderer the same size as the window
         renderer.setSize( window.innerWidth / 2, window.innerHeight / 2 );
         // Without this, the image doesn't show
@@ -76,7 +109,7 @@ export default class Display extends React.Component {
         // robot
         let roboGeometry = new THREE.SphereGeometry(0.5, 32, 32);
         let robot = new THREE.Mesh(roboGeometry, new THREE.MeshLambertMaterial( {color: "#f56e90"} ));
-        var robotDir = new THREE.ArrowHelper(new THREE.Vector3(-1,0,0),new THREE.Vector3(0,0,0),1,"#ff0000",0.5,0.2);
+        let robotDir = new THREE.ArrowHelper(new THREE.Vector3(-1,0,0),new THREE.Vector3(0,0,0),1,"#ff0000",0.5,0.2);
         robot.add(robotDir);
         let zLineMat = new THREE.MeshBasicMaterial( {color: 0xf2c2ce} );
         geometry = new THREE.PlaneBufferGeometry(1, 1, 32);
@@ -104,30 +137,60 @@ export default class Display extends React.Component {
           }
 
         // This animates the cube. In the animate function, the scene and camera are rendered
-        let animate = function() {
+        let animate = () => {
             requestAnimationFrame( animate );
+            
+            robot.position.lerp( this.state.world.dragon_pos, .5 );
+            robotDir.setDirection( this.state.world.dragon_dir );
+            zCuePlane.position.lerp( new THREE.Vector3(this.state.world.dragon_pos.x, this.state.world.dragon_pos.y, 0), .5 );
+
             cube.rotation.x += .01;
             cube.rotation.y += .01;
             cube.rotation.z += .01;
-            if (robot.position.x <= Math.abs(3)) {
-                const randNum = getRandomArbitrary(-.1, .1);
-                robot.translateX( randNum );
-                zCuePlane.translateX( randNum );
-            }
-            if (robot.position.y <= Math.abs(3)) {
-                const randNum = getRandomArbitrary(-.1, .1);
-                robot.translateY( randNum );
-                zCuePlane.translateY( randNum );
-            }
-            if (robot.position.z <= Math.abs(3)) {
-                const randNum = getRandomArbitrary(-.1, .1);
-                robot.translateZ( randNum );
-            }
+
             renderer.render( scene, camera );
+
+            // if (robot.position.x <= Math.abs(3)) {
+            //     const randNum = getRandomArbitrary(-.1, .1);
+            //     robot.translateX( randNum );
+            //     zCuePlane.translateX( randNum );
+            // }
+            // if (robot.position.y <= Math.abs(3)) {
+            //     const randNum = getRandomArbitrary(-.1, .1);
+            //     robot.translateY( randNum );
+            //     zCuePlane.translateY( randNum );
+            // }
+            // if (robot.position.z <= Math.abs(3)) {
+            //     const randNum = getRandomArbitrary(-.1, .1);
+            //     robot.translateZ( randNum );
+            // }
         };
         animate();
-    }
 
+
+
+
+
+
+
+        let setDisplayFromWorld = function(dt: number) {
+            let bot = robot;
+    
+            if (bot) {
+                // set robot goal position and direction
+                finalBotPos.copy(bot.position).add(robotOffset);
+                finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 0, 0)); // 1,0,0 is default direction
+                waitTime = dt*0.1;
+                animTime = Math.min(dt*0.9, MAX_ANIMATION_TIME);
+                animStatus = "waiting";
+                if (animTime < MIN_ANIMATION_TIME) {
+                    animTime = 0;
+                    animStatus = "animating";
+                }
+                dirty = false;
+            }
+        }
+    }
     render() {
         return (
             <div id="three-js" ref={this.divRef} />

@@ -1,5 +1,6 @@
 import React from 'react';
-import BlocklyComp, { print_blocks } from './BlocklyComp';
+import * as THREE from 'three';
+import BlocklyComp /*{ print_blocks }*/ from './BlocklyComp';
 import Display from './Display';
 import WorldState from './WorldState';
 import { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
@@ -19,6 +20,11 @@ repeat 4 times
     Right()
 `) as Program);
     this.sim.sim_state = SimulatorState.Running;
+
+    // Testing:
+    this.state.dragon_pos.set(1, 2, 3);
+    this.state.dragon_dir.set(-1, 0, 0);
+    this.state.cube_map.set(new THREE.Vector3(1, 1, 1), 3);
   }
 
   render() {
@@ -28,7 +34,7 @@ repeat 4 times
         {/* Code area
             Blockly
             Control buttons  */}
-        <button onClick={() => print_blocks()} />
+        {/* <button onClick={() => print_blocks()} /> */}
         <BlocklyComp />
         <Display world={this.state} simulator={this.sim}/>
         {/* Game area
