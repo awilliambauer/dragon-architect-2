@@ -22,6 +22,18 @@ declare module "blockly" {
     interface Block {
         getNested(): Blockly.Block[]
     }
+
+    interface ProcedureBlock extends Block{
+        /**
+         * Return the signature of this procedure definition.
+         * @return {!Array} Tuple containing three elements:
+         *     - (string) the name of the defined procedure,
+         *     - (Array) a list of all its arguments,
+         *     - (boolean) that it DOES have a return value.
+         * @this {Blockly.Block}
+         */
+        getProcedureDef(): [string, string[], boolean]
+    }
 }
 
 Blockly.Block.prototype.getNested = function () {
@@ -54,6 +66,14 @@ function print_block(indent: string, block: Blockly.Block) {
     }
 }
 
+export function print_blocks() {
+    let top = Blockly.getMainWorkspace().getTopBlocks(true);
+    _.forEach(top, (block) => {
+        console.log("top");
+        print_block("", block);
+    });
+}
+
 export function block_to_text(str: string, indent: string, block: Blockly.Block): string{
     let convert_fn = KoboldConvert.get(block.type);
     let children = block.getNested();
@@ -71,7 +91,6 @@ export function block_to_text(str: string, indent: string, block: Blockly.Block)
     return str;
 }
 
-
 export function blocks_to_text(): string{
     var text = "";
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
@@ -86,16 +105,6 @@ export function blocks_to_text(): string{
 //         console.log(blocks_to_text());
 //     });
 // }
-
-export function print_blocks() {
-    let top = Blockly.getMainWorkspace().getTopBlocks(true);
-    _.forEach(top, (block) => {
-        console.log("top");
-        print_block("", block);
-    });
-}
-
-
 
 function makeShadowNum(num: number, id?: string) {
     if (id) {
@@ -124,108 +133,15 @@ const COMMANDS = {
     // },
     // defproc_noargs: { block: '<block type="procedures_noargs_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures' },
     // defproc: { block: '<block type="procedures_defnoreturn"></block>', teaser: '<block type="procedures_defnoreturn_teaser"></block>', pack: 'procedures' },
+    defproc: { block: '<block type="procedures_defnoreturn"></block>', pack: 'procedures' },
+
+
 };
 
 
 function customBlocklyInit() {
 
-    // Blockly.Blocks['PlaceCube'] = {
-    //     init: function (this: Blockly.Block) {
-    //         this.setColour(COLOR_MOVE_1);
-    //         this.appendDummyInput()
-    //             .appendField("place cube")
-    //             .appendField(new Blockly.FieldColour(Blockly.FieldColour.COLOURS[0]), 'VALUE');
-    //         this.setPreviousStatement(true);
-    //         this.setNextStatement(true);
-    //     }
-    // };
-
-    Blockly.Blocks['procedures_defnoreturn'] = {
-        init: function (this: Blockly.Block) {
-            // this.jsonInit({
-            //     message0: "set %1 to %2",
-            //     args0: [
-            //         {
-            //             type: "field_variable",
-            //             name: "VAR",
-            //             variable: "item",
-            //             variableTypes: [""]
-            //         },
-            //         {
-            //             type:"input_value",
-            //             name: "VALUE"
-            //         }
-            //     ],
-            // });
-            this.setColour(COLOR_PROCS);
-
-            var name = Blockly.Procedures.findLegalName(
-                Blockly.Msg.PROCEDURES_DEFNORETURN_PROCEDURE, this);
-            var nameField = new Blockly.FieldTextInput(name,
-                    Blockly.Procedures.rename);
-            nameField.setSpellcheck(false);
-
-            // this.appendDummyInput()
-            //     // .appendField(Blockly.Msg.PROCEDURES_DEFNORETURN_TITLE)
-            //     // .appendField(nameField, 'NAME');
-            //     .appendField("Procedure")
-            //     .appendField(nameField)
-            //     .appendField("is");
-                this.jsonInit({
-                    type: "procedures_defnoreturn",
-
-                    message0: "Procedure %1",
-                    args0: [
-                    {
-                        type: "field_input",
-                        name: "NAME"
-                    }
-                    ],
-                    message1: "is %1",
-                    args1: [
-                        {
-                            type: "input_statement",
-                            name: "DO"
-                        }
-                    ]
-                });
-            
-            
-            this.setTooltip(Blockly.Msg.PROCEDURES_DEFNORETURN_TOOLTIP);
-            this.setPreviousStatement(false);
-            this.setNextStatement(true);
-            this.setInputsInline(true);
-            
-            // this.statementConnection_ = null;
-
-            // var inputs = this.inputList.filter(function (input) { return input.type === Blockly.NEXT_STATEMENT; });
-            // _.forEach(function (input) { input.connection.neverFrozen = true; });
-        },
-        // function dispose(){
-        //     var flyout = this.isInFlyout;
-        //     Blockly.Blocks['procedures_defnoreturn'].dispose.apply(this, arguments);
-        //     if (Blockly.dragMode_ === 0 && !flyout) {
-        //         Blockly.Blocks.updateToolbox();
-        // }
-        // var flyout = this.BlockSvg.isInFlyout
-        // let 
-        // Blockly.WorkspaceSvg.updateToolbox('<block type="Up"><value name="VALUE">')
-        
-        
-        
-        // updateParams_: Blockly.Blocks['procedures_defnoreturn'].updateParams_,
-        // KoboldConvert.set(this.getInput("NAME")?.connection?, (block: Blockly.Block) => {
-        //     return `()`
-        // });
-    };
-
-    // let name = Blockly.Block.getInput("NAME")? // not sure how to fix this
-    // KoboldConvert.set(name, (block: Blockly.Block) => {
-    //     return `def: ` + name + ` \n \t (${block.getInput("DO")?.connection?.targetBlock()?.getFieldValue("STATEMENT")})`
-    // });
-
-
-    
+    //up
     Blockly.Blocks['Up'] = {
         init: function (this: Blockly.Block) {
             this.jsonInit({
@@ -248,6 +164,7 @@ function customBlocklyInit() {
         return `Up(${block.getInput("VALUE")?.connection?.targetBlock()?.getFieldValue("NUM")})`
     });
 
+    //down
     Blockly.Blocks['Down'] = {
         init: function (this: Blockly.Block) {
             this.jsonInit({
@@ -270,9 +187,7 @@ function customBlocklyInit() {
         return `Down(${block.getInput("VALUE")?.connection?.targetBlock()?.getFieldValue("NUM")})`
     });
 
-    
-
-
+    //forward
     Blockly.Blocks['Forward'] = {
         init: function (this: Blockly.Block) {
             this.jsonInit({
@@ -291,14 +206,11 @@ function customBlocklyInit() {
             });
         }
     };
-
     KoboldConvert.set("Forward", (block: Blockly.Block) => {
         return `Foward(${block.getInput("VALUE")?.connection?.targetBlock()?.getFieldValue("NUM")})`
     });
 
-
-   
-
+    //left
     Blockly.Blocks['Left'] = {
         init: function (this: Blockly.Block) {
             this.setColour(COLOR_MOVE_1);
@@ -308,11 +220,11 @@ function customBlocklyInit() {
             this.setNextStatement(true);
         }
     };
-
     KoboldConvert.set("Left", (block: Blockly.Block) => {
         return `Left()`
     });
 
+    //right
     Blockly.Blocks['Right'] = {
         init: function (this: Blockly.Block) {
             this.setColour(COLOR_MOVE_1);
@@ -322,11 +234,11 @@ function customBlocklyInit() {
             this.setNextStatement(true);
         }
     };
-
     KoboldConvert.set("Right", (block: Blockly.Block) => {
         return `Right()`
     });
 
+    //placecube
     Blockly.Blocks['PlaceCube'] = {
         init: function (this: Blockly.Block) {
             this.setColour(COLOR_MOVE_1);
@@ -337,11 +249,12 @@ function customBlocklyInit() {
             this.setNextStatement(true);
         }
     };
-
     KoboldConvert.set("PlaceCube", (block: Blockly.Block) => {
-        return `PlaceCube()`
+        return `PlaceCube(`+Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE"))+`)`
+        // this will be an integer
     });
 
+    //removecube
     Blockly.Blocks['RemoveCube'] = {
         init: function (this: Blockly.Block) {
             this.setColour(COLOR_MOVE_1);
@@ -351,13 +264,19 @@ function customBlocklyInit() {
             this.setNextStatement(true);
         }
     };
-
     KoboldConvert.set("RemoveCube", (block: Blockly.Block) => {
         return `RemoveCube()`
     });
 
+    //repeat (built-in)
     KoboldConvert.set("controls_repeat_ext", (block: Blockly.Block) => {
         return `repeat ${block.getInput("TIMES")?.connection?.targetBlock()?.getFieldValue("NUM")} times`;
+    });
+
+    //procedure (built-in)
+    KoboldConvert.set("procedures_defnoreturn", (block: Blockly.Block) => {
+        let [name, args, _hasReturn] = (block as Blockly.ProcedureBlock).getProcedureDef();
+        return `define ${name}(${args})`;
     });
 }
 
