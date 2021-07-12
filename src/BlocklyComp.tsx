@@ -99,7 +99,12 @@ export function blocks_to_text(): string{
     });
     return text;
 }
-// export function print_blocks(){ //just to test block(s)_to_text
+
+// The following is just to test block(s)_to_text.
+// To test if blocks_to_text() work, uncomment it
+// and comment the original print_blocks() in line 69
+//
+// export function print_blocks(){ 
 //     let top = Blockly.getMainWorkspace().getTopBlocks(true);
 //     _.forEach(top, (block) =>{
 //         console.log(blocks_to_text());
