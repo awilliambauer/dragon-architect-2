@@ -22,9 +22,18 @@ repeat 4 times
     this.sim.sim_state = SimulatorState.Running;
 
     // Testing:
-    this.state.dragon_pos.set(1, 2, 3);
+    // Tests the end position of the dragon
+    this.state.dragon_pos.set(4, 2, 3);
+    // Tests the direction of the arrow helper (MUST BE A UNIT VECTOR)
     this.state.dragon_dir.set(-1, 0, 0);
-    this.state.cube_map.set(new THREE.Vector3(1, 1, 1), 3);
+    // Tests the location and colors of cubes
+    this.state.cube_map.set(new THREE.Vector3(1, 3, 1), 1);
+    this.state.cube_map.set(new THREE.Vector3(1, 3, 3), 3);
+    this.state.cube_map.set(new THREE.Vector3(2, 2, 3), 2);
+  }
+
+  change_state() {
+
   }
 
   render() {
@@ -35,6 +44,7 @@ repeat 4 times
             Blockly
             Control buttons  */}
         {/* <button onClick={() => print_blocks()} /> */}
+            {/* <button onClick={() => this.change_state()} */}
         <BlocklyComp />
         <Display world={this.state} simulator={this.sim}/>
         {/* Game area

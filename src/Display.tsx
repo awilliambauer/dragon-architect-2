@@ -1,3 +1,4 @@
+import { SSL_OP_COOKIE_EXCHANGE } from 'constants';
 import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import * as THREE from 'three';
@@ -39,6 +40,15 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         const ROTATION_SMOOTHNESS = 5.0; // The relative speed at which the camera will catch up.
         const MAX_ANIMATION_TIME = 0.2; // if animation would take longer than this, take this time and then just sit idle
         const MIN_ANIMATION_TIME = 0.1; // if animation would take less than this, just don't bother animating anything
+        const cubeColors = ["#1ca84f", "#a870b7", "#ff1a6d", "#00bcf4", "#ffc911", "#ff6e3d", "#000000", "#ffffff"];
+        let loader = new THREE.TextureLoader();
+        let cubes: any = {};
+        let cubeMats = [];
+        let tex1 = loader.load("media/canvas_cube.png");
+        cubeColors.forEach(function (color: string) {
+            cubeMats.push(new THREE.MeshLambertMaterial({color:color, map:tex1}));
+            cubes[color] = {meshes:[]};
+        });
 
         // Camera positioning
         let relativeCamPos = new THREE.Vector3(-15,0,12);
@@ -96,7 +106,6 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         camera.position.z = 10;
 
         // Plane geometry, material, and mesh
-        let loader = new THREE.TextureLoader();
         let geometry = new THREE.PlaneBufferGeometry(100, 100, 32);
         let tex = loader.load("media/outlined_cube.png");
         tex.wrapS = THREE.RepeatWrapping;
@@ -139,7 +148,48 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         // This animates the cube. In the animate function, the scene and camera are rendered
         let animate = () => {
             requestAnimationFrame( animate );
+
+            // Iterates over each cube in cube_mat and places all cubes
+            this.state.world.cube_map.forEach((colorVal: number, cubePosition: THREE.Vector3) => {
+                let cubeGeo = new THREE.BoxGeometry(1, 1, 1);
+                let cubeMat = new THREE.MeshLambertMaterial({color: cubeColors[colorVal], transparent: true, opacity:0.5});
+                let cube = new THREE.Mesh( cubeGeo, cubeMat );
+
+                cube.translateX( cubePosition.x );
+                cube.translateY( cubePosition.y );
+                cube.translateZ( cubePosition.z );
+
+                scene.add( cube );
+            });
+
+            // An array of all available ___
+            let available: any[] = [];
+            let available_index = 0;
+            // An object that contains 
+            let filled: any = {};
+
+            // This checks for cubes that should be removed
+            cubeColors.forEach((color: string) => {
+                available[cubeColors.indexOf(color)] = [];
+                cubes[color].meshes.forEach( (obj: any) => { // For each cube (.meshes) (object with mesh and position) in the specified color
+                    if (!this.state.world.cube_map.hasOwnProperty(obj.pos)) { // If the object has a position property
+                        scene.remove(obj.mesh); // Remove from scene
+                        obj.pos = null; // And set position to null
+                    } else { // If the object doesn't have a position property
+                        filled[obj.pos] = true; // Set the filled object at that cube object to true
+                    } if (obj.pos === null) {
+                        available[cubeColors.indexOf(color)].push(obj);
+                    }
+                })
+            });
+            this.state.world.cube_map.forEach( (colorVal: number, cubePosition: THREE.Vector3 ) => {
+                let col = cubeColors[colorVal];
+                if (!filled[colorVal]) {
+                    // placeholder comment
+                }
+            });
             
+            // Draws the robot's end position along with the arrowhelper
             robot.position.lerp( this.state.world.dragon_pos, .5 );
             robotDir.setDirection( this.state.world.dragon_dir );
             zCuePlane.position.lerp( new THREE.Vector3(this.state.world.dragon_pos.x, this.state.world.dragon_pos.y, 0), .5 );
