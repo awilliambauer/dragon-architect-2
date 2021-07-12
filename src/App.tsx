@@ -1,10 +1,10 @@
 import React from 'react';
 import * as THREE from 'three';
-import BlocklyComp /*{ print_blocks }*/ from './BlocklyComp';
+import BlocklyComp, { blocks_to_text } /*{ print_blocks }*/ from './BlocklyComp';
 import Display from './Display';
 import WorldState from './WorldState';
-import { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
-import parse, { Program } from './Parser';
+import run, { load_stdlib, IncrementalSimulator, SimulatorState, RecursiveSimulator } from './Simulator';
+import parse, { Program, SyntaxError } from './Parser';
 
 class App extends React.Component {
   state: WorldState = new WorldState();
@@ -36,6 +36,16 @@ repeat 4 times
 
   }
 
+  run_program() {
+    const program = blocks_to_text();
+    const ast = parse(program);
+    if (ast instanceof SyntaxError) {
+      console.error(`Syntax Error: ${ast}`);
+    } else {
+      run(this.state, ast);
+    }
+  }
+
   render() {
     return (
       <div className="App">
@@ -43,7 +53,8 @@ repeat 4 times
         {/* Code area
             Blockly
             Control buttons  */}
-        {/* <button onClick={() => print_blocks()} /> */}
+        <button onClick={() => console.log(blocks_to_text())}>blocks_to_text</button>
+        <button onClick={() => this.run_program()}>Run Program</button>
             {/* <button onClick={() => this.change_state()} */}
         <BlocklyComp />
         <Display world={this.state} simulator={this.sim}/>
