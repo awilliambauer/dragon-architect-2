@@ -1,5 +1,10 @@
 import _ from 'lodash';
 
+/*
+raw text -> lexer -> list of tokens
+list of tokens -> parser -> program (abstract syntax tree, list of statements)
+*/
+
 // TODO split lexer and parser into separate files
 
 // @ and = for specifying program-wide attributes as key-value pairs
@@ -149,7 +154,7 @@ export type Statement = {
 };
 
 export type Procedure = {
-    kind: string
+    kind: string // will be "procedure"
     meta: Meta
     name: string
     params: string[]
