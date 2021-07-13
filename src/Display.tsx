@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import * as THREE from 'three';
 import { IncrementalSimulator } from './Simulator';
-import WorldState from './WorldState';
+import WorldState, { UP } from './WorldState';
 
 type DisplayState = {
     world: WorldState,
@@ -44,14 +44,14 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         const cubeColors = ["#1ca84f", "#a870b7", "#ff1a6d", "#00bcf4", "#ffc911", "#ff6e3d", "#000000", "#ffffff"];
         let loader = new THREE.TextureLoader();
         // Map where each key is a color and each value is an object. The object has a "meshes" property
-        let cubes = new Map<string, {meshes: object[]}>();
-        let cubeMats: any = [];
+        let cubes = new Map<string, THREE.Mesh[]>();
+        let cubeMats: THREE.MeshLambertMaterial[] = [];
         let tex1 = loader.load("media/canvas_cube.png");
         cubeColors.forEach(function (color: string) {
             cubeMats.push(new THREE.MeshLambertMaterial({color:color, map:tex1}));
-            cubes.set(color, {meshes:[]});
+            cubes.set(color, []);
         });
-        console.log("THiS IS THE OBJ: " + JSON.stringify(cubes));
+        // console.log("THiS IS THE OBJ: " + JSON.stringify(cubes));
 
         // Camera positioning
         let relativeCamPos = new THREE.Vector3(-15,0,12);
@@ -74,7 +74,7 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
 
         camera.position.copy(relativeCamPos);
         camera.lookAt(new THREE.Vector3(0,0,0));
-        camera.rotateZ(270 * Math.PI / 180);
+        //camera.rotateZ(270 * Math.PI / 180);
         camera.up.set(0,0,1);
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
@@ -100,14 +100,6 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         scene.add(light);
         scene.add(new THREE.AmbientLight("#404040"));
 
-        // Camera init
-        camera.position.copy(relativeCamPos);
-        camera.lookAt(new THREE.Vector3(0,0,0));
-        // camera.rotateX(-10);
-
-        // Moves the camera up 2 so that it's not in the center of the image
-        camera.position.z = 10;
-
         // Plane geometry, material, and mesh
         let geometry = new THREE.PlaneBufferGeometry(100, 100, 32);
         let tex = loader.load("media/outlined_cube.png");
@@ -132,6 +124,70 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         scene.add(zCuePlane);
         scene.add(robot);
 
+        // Camera init
+        let radiansOfDegrees = (deg: number) => {
+            return deg / 180 * Math.PI;
+        }
+        let rotateCamera = (degrees: number) => {
+            let q = new THREE.Quaternion();
+            q.setFromAxisAngle(UP, radiansOfDegrees(degrees));
+            relativeCamPos.applyQuaternion(q);
+        };
+        let onWindowResize = () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        };
+        let moveCam = (tDelta: number, tTotal: number) => {
+            let z = WOBBLE_MAGNITUDE * Math.sin(tTotal * 4 * Math.PI / WOBBLE_PERIOD);
+            let y = WOBBLE_MAGNITUDE * Math.cos(tTotal * 2 * Math.PI / WOBBLE_PERIOD);
+            let v = new THREE.Vector3(0, y, z);
+
+            // switch (animStatus) {
+            //     case "waiting":
+            //         waitTime -= tDelta;
+            //         if (waitTime > 0) {
+            //             break;
+            //         }
+            //         tDelta += waitTime; // wait time is negative, carry over into animating
+            //         animStatus = "animating";
+            //         // deliberate case fall-through since wait time is up if we get here
+            //     case "animating":
+            //         robot.position.lerp(finalBotPos, Math.min(tDelta / animTime, 1));
+            //         robot.quaternion.slerp(finalBotQ, Math.min(tDelta / animTime, 1));
+            //         animTime -= tDelta;
+            //         if (animTime <= 0) {
+            //             robot.position.copy(finalBotPos);
+            //             robot.quaternion.copy(finalBotQ);
+            //             animStatus = "done";
+            //         }
+            //         break;
+            // }
+            // makeZLine();
+
+            let newCamPos = v.add(relativeCamPos).add(robot.position);
+            camera.position.lerp(newCamPos, TRANSLATION_SMOOTHNESS * tDelta);
+
+            // Couldn't figure out how to reimplement technique from Unity code
+            // There's probably something better than my hack
+            let oldCamQ = camera.quaternion.clone();
+            camera.lookAt(robot.position);
+            let newCamQ = camera.quaternion.clone();
+            camera.quaternion.copy(oldCamQ);
+            camera.quaternion.slerp(newCamQ, ROTATION_SMOOTHNESS * tDelta);
+
+            renderer.render(scene, camera);
+        }
+        camera.position.copy(relativeCamPos);
+        camera.lookAt(new THREE.Vector3(0,0,0));
+        //camera.lookAt(scene.position);
+        rotateCamera(-100);
+        robot.position.copy(robotOffset);
+        window.addEventListener( 'resize', onWindowResize, false );
+
+        // Moves the camera up 2 so that it's not in the center of the image
+        camera.position.z = 10;
+
         // Skybox
         let path = "media/skybox/";
         let format = ".jpg";
@@ -143,87 +199,48 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         let cubeLoader = new THREE.CubeTextureLoader();
         scene.background = cubeLoader.load(texes);
 
-        // Used to move the robot randomly in the animate function
-        function getRandomArbitrary(min: number, max: number) {
-            return Math.random() * (max - min) + min;
-          }
-        
-        let removeStuff = () => {
-
-        }
-
         // This animates the cube. In the animate function, the scene and camera are rendered
         let animate = () => {
             requestAnimationFrame( animate );
-
-            // Iterates over each cube in cube_mat and places all cubes
-            this.state.world.cube_map.forEach((colorVal: number, cubePosition: THREE.Vector3) => {
-                let cubeGeo = new THREE.BoxGeometry(1, 1, 1);
-                let cubeMat = new THREE.MeshLambertMaterial({color: cubeColors[colorVal], transparent: true, opacity:0.5});
-                let cube = new THREE.Mesh( cubeGeo, cubeMat );
-
-                // Place cube in correct position
-                cube.translateX( cubePosition.x );
-                cube.translateY( cubePosition.y );
-                cube.translateZ( cubePosition.z );
-
-                scene.add( cube );
-            });
-
-
-            // A map where the keys are colors and the values are meshes
-            // This map shows all of the available meshes, or the meshes that haven't been used yet
-            // REMINDER: Mesh is the combination of the cube's (or "object's" more generally) material + position
-            let available = new Map<number, Array<THREE.Mesh>>();
-            // Indexes which mesh on the available map we're on
-            let available_index = 0;
+            // A map where the keys are colors and the values are cube meshes
+            // This map shows all of the available meshes, or the meshes that don't have a position
+            let available = new Map<string, THREE.Mesh[]>();
             // A map whose keys are positions and values are booleans
             // Represents if a position is filled (true) or not (false)
             let filled = new Map<THREE.Vector3, boolean>();
 
             // This checks for cubes that should be removed
-            // console.log("CUBE COLORS: " + cubeColors);
             cubeColors.forEach((color: string) => {
-                available.set(cubeColors.indexOf(color), []);
-                // console.log("CUBES: " + JSON.stringify(cubes));
-                cubes.get(color)!.meshes.forEach( (obj: any) => { // For each cube (.meshes) (object with material and position) in the specified color
-                    if (!this.state.world.cube_map.hasOwnProperty(obj.pos)) { // If the object has a position property
-                        scene.remove(obj.mesh); // Remove from scene
-                        obj.pos = null; // And set position to null
-                    } else { // If the object doesn't have a position property
-                        filled.set(obj.pos, true); // Set the filled object at that cube object to true
-                    } if (obj.pos === null) {
-                        available.get(cubeColors.indexOf(color))!.push(obj);
+                available.set(color, []); // Set each color in available map to an empty array
+                cubes.get(color)!.forEach( (cube) => { // For each cube (mesh with material and position) in the specified color
+                    if (!this.state.world.cube_map.has(cube.position)) { // If the cube doesn't have a position property
+                        scene.remove(cube); // Remove from scene
+                        available.get(color)!.push(cube);
+                    } else { // If the cube has a position property
+                        filled.set(cube.position, true); // Set the filled object at that cube object to true
                     }
-                })
+                });
             });
 
-            // Loop over positions that need meshes
+            // Loop over all cubes in cube map
+            // This loop will add a cube to the display if it doesn't have a position
             for (let [cubePosition, colorInd] of this.state.world.cube_map) {
-                // console.log(typeof(cubePosition)); "OBJECT!!"
-                // console.log("INSTANCE OF: " + (cubePosition instanceof THREE.Vector3)) "TRUE!!"
                 let color: string = cubeColors[colorInd];
-                if (!filled.get(cubePosition!)) {
-                    let cube = {
-                        // IDK WHY THIS IS PROTOTYPE??
-                        pos: THREE.Vector3.prototype,
-                        mesh: THREE.Mesh.prototype,
-                    };
-                    if (available.get(cubeColors.indexOf(color))) {
-                        cube.pos = cubePosition;
-                        cube.mesh = (available.get(cubeColors.indexOf(color))![available_index++] as THREE.Mesh);
-                    } else {
-                        cube = {
-                            mesh: new THREE.Mesh(targetGeo, cubeMats[this.state.world.cube_map.get(cubePosition)!]),
-                            pos: cubePosition,
-                        };
-                        cubes.get(color)!.meshes.push(cube);
+                if (!filled.has(cubePosition)) { // If this cube position does not exist (is undefined) in filled
+                    let existing_cube = available.get(color)?.pop(); // Remove the last cube mesh from available list
+                    if (existing_cube) { // If there is a cube available....
+                        existing_cube.position.copy(cubePosition); // ...Give it the position of the current cube
+                        scene.add(existing_cube);
+                    } else { // If there isn't a cube mesh available....
+                        let new_cube: THREE.Mesh = new THREE.Mesh(targetGeo, cubeTargetMat) // ...Create a new cube mesh
+                        new_cube.position.copy(cubePosition);
+                        cubes.get(color)!.push(new_cube);
+                        filled.set(new_cube.position, true);
+                        scene.add(new_cube);
                     }
-                    scene.add(cube.mesh);
-                    // cube.mesh.copy(cubePosition).add(cubeOffset);
                 }
             };
-            
+            //moveCam(dt, t);
             // Draws the robot's end position along with the arrowhelper
             robot.position.lerp( this.state.world.dragon_pos, .5 );
             robotDir.setDirection( this.state.world.dragon_dir );
@@ -232,48 +249,18 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
             cube.rotation.x += .01;
             cube.rotation.y += .01;
             cube.rotation.z += .01;
+    
+            // Attaches camera to robot
+            camera.position.lerp(robot.position, 0.4);
+            camera.lookAt( robot.position );
+            camera.position.x = robot.position.x+10;
+            camera.position.y = robot.position.y-2;
+            camera.position.z = robot.position.z+11;
 
             renderer.render( scene, camera );
-
-            // if (robot.position.x <= Math.abs(3)) {
-            //     const randNum = getRandomArbitrary(-.1, .1);
-            //     robot.translateX( randNum );
-            //     zCuePlane.translateX( randNum );
-            // }
-            // if (robot.position.y <= Math.abs(3)) {
-            //     const randNum = getRandomArbitrary(-.1, .1);
-            //     robot.translateY( randNum );
-            //     zCuePlane.translateY( randNum );
-            // }
-            // if (robot.position.z <= Math.abs(3)) {
-            //     const randNum = getRandomArbitrary(-.1, .1);
-            //     robot.translateZ( randNum );
-            // }
         };
         animate();
 
-
-
-
-
-
-        let setDisplayFromWorld = function(dt: number) {
-            let bot = robot;
-    
-            if (bot) {
-                // set robot goal position and direction
-                finalBotPos.copy(bot.position).add(robotOffset);
-                finalBotQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), new THREE.Vector3(1, 0, 0)); // 1,0,0 is default direction
-                waitTime = dt*0.1;
-                animTime = Math.min(dt*0.9, MAX_ANIMATION_TIME);
-                animStatus = "waiting";
-                if (animTime < MIN_ANIMATION_TIME) {
-                    animTime = 0;
-                    animStatus = "animating";
-                }
-                dirty = false;
-            }
-        }
     }
     render() {
         return (
