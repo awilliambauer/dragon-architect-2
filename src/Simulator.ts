@@ -202,9 +202,14 @@ export class IncrementalSimulator {
         }
     }
 
+    is_running(): boolean {
+        return this.sim_state === SimulatorState.Running;
+    }
+
     execute_to_command(): void | RuntimeError {
         if (this.execution_stack.length === 0 || this.sim_state !== SimulatorState.Running) {
             // TODO figure out what should happen here
+            this.sim_state = SimulatorState.Finished;
             return;
         }
         const [ stmt, env ] = this.execution_stack.pop()!;
