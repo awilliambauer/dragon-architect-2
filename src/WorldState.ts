@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { SimCommand, RuntimeError, RuntimeErrorCode, runtime_error, 
     ValueType } from './Simulator';
 import _ from 'lodash';
+import { mapDeleteVector3, mapHasVector3 } from './Util';
 
 export const UP = new THREE.Vector3(0, 0, 1);
 export const DOWN = new THREE.Vector3(0, 0, -1);
@@ -62,14 +63,14 @@ export default class WorldState {
                     return color_id;
                 }
                 // only has an affect when a cube is not already present
-                if (!this.cube_map.has(this.dragon_pos)) {
+                if (!mapHasVector3(this.cube_map, this.dragon_pos)) {
                     this.cube_map.set(this.dragon_pos.clone(), color_id);
                 } else {
                     return; // return early to avoid marking dirty an unchanged state
                 }
                 break;
             case "remove":
-                if (!this.cube_map.delete(this.dragon_pos)) {
+                if (!mapDeleteVector3(this.cube_map, this.dragon_pos)) {
                     return; // return early to avoid marking dirty an unchanged state
                 }
                 break;
