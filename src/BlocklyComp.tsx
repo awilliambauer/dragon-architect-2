@@ -119,7 +119,7 @@ function makeShadowNum(num: number, id?: string) {
 };
 
 const COMMANDS = {
-    move2: { block: '<block type="Forward"><value name="VALUE">' + makeShadowNum(1) + '</value></block>' },
+    move2: { block: '<block type="Forward"><value name="VALUE">' + makeShadowNum(1) + '</value></block><block type="Left"></block><block type="Right"></block>' },
     //set: { block: '<block type="Set"><value name="VALUE">' + makeShadowNum(1) + '</value></block>' },
     place: { block: '<block type="PlaceCube"></block>' },
     remove: { block: '<block type="RemoveCube"></block>', teaser: '<block type="RemoveCube_teaser"></block>', pack: 'remove' },
@@ -145,6 +145,7 @@ const COMMANDS = {
 
 
 function customBlocklyInit() {
+    Blockly.FieldColour.COLOURS = ["#1ca84f", "#a870b7", "#ff1a6d", "#00bcf4", "#ffc911", "#ff6e3d", "#000000", "#ffffff"];
 
     //up
     Blockly.Blocks['Up'] = {
@@ -293,7 +294,7 @@ export default class BlocklyComp extends React.Component {
 
     render() {
         return (
-            <div id="blocklyDiv" style={{height: '480px', width: '600px'}}></div>
+            <div id="blocklyDiv" style={{width: '100%'}}></div>
         )
     }
 

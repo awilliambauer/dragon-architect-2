@@ -55,9 +55,13 @@ repeat 4 times
             Control buttons  */}
         <button onClick={() => console.log(blocks_to_text())}>blocks_to_text</button>
         <button onClick={() => this.run_program()}>Run Program</button>
-            {/* <button onClick={() => this.change_state()} */}
-        <BlocklyComp />
-        <Display world={this.state} simulator={this.sim}/>
+        {/* <button onClick={() => this.change_state()} */}
+        <div id="main-view-code">
+          <BlocklyComp />
+        </div>
+        <div id="main-view-game">
+          <Display world={this.state} simulator={this.sim} />
+        </div>
         {/* Game area
             Camera controls
             3D view
