@@ -5,7 +5,7 @@ import { stringify } from 'querystring';
 import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import * as THREE from 'three';
-import { IncrementalSimulator } from './Simulator';
+import { IncrementalSimulator, SimulatorState } from './Simulator';
 import WorldState, { UP } from './WorldState';
 
 type DisplayState = {
@@ -164,6 +164,11 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         // This animates the cube. In the animate function, the scene and camera are rendered
         let animate = () => {
             requestAnimationFrame( animate );
+
+            // Animation :)
+            if (this.state.simulator.is_running()) {
+                this.state.simulator.execute_to_command();
+            }
 
             // The "available" and "filled" maps are solely for efficiency. Cubes can be reused so we don't have to keep creating them
             // A map where the keys are colors and the values are cube meshes
