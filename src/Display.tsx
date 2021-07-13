@@ -1,4 +1,5 @@
 import { SSL_OP_COOKIE_EXCHANGE } from 'constants';
+import { stringify } from 'querystring';
 import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import * as THREE from 'three';
@@ -42,13 +43,15 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         const MIN_ANIMATION_TIME = 0.1; // if animation would take less than this, just don't bother animating anything
         const cubeColors = ["#1ca84f", "#a870b7", "#ff1a6d", "#00bcf4", "#ffc911", "#ff6e3d", "#000000", "#ffffff"];
         let loader = new THREE.TextureLoader();
-        let cubes: any = {};
-        let cubeMats = [];
+        // Map where each key is a color and each value is an object. The object has a "meshes" property
+        let cubes = new Map<string, {meshes: object[]}>();
+        let cubeMats: any = [];
         let tex1 = loader.load("media/canvas_cube.png");
         cubeColors.forEach(function (color: string) {
             cubeMats.push(new THREE.MeshLambertMaterial({color:color, map:tex1}));
-            cubes[color] = {meshes:[]};
+            cubes.set(color, {meshes:[]});
         });
+        console.log("THiS IS THE OBJ: " + JSON.stringify(cubes));
 
         // Camera positioning
         let relativeCamPos = new THREE.Vector3(-15,0,12);
@@ -130,20 +133,24 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         scene.add(robot);
 
         // Skybox
-        var path = "media/skybox/";
-        var format = ".jpg";
+        let path = "media/skybox/";
+        let format = ".jpg";
         // it's not clear to me three js does what it says it does with the six images, but I've got everything lining
         // up via trial and error
-        var texes = [path + "px" + format, path + "nx" + format,
+        let texes = [path + "px" + format, path + "nx" + format,
             path + "py" + format, path + "ny" + format,
             path + "pz" + format, path + "nz" + format];
-        var cubeLoader = new THREE.CubeTextureLoader();
+        let cubeLoader = new THREE.CubeTextureLoader();
         scene.background = cubeLoader.load(texes);
 
         // Used to move the robot randomly in the animate function
         function getRandomArbitrary(min: number, max: number) {
             return Math.random() * (max - min) + min;
           }
+        
+        let removeStuff = () => {
+
+        }
 
         // This animates the cube. In the animate function, the scene and camera are rendered
         let animate = () => {
@@ -155,6 +162,7 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
                 let cubeMat = new THREE.MeshLambertMaterial({color: cubeColors[colorVal], transparent: true, opacity:0.5});
                 let cube = new THREE.Mesh( cubeGeo, cubeMat );
 
+                // Place cube in correct position
                 cube.translateX( cubePosition.x );
                 cube.translateY( cubePosition.y );
                 cube.translateZ( cubePosition.z );
@@ -162,32 +170,59 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
                 scene.add( cube );
             });
 
-            // An array of all available ___
-            let available: any[] = [];
+
+            // A map where the keys are colors and the values are meshes
+            // This map shows all of the available meshes, or the meshes that haven't been used yet
+            // REMINDER: Mesh is the combination of the cube's (or "object's" more generally) material + position
+            let available = new Map<number, Array<THREE.Mesh>>();
+            // Indexes which mesh on the available map we're on
             let available_index = 0;
-            // An object that contains 
-            let filled: any = {};
+            // A map whose keys are positions and values are booleans
+            // Represents if a position is filled (true) or not (false)
+            let filled = new Map<THREE.Vector3, boolean>();
 
             // This checks for cubes that should be removed
+            // console.log("CUBE COLORS: " + cubeColors);
             cubeColors.forEach((color: string) => {
-                available[cubeColors.indexOf(color)] = [];
-                cubes[color].meshes.forEach( (obj: any) => { // For each cube (.meshes) (object with mesh and position) in the specified color
+                available.set(cubeColors.indexOf(color), []);
+                // console.log("CUBES: " + JSON.stringify(cubes));
+                cubes.get(color)!.meshes.forEach( (obj: any) => { // For each cube (.meshes) (object with material and position) in the specified color
                     if (!this.state.world.cube_map.hasOwnProperty(obj.pos)) { // If the object has a position property
                         scene.remove(obj.mesh); // Remove from scene
                         obj.pos = null; // And set position to null
                     } else { // If the object doesn't have a position property
-                        filled[obj.pos] = true; // Set the filled object at that cube object to true
+                        filled.set(obj.pos, true); // Set the filled object at that cube object to true
                     } if (obj.pos === null) {
-                        available[cubeColors.indexOf(color)].push(obj);
+                        available.get(cubeColors.indexOf(color))!.push(obj);
                     }
                 })
             });
-            this.state.world.cube_map.forEach( (colorVal: number, cubePosition: THREE.Vector3 ) => {
-                let col = cubeColors[colorVal];
-                if (!filled[colorVal]) {
-                    // placeholder comment
+
+            // Loop over positions that need meshes
+            for (let [cubePosition, colorInd] of this.state.world.cube_map) {
+                // console.log(typeof(cubePosition)); "OBJECT!!"
+                // console.log("INSTANCE OF: " + (cubePosition instanceof THREE.Vector3)) "TRUE!!"
+                let color: string = cubeColors[colorInd];
+                if (!filled.get(cubePosition!)) {
+                    let cube = {
+                        // IDK WHY THIS IS PROTOTYPE??
+                        pos: THREE.Vector3.prototype,
+                        mesh: THREE.Mesh.prototype,
+                    };
+                    if (available.get(cubeColors.indexOf(color))) {
+                        cube.pos = cubePosition;
+                        cube.mesh = (available.get(cubeColors.indexOf(color))![available_index++] as THREE.Mesh);
+                    } else {
+                        cube = {
+                            mesh: new THREE.Mesh(targetGeo, cubeMats[this.state.world.cube_map.get(cubePosition)!]),
+                            pos: cubePosition,
+                        };
+                        cubes.get(color)!.meshes.push(cube);
+                    }
+                    scene.add(cube.mesh);
+                    // cube.mesh.copy(cubePosition).add(cubeOffset);
                 }
-            });
+            };
             
             // Draws the robot's end position along with the arrowhelper
             robot.position.lerp( this.state.world.dragon_pos, .5 );
@@ -216,7 +251,6 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
             // }
         };
         animate();
-
 
 
 
