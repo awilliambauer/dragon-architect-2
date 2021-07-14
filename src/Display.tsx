@@ -6,6 +6,7 @@ import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import * as THREE from 'three';
 import { IncrementalSimulator, SimulatorState } from './Simulator';
+import { mapHasVector3 } from './Util';
 import WorldState, { UP } from './WorldState';
 
 type DisplayState = {
@@ -30,6 +31,17 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         }
     }
 
+    // simulate function
+    // This function will incorporate the simulation every X seconds
+    simulate() {
+
+    }
+    // update state function
+    // This function will update the state using the this.dirty flag
+    updateState() {
+        
+    }
+
     // Function that displays things after program "did mount"
     componentDidMount() {
         // Animation
@@ -46,32 +58,32 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         const MIN_ANIMATION_TIME = 0.1; // if animation would take less than this, just don't bother animating anything
         const cubeColors = ["#1ca84f", "#a870b7", "#ff1a6d", "#00bcf4", "#ffc911", "#ff6e3d", "#000000", "#ffffff"];
         let loader = new THREE.TextureLoader();
-        // Map where each key is a color and each value is an object. The object has a "meshes" property
+        // Map where each key is a color and each value is a list of meshes
         let cubes = new Map<string, THREE.Mesh[]>();
         let cubeMats: THREE.MeshLambertMaterial[] = [];
         let tex1 = loader.load("media/canvas_cube.png");
         cubeColors.forEach(function (color: string) {
-            cubeMats.push(new THREE.MeshLambertMaterial({color:color, map:tex1}));
+            cubeMats.push(new THREE.MeshLambertMaterial({ color: color, map: tex1 }));
             cubes.set(color, []);
         });
 
         // Camera positioning
-        let relativeCamPos = new THREE.Vector3(-15,0,12);
+        let relativeCamPos = new THREE.Vector3(-15, 0, 12);
         let relativeCamPosMag = relativeCamPos.length() - 0.5; // -0.5 is an undocumented part of unity version, preserving it here
-        // Offsets are needed to make robot appear above the placement of the cubes, and to appear in the center of the plane
-        let robotOffset = new THREE.Vector3(0.25, 0.25, .75); // How much the robot is offSet from center of position
-        let cubeOffset = new THREE.Vector3(0.5, 0.5, 0); // How much cubes are offset from center of position
+        // Offsets are needed to make dragon appear above the placement of the cubes, and to appear in the center of the plane
+        let dragonOffset = new THREE.Vector3(0.5, 0.5, 1.5); // How much the dragon is offSet from center of position
+        let cubeOffset = new THREE.Vector3(0.5, 0.5, 0.5); // How much cubes are offset from center of position
 
         // Defines the three main elements of a threejs window: scene, camera, and renderer
         let scene = new THREE.Scene();
-        let camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 1500);
-        let renderer = new THREE.WebGLRenderer();
-        renderer.setSize( window.innerWidth / 2, window.innerHeight / 2 ); // Makes renderer half the size of the window
+        let camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1500);
+        let renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth / 2, window.innerHeight / 2); // Makes renderer half the size of the window
 
         // Camera: initial values
         camera.position.copy(relativeCamPos);
-        camera.lookAt(new THREE.Vector3(0,0,0));
-        camera.up.set(0,0,1);
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+        camera.up.set(0, 0, 1);
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
 
@@ -85,17 +97,17 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         this.divRef.current?.appendChild(renderer.domElement);
 
         // Cube geometry, materials, and mesh
-        let cubeGeo  = new THREE.BoxGeometry(1, 1, 1);
+        let cubeGeo = new THREE.BoxGeometry(1, 1, 1);
         let targetGeo = new THREE.BoxGeometry(1.1, 1.1, 1.1);
-        let cubeTargetMat = new THREE.MeshLambertMaterial({color:"#4078E6", transparent: true, opacity:0.5});
-        let robotTarget = new THREE.Mesh(targetGeo, new THREE.MeshLambertMaterial({color:"#df67be", transparent: true, opacity:0.5}));
+        let cubeTargetMat = new THREE.MeshLambertMaterial({ color: "#4078E6", transparent: true, opacity: 0.5 });
+        let dragonTarget = new THREE.Mesh(targetGeo, new THREE.MeshLambertMaterial({ color: "#df67be", transparent: true, opacity: 0.5 }));
         let targetShadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 32),
-            new THREE.MeshBasicMaterial({color:"#686868", transparent: true, opacity: 0.31, side: THREE.DoubleSide}));
+            new THREE.MeshBasicMaterial({ color: "#686868", transparent: true, opacity: 0.31, side: THREE.DoubleSide }));
 
         // Light
-        var light = new THREE.DirectionalLight("#ffffff", 1.74);
+        const light = new THREE.DirectionalLight("#ffffff", 1.74);
         // light.position.set(0.32,0.77,-0.56); // rotating 0,0,-1 by 50 about x then 330 about y
-        light.position.set(-0.56,-0.32,0.77);
+        light.position.set(-0.56, -0.32, 0.77);
         scene.add(light);
         scene.add(new THREE.AmbientLight("#404040"));
 
@@ -105,49 +117,40 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         tex.wrapS = THREE.RepeatWrapping;
         tex.wrapT = THREE.RepeatWrapping;
         tex.repeat.set(100, 100);
-        let material = new THREE.MeshBasicMaterial( {map: tex, side: THREE.DoubleSide} );
+        let material = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide });
         let plane = new THREE.Mesh(geometry, material);
-        scene.add( plane );
+        scene.add(plane);
 
-        // Robot
-        let roboGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-        let robot = new THREE.Mesh(roboGeometry, new THREE.MeshLambertMaterial( {color: "#f56e90"} ));
-        let robotDir = new THREE.ArrowHelper(new THREE.Vector3(-1,0,0),new THREE.Vector3(0,0,0),1,"#ff0000",0.5,0.2);
-        robot.add(robotDir);
-        let zLineMat = new THREE.MeshBasicMaterial( {color: 0xf2c2ce} );
+        // Dragon
+        let dragonGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+        let dragon = new THREE.Mesh(dragonGeometry, new THREE.MeshLambertMaterial({ color: "#f56e90" }));
+        let dragonDir = new THREE.ArrowHelper(new THREE.Vector3(-1, 0, 0), new THREE.Vector3(0, 0, 0), 1, "#ff0000", 0.5, 0.2);
+        dragon.add(dragonDir);
         geometry = new THREE.PlaneBufferGeometry(1, 1, 32);
         tex = loader.load("media/y-cue.png");
-        material = new THREE.MeshBasicMaterial( {map: tex, side: THREE.DoubleSide} );
-        let zCuePlane = new THREE.Mesh(roboGeometry, material);
+        material = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide });
+        let zCuePlane = new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 32), new THREE.MeshBasicMaterial({ color: "#686868", transparent: true, opacity: 0.8, side: THREE.DoubleSide }));
         scene.add(zCuePlane);
-        scene.add(robot);
+        scene.add(dragon);
 
-        // Make z-line (this is the line that travels from the base of the robot to the ground)
-        // Its function is to make clear which cube the robot is currently on
-        let zLine: THREE.Mesh;
-        let makeZLine = () => {
-            scene.remove(zLine);
-            if (zLine) {
-                zLine.geometry.dispose();
-            }
-            // Find nearest filled cell below robot
-            // Use robot.position (instead of RuthefjordWorldState.robot.pos), so height is correct when animating
-            // Use Math.floor to compensate for robotOffset
-            let height = robot.position.z;
-            for (let z = Math.floor(robot.position.z); z >= 0; z--) {
-                if (this.state.world.cube_map.has(new THREE.Vector3((Math.floor(robot.position.x), Math.floor(robot.position.y), z)))) {
-                    height -= z + (robotOffset.z - cubeOffset.z);
-                    break;
+        // Position the shadow underneath the dragon
+        let positionZCue = () => {
+            // Find nearest filled cell below dragon
+            // Use dragon.position (instead of this.state.dragon_pos), so zOffset is correct when animating
+            // Use Math.floor to compensate for dragonOffset
+            let zOffset = dragon.position.z;
+            let vec = new THREE.Vector3();
+            for (let z = Math.floor(dragon.position.z); z >= 0; z--) {
+                if (mapHasVector3(this.state.world.cube_map, vec.set(Math.floor(dragon.position.x), Math.floor(dragon.position.y), z))) {
+                    zOffset -= z + (dragonOffset.z - cubeOffset.z);
+                    zCuePlane.position.copy(dragon.position);
+                    zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
+                    return;
                 }
             }
-            let geometry = new THREE.CylinderGeometry(0.1, 0.1, height, 32);
-            zLine = new THREE.Mesh(geometry, zLineMat);
-            zLine.position.copy(robot.position);
-            zLine.translateZ(-height / 2);
-            zLine.rotateOnAxis(new THREE.Vector3(1,0,0), Math.PI / 2);
-            scene.add(zLine);
-            zCuePlane.position.copy(robot.position);
-            zCuePlane.translateZ(-height + 0.1); // offset a bit to avoid z-fighting
+            // position when there's no cube below
+            zCuePlane.position.copy(dragon.position);
+            zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
         }
 
         // Skybox
@@ -156,18 +159,34 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         // It's not clear to me three js does what it says it does with the six images, but I've got everything lining
         // up via trial and error
         let texes = [path + "px" + format, path + "nx" + format,
-            path + "py" + format, path + "ny" + format,
-            path + "pz" + format, path + "nz" + format];
+        path + "py" + format, path + "ny" + format,
+        path + "pz" + format, path + "nz" + format];
         let cubeLoader = new THREE.CubeTextureLoader();
         scene.background = cubeLoader.load(texes);
 
-        // This animates the cube. In the animate function, the scene and camera are rendered
+        // Create new clock for animation
+        let animClock = new THREE.Clock();
+        let time = 0; // Time starts at 0, will increase every iteration through the animation section
+
+        // This animates the scene. In the animate function, the scene and camera are rendered
         let animate = () => {
-            requestAnimationFrame( animate );
+            requestAnimationFrame(animate);
+
+            let z = WOBBLE_MAGNITUDE * Math.sin(clock.elapsedTime * 4 * Math.PI / WOBBLE_PERIOD);
+            let y = WOBBLE_MAGNITUDE * Math.cos(clock.elapsedTime * 2 * Math.PI / WOBBLE_PERIOD);
+            let v = new THREE.Vector3(0, y, z);
+            let tDelta = clock.getDelta();
 
             // Animation :)
+            // Checks to see if the simulator is running (if there are still animations left to do)
             if (this.state.simulator.is_running()) {
-                this.state.simulator.execute_to_command();
+                let delta = animClock.getDelta(); // delta represents the amount of time between each iteration
+                time += delta; // Add delta to time variable (total time between each time entering second if statement below)
+                let animationPerSec = .017; // This is the amount of time you want between each animation movement!
+                if (time>animationPerSec) { // If the total time is greater than the time you want...
+                    this.state.simulator.execute_to_command(); // The command is executed
+                    time = 0; // Reset time to 0
+                }
             }
 
             // The "available" and "filled" maps are solely for efficiency. Cubes can be reused so we don't have to keep creating them
@@ -181,8 +200,8 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
             // This for loop checks for cubes that are no longer in the cube_map and should be removed
             cubeColors.forEach((color: string) => { // Iterate over each color
                 available.set(color, []); // Set each color in available map to an empty array
-                cubes.get(color)!.forEach( (cube) => { // For each cube (mesh with material and position) in the specified color
-                    if (!this.state.world.cube_map.has(cube.position)) { // If the cube doesn't have a position property
+                cubes.get(color)!.forEach((cube) => { // For each cube (mesh with material and position) in the specified color
+                    if (!mapHasVector3(this.state.world.cube_map, cube.position)) { // If the cube doesn't have a position property
                         scene.remove(cube); // Remove from scene
                         available.get(color)!.push(cube);
                     } else { // If the cube has a position property
@@ -195,7 +214,7 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
             // This loop will add a cube to the display if the cube doesn't have a position
             for (let [cubePosition, colorInd] of this.state.world.cube_map) {
                 let color: string = cubeColors[colorInd];
-                if (!filled.has(cubePosition)) { // If this cube position does not exist (is undefined) in filled
+                if (!mapHasVector3(filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
                     let existing_cube = available.get(color)?.pop(); // Remove the last cube mesh from available list
                     if (existing_cube) { // If there is a cube available....
                         existing_cube.position.copy(cubePosition).add(cubeOffset); // ...Give it the position of the current cube
@@ -210,20 +229,24 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
                 }
             };
 
-            // Draws the robot's end position along with the arrowhelper
-            robot.position.lerp( this.state.world.dragon_pos, .5 ).add(robotOffset);
-            robotDir.setDirection( this.state.world.dragon_dir );
-            zCuePlane.position.lerp( new THREE.Vector3(this.state.world.dragon_pos.x, this.state.world.dragon_pos.y, 0), .5 );
-            makeZLine();
+            // Draws the dragon's end position along with the arrowhelper
+            dragon.position.copy(this.state.world.dragon_pos).add(dragonOffset);
+            dragonDir.setDirection(this.state.world.dragon_dir);
+            // zCuePlane.position.set(this.state.world.dragon_pos.x, this.state.world.dragon_pos.y, 0);
+            positionZCue();
 
-            // Attach camera to robot
-            camera.position.lerp(robot.position, 0.4);
-            camera.lookAt( robot.position );
-            camera.position.x = robot.position.x+10;
-            camera.position.y = robot.position.y-2;
-            camera.position.z = robot.position.z+11;
+            // Smoothly move the camera towards its position relative to the dragon
+            let newCamPos = v.add(relativeCamPos).add(dragon.position);
+            camera.position.lerp(newCamPos, TRANSLATION_SMOOTHNESS * tDelta);
 
-            renderer.render( scene, camera );
+            // Smoothly rotate the camera to look at the dragon
+            let oldCamQ = camera.quaternion.clone();
+            camera.lookAt(dragon.position);
+            let newCamQ = camera.quaternion.clone();
+            camera.quaternion.copy(oldCamQ);
+            camera.quaternion.slerp(newCamQ, ROTATION_SMOOTHNESS * tDelta);
+
+            renderer.render(scene, camera);
         };
         animate();
 
