@@ -19,6 +19,18 @@ type DisplayProps = {
     simulator: IncrementalSimulator
 }
 
+type ClockParameter = {
+    clock: THREE.Clock,
+    time: number
+}
+
+type GoalPositions = {
+    dragPos: THREE.Vector3,
+    dragDir: THREE.ArrowHelper,
+    dragOffset: THREE.Vector3,
+    cubeOffset: THREE.Vector3
+}
+
 export default class Display extends React.Component<DisplayProps, DisplayState> {
     divRef: React.RefObject<HTMLDivElement>;
 
@@ -33,13 +45,28 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
 
     // simulate function
     // This function will incorporate the simulation every X seconds
-    simulate() {
-
+    simulate(clockStuff: ClockParameter) {
+        // Checks to see if the simulator is running (if there are still animations left to do)
+        if (this.state.simulator.is_running()) {
+            let delta = clockStuff.clock.getDelta(); // delta represents the amount of time between each iteration
+            clockStuff.time += delta; // Add delta to time variable (total time between each time entering second if statement below)
+            let animationPerSec = .1; // This is the amount of time you want between each animation movement!
+            if (clockStuff.time>animationPerSec) { // If the total time is greater than the time you want...
+                this.state.simulator.execute_to_command(); // The command is executed
+                clockStuff.time = 0; // Reset time to 0
+            }
+        }
     }
     // update state function
     // This function will update the state using the this.dirty flag
-    updateState() {
-        
+    // Cubes and final dragon position
+    updateState(goalPositions: GoalPositions) {
+        // update goal values (dragon position/rotation and cube placements)
+        console.log("Position: " + JSON.stringify(this.state.world.dragon_pos));
+        //let finalDragPos = this.state.world.dragon_pos.add(goalPositions.dragOffset);
+
+        //let finalDragDir = this.state.world.dragon_dir;
+        this.state.world.dirty = false;
     }
 
     // Function that displays things after program "did mount"
@@ -165,8 +192,19 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         scene.background = cubeLoader.load(texes);
 
         // Create new clock for animation
-        let animClock = new THREE.Clock();
-        let time = 0; // Time starts at 0, will increase every iteration through the animation section
+        let clockStuff: ClockParameter = {
+            clock: new THREE.Clock(),
+            time: 0
+        }
+
+        let goalPositions: GoalPositions = {
+            dragPos: this.state.world.dragon_pos.add(dragonOffset),
+            dragDir: dragonDir,
+            dragOffset: dragonOffset,
+            cubeOffset: cubeOffset
+        }
+        // let animClock = new THREE.Clock();
+        // let time = 0; // Time starts at 0, will increase every iteration through the animation section
 
         // This animates the scene. In the animate function, the scene and camera are rendered
         let animate = () => {
@@ -178,15 +216,13 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
             let tDelta = clock.getDelta();
 
             // Animation :)
-            // Checks to see if the simulator is running (if there are still animations left to do)
-            if (this.state.simulator.is_running()) {
-                let delta = animClock.getDelta(); // delta represents the amount of time between each iteration
-                time += delta; // Add delta to time variable (total time between each time entering second if statement below)
-                let animationPerSec = .017; // This is the amount of time you want between each animation movement!
-                if (time>animationPerSec) { // If the total time is greater than the time you want...
-                    this.state.simulator.execute_to_command(); // The command is executed
-                    time = 0; // Reset time to 0
-                }
+            this.simulate(clockStuff);
+
+            // Update world state
+
+            if (this.state.world.dirty) {
+                //console.log("DIRTY = True");
+                this.updateState(goalPositions);
             }
 
             // The "available" and "filled" maps are solely for efficiency. Cubes can be reused so we don't have to keep creating them
