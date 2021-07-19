@@ -1,6 +1,14 @@
-import Blockly from 'blockly';
+import Blockly, { mainWorkspace } from 'blockly'; //newly added mainWorkspace
 import React from 'react';
 import _ from 'lodash';
+import parse, {
+    Procedure, FileLocation, Expression,
+    ExpressionType, Invocation, Meta, Ident, Program,
+    SyntaxError, Statement, StatementType, Repeat, Execute, Command, TopLevelStatement
+} from './Parser';
+import { help } from 'yargs';
+
+
 
 const COLOR_MOVE_1 = '#0075A6';
 // const COLOR_MOVE_2 = '#B84B26';
@@ -23,7 +31,7 @@ declare module "blockly" {
         getNested(): Blockly.Block[]
     }
 
-    interface ProcedureBlock extends Block{
+    interface ProcedureBlock extends Block {
         /**
          * Return the signature of this procedure definition.
          * @return {!Array} Tuple containing three elements:
@@ -37,10 +45,10 @@ declare module "blockly" {
 }
 
 Blockly.Block.prototype.getNested = function () {
-    var blocks = [];
-    for (var i = 0, input; (input = this.inputList[i]); i++) {
+    let blocks = [];
+    for (let i = 0, input; (input = this.inputList[i]); i++) {
         if (input.connection) {
-            var child = input.connection.targetBlock();
+            let child = input.connection.targetBlock();
             if (child) {
                 blocks.push(child);
             }
@@ -50,6 +58,150 @@ Blockly.Block.prototype.getNested = function () {
 };
 
 const KoboldConvert = new Map<string, (block: Blockly.Block) => string>();
+
+
+// little helper functions for the recursive xmlHelper() function
+export function breakStmt(stmt: Statement) {
+    switch (stmt.kind) {
+        case StatementType.Command:
+            let command = stmt.stmt as Command;
+            return command.invoke;
+
+        case StatementType.Execute:
+            let exec = stmt.stmt as Execute;
+            return exec.invoke;
+
+        default:
+            return null;
+    }
+}
+export function breakStmtRep(stmt: Statement) {
+    let rep = stmt.stmt as Repeat;
+    return rep.body;
+}
+export function breakStmtRepNum(stmt: Statement) {
+    let rep = stmt.stmt as Repeat;
+    return rep.number.expression;
+}
+
+
+// a recursive function that turns parsed code strings to a huge xml string
+export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: string) {
+
+    if(program === []){
+        return "";
+    }
+    //for (let s of program){
+            
+    switch(program[0].kind) {
+        case "procedure": //block is a procedure
+            let xmlPro = "";
+            let pro = program[0].body;
+
+            xmlPro = xmlHelper(pro, xmlPro);
+
+            xmlPro = '<block type = "procedures_defnoreturn"><field name="NAME">' +program[0].name+
+            '</field><statement name="STACK">' + xmlPro;
+            xmlPro += '</statement></block>';
+            xml = xml + xmlPro;
+
+            break;
+                
+        default: // block is a statement (repeat, execute or command)
+            let block = breakStmt(program[0] as Statement);
+            if (block) {
+                if (block.name === "Left" || block.name === "Right" || block.name === 'RemoveCube') {
+                    if(program.length === 1) {
+                        return '<block type="'+block.name + '"></block>';
+                    }
+                    xml = '<block type="'+block.name + '"><next>'+ xmlHelper(program.slice(1),"") + '</next></block>';
+                }
+
+                else if ( block.name === 'PlaceCube'){
+                    let expr = block.args;
+                    let color = 0;
+                    if(expr[0].kind === ExpressionType.Number) { 
+                        color = expr[0].expression as number;
+                    }
+                    
+                    if(program.length === 1) {
+                        return '<block type="'+block.name +'"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field></block>';
+                    }
+                    xml = '<block type="'+block.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field><next>'+
+                    xmlHelper(program.slice(1),"") + '</next></block>';
+                    
+                }
+                        
+                else{
+                    let expr = block.args;
+                    if (expr[0].kind === ExpressionType.Number){ 
+                        
+                        if(program.length === 1) {
+                            return '<block type="'+block.name +'"><value name="VALUE">' + makeShadowNum(expr[0].expression as number)+
+                                '</value></block>';
+                        }
+                        
+                        xml = '<block type="'+block.name + '"><value name="VALUE">' +  makeShadowNum(expr[0].expression as number) +
+                            '</value><next>'+ xmlHelper(program.slice(1),"") + '</next></block>';
+                        
+                    }
+                }
+            }
+            else{ //block is a repeat
+                let xmlRep = "";
+                let rep = breakStmtRep(program[0] as Statement);
+                
+                // xmlRep = xmlHelper([rep[rep.length-1]],"", true);//false
+                
+                // for(let r = rep.length-2;r>=0;r--){
+                //     xmlRep = xmlHelper([rep[r]],xmlRep, true);
+                //     //console.log(xml);
+                // }
+
+                xmlRep = xmlHelper(rep, xmlRep);
+
+            
+                xmlRep = '<block type="controls_repeat_ext"><value name="TIMES"><shadow type="math_number"><field name="NUM">'
+                    + breakStmtRepNum(program[0] as Statement)+ '</field></shadow></value><statement name="DO">' + xmlRep;
+
+                
+                xmlRep += '</statement>';
+                if(program.length > 1) {
+                    xml = xml + xmlRep + '<next>' + xmlHelper(program.slice(1),"") + '</next></block>';
+                }
+                else{
+                    xml = xml + xmlRep + '</block>';
+                }
+
+
+            }
+
+    }
+            
+        
+    
+    return xml;
+}
+
+//code string to xml string
+export function exportCode(code: string) {
+    //currently not able to 
+    //determine number of block groups
+    let xml = '<xml>';
+    let program = parse(code);
+    if( !(program instanceof SyntaxError)) {
+        xml += xmlHelper(program.body, "");
+    }
+    
+    xml += '</xml>';
+    return xml;
+
+}
+
+// xml string to dom then to workspace
+export function xmlToWorkspace(xml: string) {
+    return Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(xml), mainWorkspace);
+}
 
 function print_block(indent: string, block: Blockly.Block) {
     let convert_fn = KoboldConvert.get(block.type);
@@ -74,15 +226,17 @@ export function print_blocks() {
     });
 }
 
-export function block_to_text(str: string, indent: string, block: Blockly.Block): string{
+
+
+export function block_to_text(str: string, indent: string, block: Blockly.Block): string {
     let convert_fn = KoboldConvert.get(block.type);
     let children = block.getNested();
-    if(convert_fn){
+    if (convert_fn) {
         str += indent + convert_fn(block) + "\n";
     }
     if (children.length > 0) {
-        for(var child of children){
-            str = block_to_text(str, (indent+"\t"), child);   
+        for(let child of children) {
+            str = block_to_text(str, (indent + "\t"), child);   
         }
     }
     if (block.getNextBlock() && convert_fn) {
@@ -92,11 +246,13 @@ export function block_to_text(str: string, indent: string, block: Blockly.Block)
 }
 
 export function blocks_to_text(): string{
-    var text = "";
+    let text = "";
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
-    _.forEach(top, (block) =>{
-        text += (block_to_text("","", block) + "\n");
+    _.forEach(top, (block) => {
+        text += (block_to_text("", "", block) + "\n");
+        console.log(Blockly.Xml.domToText(Blockly.Xml.blockToDom(block)));
     });
+    exportCode(text);
     return text;
 }
 
@@ -256,7 +412,7 @@ function customBlocklyInit() {
         }
     };
     KoboldConvert.set("PlaceCube", (block: Blockly.Block) => {
-        return `PlaceCube(`+Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE"))+`)`
+        return `PlaceCube(` + Blockly.FieldColour.COLOURS.indexOf(block.getFieldValue("VALUE")) + `)`
         // this will be an integer
     });
 
@@ -294,7 +450,7 @@ export default class BlocklyComp extends React.Component {
 
     render() {
         return (
-            <div id="blocklyDiv" style={{width: '100%'}}></div>
+            <div id="blocklyDiv" style={{ width: '100%' }}></div>
         )
     }
 
@@ -309,7 +465,7 @@ export default class BlocklyComp extends React.Component {
 
         // add each block from COMMANDS to the toolbox
         _.forEach(COMMANDS, function (data, _name) {
-                toolXML += data.block;
+            toolXML += data.block;
         });
         toolXML += '</xml>';
         workspace.updateToolbox(toolXML);
