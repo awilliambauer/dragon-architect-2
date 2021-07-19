@@ -1,5 +1,6 @@
 import _ from "lodash"
 import * as THREE from "three"
+import { GameState } from "./App"
 import parse, { SyntaxError } from "./Parser"
 import run from "./Simulator"
 import { mapHasVector3 } from "./Util"
@@ -74,13 +75,6 @@ function make_world_from_spec(spec: WorldSpec): WorldState {
 
 function make_goals_from_world(end: WorldState, start: WorldState): GoalInfo[] {
     let goals = []
-    // only care about dragon position, not direction
-    if (!end.dragon_pos.equals(start.dragon_pos)) {
-        goals.push({
-            kind: GoalInfoType.DragonPos,
-            position: end.dragon_pos
-        });
-    }
 
     // check for cubes added, position only
     for (let [cubePos, _cubeColor] of end.cube_map) {
@@ -102,6 +96,17 @@ function make_goals_from_world(end: WorldState, start: WorldState): GoalInfo[] {
         }
     }
 
+    // only have a position goal if there are no cube goals
+    if (goals.length === 0) {
+        // only care about dragon position, not direction
+        if (!end.dragon_pos.equals(start.dragon_pos)) {
+            goals.push({
+                kind: GoalInfoType.DragonPos,
+                position: end.dragon_pos
+            });
+        }
+    }
+
     return goals;
 }
 
@@ -111,11 +116,26 @@ export default class PuzzleState {
     goals: GoalInfo[] = []
     instructions: string = ""
 
+    is_complete(gamestate: GameState): boolean {
+        // return true if the current game state matches the goals
+        /* criteria
+            simulator must be finished
+            loop over goals
+                switch on goal.kind
+                    RunOnly: true
+                    MinCube: check gamestate.world.cube_map for correct number of cubes
+                    AddCube: check that this cube exists
+                    RemoveCube: check that this cube does not exist
+                    DragonPos: check dragon's position
+        */
+       return false;
+    }
+
     static make_from_file(filename: string) {
         return new Promise<PuzzleState>(resolve => {
             let state = new PuzzleState();
             fetch(filename)
-                .then(response => response.json())
+                .then(response => { console.log(response); return response.json() })
                 .then((data: PuzzleSpec) => {
                     state.start_world = make_world_from_spec(data.world);
 
