@@ -288,6 +288,11 @@ export default class Display extends React.Component<DisplayProps> {
             this.dragAnimation.animStatus = "animating";
         }
 
+        if (this.props.puzzle) {
+            // create goal cubes
+        } else {
+            // remove goal cubes
+        }
 
         // This for loop checks for cubes that are no longer in the cube_map and should be removed
         this.constantValues.cubeColors.forEach((color: string) => { // Iterate over each color
@@ -359,12 +364,12 @@ export default class Display extends React.Component<DisplayProps> {
 
             // Smoothens out the dragon's movement and animation
             if (this.dragAnimation.animStatus === "waiting") {
-                console.log("JDFSLKFH");
-                console.log("WAIT TIME: " + this.dragAnimation.waitTime);
-                console.log("tDelta time: " + tDelta);
+                // console.log("JDFSLKFH");
+                // console.log("WAIT TIME: " + this.dragAnimation.waitTime);
+                // console.log("tDelta time: " + tDelta);
                 this.dragAnimation.waitTime -= tDelta;
                     if (this.dragAnimation.waitTime < 0) {
-                        console.log("Wait time is below 0!");
+                        // console.log("Wait time is below 0!");
                         tDelta += this.dragAnimation.waitTime; // wait time is negative, carry over into animating
                         this.dragAnimation.animStatus = "animating";
                     }

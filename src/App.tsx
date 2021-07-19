@@ -6,9 +6,8 @@ import WorldState from './WorldState';
 import run, { load_stdlib, IncrementalSimulator, SimulatorState, RecursiveSimulator } from './Simulator';
 import parse, { Program, SyntaxError } from './Parser';
 import PuzzleState from './PuzzleState';
-// import {setState} from 'react';
 
-type GameState = {
+export type GameState = {
   world: WorldState,
   puzzle?: PuzzleState
   sim: IncrementalSimulator

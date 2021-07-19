@@ -1,0 +1,5 @@
+repeat 4 times
+    repeat 3 times
+        PlaceCube(0)
+        Forward(1)
+    Right()

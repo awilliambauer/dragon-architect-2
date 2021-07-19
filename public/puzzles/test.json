@@ -20,6 +20,7 @@
         ]
     },
     "program": "puzzles/test.kobold",
-    "goal": "run_only",
+    "goal": "solution",
+    "solution": "test-solution.kobold",
     "instructions": "Click {go} to have me run my program!"
 }
