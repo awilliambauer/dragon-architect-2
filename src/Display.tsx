@@ -7,24 +7,22 @@ import ReactDOM from 'react-dom';
 import * as THREE from 'three';
 import { IncrementalSimulator, SimulatorState } from './Simulator';
 import { mapHasVector3 } from './Util';
-import WorldState, { UP } from './WorldState';
+import WorldState from './WorldState';
 
+// Not really sure right now?....
 type DisplayState = {
     world: WorldState,
     simulator: IncrementalSimulator
 }
 
+// This is the state for the entire program
+// It's passed in from the App file with world and simulator objects
 type DisplayProps = {
     world: WorldState,
     simulator: IncrementalSimulator
 }
 
-type ClockParameter = {
-    clock: THREE.Clock,
-    time: number
-}
-
-// All constant values
+// All constant variables
 type Constants = {
     WOBBLE_PERIOD: number,
     WOBBLE_MAGNITUDE: number,
@@ -58,6 +56,7 @@ type Main = {
     //renderer.setSize(window.innerWidth / 2, window.innerHeight / 2); // Makes renderer half the size of the window
 }
 
+// This type holds information about the clock (which is used for animation)
 type ClockStuff = {
     // Defines clock (used for animation), final bot position/quaternion (rotation direction)
     clock: THREE.Clock;
@@ -67,6 +66,7 @@ type ClockStuff = {
     time: number
 }
 
+// This type holds information about the cubes, light, plane, and dragon
 type GeometryLight = {
     // Cube geometry, materials, and mesh
     cubeGeo: THREE.BoxGeometry,
@@ -74,7 +74,7 @@ type GeometryLight = {
     cubeTargetMat: THREE.MeshLambertMaterial,
     dragonTarget: THREE.Mesh,
     targetShadow: THREE.Mesh,
-    
+
     // Light
     light: THREE.DirectionalLight,
 
@@ -92,6 +92,7 @@ type GeometryLight = {
     zCuePlane: THREE.Mesh
 }
 
+// The Display.tsx function that does everything
 export default class Display extends React.Component<DisplayProps, DisplayState> {
     divRef: React.RefObject<HTMLDivElement>;
     constantValues: Constants;
@@ -100,27 +101,7 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
     clockStuff: ClockStuff;
     geometryAndLights: GeometryLight;
 
-    // Position the shadow underneath the dragon
-    positionZCue() {
-        // Find nearest filled cell below dragon
-        // Use dragon.position (instead of this.state.dragon_pos), so zOffset is correct when animating
-        // Use Math.floor to compensate for dragonOffset
-        let zOffset = this.geometryAndLights.dragon.position.z;
-        let vec = new THREE.Vector3();
-        for (let z = Math.floor(this.geometryAndLights.dragon.position.z); z >= 0; z--) {
-            if (mapHasVector3(this.state.world.cube_map, vec.set(Math.floor(this.geometryAndLights.dragon.position.x), Math.floor(this.geometryAndLights.dragon.position.y), z))) {
-                zOffset -= z + (this.cameraPos.dragonOffset.z - this.cameraPos.cubeOffset.z);
-                this.geometryAndLights.zCuePlane.position.copy(this.geometryAndLights.dragon.position);
-                this.geometryAndLights.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
-                return;
-            }
-        }
-        // position when there's no cube below
-        this.geometryAndLights.zCuePlane.position.copy(this.geometryAndLights.dragon.position);
-        this.geometryAndLights.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
-    };
-
-
+    // The constructor sets up universal variables that hold types (which include "smaller" variables)
     constructor(props: DisplayProps) {
         super(props);
         this.constantValues = {
@@ -136,10 +117,10 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
             cubeMats: []
         }
         // This is the texture of the cubes
-        let tex1 = this.constantValues.loader.load("media/canvas_cube.png");
+        let cubeTexture = this.constantValues.loader.load("media/canvas_cube.png");
         // For loop to create the meshes of each cube
         this.constantValues.cubeColors.forEach((color: string) => {
-            this.constantValues.cubeMats.push(new THREE.MeshLambertMaterial({ color: color, map: tex1 }));
+            this.constantValues.cubeMats.push(new THREE.MeshLambertMaterial({ color: color, map: cubeTexture }));
             this.constantValues.cubes.set(color, []);
         });
 
@@ -150,7 +131,6 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
             dragonOffset: new THREE.Vector3(0.5, 0.5, 1.5), // How much the dragon is offSet from center of position
             cubeOffset: new THREE.Vector3(0.5, 0.5, 0.5) // How much cubes are offset from center of position
         }
-        let relativeCamPosMag = this.cameraPos.relativeCamPos.length() - 0.5; // -0.5 is an undocumented part of unity version, preserving it here
 
         // Main stuff
         this.mainStuff = {
@@ -186,7 +166,7 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
             dragonTarget: new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.1, 1.1), new THREE.MeshLambertMaterial({ color: "#df67be", transparent: true, opacity: 0.5 })),
             targetShadow: new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 32),
                 new THREE.MeshBasicMaterial({ color: "#686868", transparent: true, opacity: 0.31, side: THREE.DoubleSide })),
-            
+
             // Light
             light: new THREE.DirectionalLight("#ffffff", 1.74),
 
@@ -208,35 +188,31 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         this.mainStuff.scene.add(this.geometryAndLights.light);
         this.mainStuff.scene.add(new THREE.AmbientLight("#404040"));
 
-        let tex = this.constantValues.loader.load("media/outlined_cube.png");
-        tex.wrapS = THREE.RepeatWrapping;
-        tex.wrapT = THREE.RepeatWrapping;
-        tex.repeat.set(100, 100);
-        this.geometryAndLights.planeMaterial.setValues({ map: tex, side: THREE.DoubleSide });
+        let planeTexture = this.constantValues.loader.load("media/outlined_cube.png");
+        planeTexture.wrapS = THREE.RepeatWrapping;
+        planeTexture.wrapT = THREE.RepeatWrapping;
+        planeTexture.repeat.set(100, 100);
+        this.geometryAndLights.planeMaterial.setValues({ map: planeTexture, side: THREE.DoubleSide });
         this.geometryAndLights.plane = new THREE.Mesh(this.geometryAndLights.planeGeometry, this.geometryAndLights.planeMaterial);
         this.mainStuff.scene.add(this.geometryAndLights.plane);
 
         this.geometryAndLights.dragon.add(this.geometryAndLights.dragonDir);
-        // tex: constantValues.loader.load("media/y-cue.png");
+        // texture: constantValues.loader.load("media/y-cue.png");
         this.mainStuff.scene.add(this.geometryAndLights.zCuePlane);
         this.mainStuff.scene.add(this.geometryAndLights.dragon);
-        
+
         // Skybox
         let path = "media/skybox/";
         let format = ".jpg";
         // It's not clear to me three js does what it says it does with the six images, but I've got everything lining
         // up via trial and error
-        let texes = [path + "px" + format, path + "nx" + format,
+        let backgroundTexture = [path + "px" + format, path + "nx" + format,
         path + "py" + format, path + "ny" + format,
         path + "pz" + format, path + "nz" + format];
         let cubeLoader = new THREE.CubeTextureLoader();
-        this.mainStuff.scene.background = cubeLoader.load(texes);
+        this.mainStuff.scene.background = cubeLoader.load(backgroundTexture);
 
-        // Create new clock for animation
-        let clockStuff1: ClockParameter = {
-            clock: new THREE.Clock(),
-            time: 0
-        }
+        // Craete divRed
         this.divRef = React.createRef();
         this.state = {
             world: props.world,
@@ -244,22 +220,41 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         }
     }
 
+    // Position the shadow underneath the dragon
+    positionZCue() {
+        // Find nearest filled cell below dragon
+        // Use dragon.position (instead of this.state.dragon_pos), so zOffset is correct when animating
+        // Use Math.floor to compensate for dragonOffset
+        let zOffset = this.geometryAndLights.dragon.position.z;
+        let vec = new THREE.Vector3();
+        for (let z = Math.floor(this.geometryAndLights.dragon.position.z); z >= 0; z--) {
+            if (mapHasVector3(this.state.world.cube_map, vec.set(Math.floor(this.geometryAndLights.dragon.position.x), Math.floor(this.geometryAndLights.dragon.position.y), z))) {
+                zOffset -= z + (this.cameraPos.dragonOffset.z - this.cameraPos.cubeOffset.z);
+                this.geometryAndLights.zCuePlane.position.copy(this.geometryAndLights.dragon.position);
+                this.geometryAndLights.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
+                return;
+            }
+        }
+        // position when there's no cube below
+        this.geometryAndLights.zCuePlane.position.copy(this.geometryAndLights.dragon.position);
+        this.geometryAndLights.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
+    };
+
     // Simulate function
-    // This function will incorporate the simulation every X seconds
+    // This function will activate the simulation every X seconds
     simulate(delta: number) {
         // Checks to see if the simulator is running (if there are still animations left to do)
         if (this.state.simulator.is_running()) {
             this.clockStuff.time += delta; // Add delta to time variable (total time between each time entering second if statement below)
             let animationPerSec = .02; // This is the amount of time you want between each animation movement!
-            if (this.clockStuff.time>animationPerSec) { // If the total time is greater than the time you want...
+            if (this.clockStuff.time > animationPerSec) { // If the total time is greater than the time you want...
                 this.state.simulator.execute_to_command(); // The command is executed
                 this.clockStuff.time = 0; // Reset time to 0
             }
         }
     }
-    // Update display function
-    // This function will update the state using the this.dirty flag
-    // Cubes and final dragon position
+
+    // This function will update the display (what you see on the screen) using the this.dirty flag
     updateDisplay() {
         // The "available" and "filled" maps are solely for efficiency. Cubes can be reused so we don't have to keep creating them
         // A map where the keys are colors and the values are cube meshes
@@ -301,7 +296,7 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
             }
         };
 
-        //let finalDragDir = this.state.world.dragon_dir;
+        // After display is updated, the world state is no longer dirty
         this.state.world.dirty = false;
     }
 
@@ -314,6 +309,7 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         // This animates the scene. In the animate function, the scene and camera are rendered
         let animate = () => {
             requestAnimationFrame(animate);
+            // tDelta represents the time that has passed since the last time getDelta() was called
             let tDelta = this.clockStuff.clock.getDelta();
 
             // Animation :)
@@ -322,7 +318,9 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
             // Update display
             if (this.state.world.dirty) {
                 this.updateDisplay();
-            }
+            };
+
+            // Smoothen out the dragon
             // Draws the dragon's end position along with the arrowhelper
             // THIS IS WHERE WE MAKE THE ANIMATION SMOOTHER. LOOK AT OLD CODE!!!
             this.geometryAndLights.dragon.position.copy(this.state.world.dragon_pos).add(this.cameraPos.dragonOffset);
@@ -356,4 +354,3 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         );
     }
 }
-
