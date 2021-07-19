@@ -5,44 +5,55 @@ import Display from './Display';
 import WorldState from './WorldState';
 import run, { load_stdlib, IncrementalSimulator, SimulatorState, RecursiveSimulator } from './Simulator';
 import parse, { Program, SyntaxError } from './Parser';
+import PuzzleState from './PuzzleState';
+// import {setState} from 'react';
 
-class App extends React.Component {
-  state: WorldState = new WorldState();
-  sim: IncrementalSimulator;
+type GameState = {
+  world: WorldState,
+  puzzle?: PuzzleState
+  sim: IncrementalSimulator
+}
+
+class App extends React.Component<{}, GameState> {
 
   constructor(props: {}) {
     super(props);
     load_stdlib();
-    this.sim = new IncrementalSimulator(this.state, parse(`
+
+    // set up initial state, will get overwritten in componentDidMount
+    let world = new WorldState();
+    this.state = {
+      world: world,
+      sim: new IncrementalSimulator(world, parse(`
 repeat 4 times
     repeat 2 times
       Forward(2)
     Right()
-`) as Program);
-    this.sim.sim_state = SimulatorState.Running;
-
-    // Testing:
-    // Tests the end position of the dragon
-    this.state.dragon_pos.set(4, 2, 3);
-    // Tests the direction of the arrow helper (MUST BE A UNIT VECTOR)
-    this.state.dragon_dir.set(-1, 0, 0);
-    // Tests the location and colors of cubes
-    this.state.cube_map.set(new THREE.Vector3(1, 3, 1), 1);
-    this.state.cube_map.set(new THREE.Vector3(1, 3, 3), 3);
-    this.state.cube_map.set(new THREE.Vector3(2, 2, 3), 2);
+`) as Program)
+    }
   }
 
-  change_state() {
-
+  componentDidMount() {
+    // load the puzzle specification from puzzles/test.json
+    // and then use it to set the game state
+    PuzzleState.make_from_file("puzzles/test.json").then(p => {
+      let sim = new IncrementalSimulator(p.start_world, parse(``) as Program);
+      sim.sim_state = SimulatorState.Running;
+      this.setState({
+        world: p.start_world,
+        puzzle: p,
+        sim: sim
+      });
+    });
   }
-
+  
   run_program() {
     const program = blocks_to_text();
     const ast = parse(program);
     if (ast instanceof SyntaxError) {
       console.error(`Syntax Error: ${ast}`);
     } else {
-      run(this.state, ast);
+      run(this.state.world, ast);
     }
   }
 
@@ -60,7 +71,7 @@ repeat 4 times
           <BlocklyComp />
         </div>
         <div id="main-view-game">
-          <Display world={this.state} simulator={this.sim} />
+          <Display world={this.state.world} puzzle={this.state.puzzle} simulator={this.state.sim} />
         </div>
         {/* Game area
             Camera controls

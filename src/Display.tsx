@@ -5,21 +5,17 @@ import { stringify } from 'querystring';
 import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import * as THREE from 'three';
+import PuzzleState from './PuzzleState';
 import { IncrementalSimulator, SimulatorState } from './Simulator';
 import { mapHasVector3 } from './Util';
 import WorldState from './WorldState';
-
-// Not really sure right now?....
-type DisplayState = {
-    world: WorldState,
-    simulator: IncrementalSimulator
-}
 
 // This is the state for the entire program
 // It's passed in from the App file with world and simulator objects
 type DisplayProps = {
     world: WorldState,
     simulator: IncrementalSimulator
+    puzzle?: PuzzleState
 }
 
 // All constant variables
@@ -93,7 +89,7 @@ type GeometryLight = {
 }
 
 // The Display.tsx function that does everything
-export default class Display extends React.Component<DisplayProps, DisplayState> {
+export default class Display extends React.Component<DisplayProps> {
     divRef: React.RefObject<HTMLDivElement>;
     constantValues: Constants;
     mainStuff: Main;
@@ -214,21 +210,17 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
 
         // Craete divRed
         this.divRef = React.createRef();
-        this.state = {
-            world: props.world,
-            simulator: props.simulator
-        }
     }
 
     // Position the shadow underneath the dragon
     positionZCue() {
         // Find nearest filled cell below dragon
-        // Use dragon.position (instead of this.state.dragon_pos), so zOffset is correct when animating
+        // Use dragon.position (instead of this.props.dragon_pos), so zOffset is correct when animating
         // Use Math.floor to compensate for dragonOffset
         let zOffset = this.geometryAndLights.dragon.position.z;
         let vec = new THREE.Vector3();
         for (let z = Math.floor(this.geometryAndLights.dragon.position.z); z >= 0; z--) {
-            if (mapHasVector3(this.state.world.cube_map, vec.set(Math.floor(this.geometryAndLights.dragon.position.x), Math.floor(this.geometryAndLights.dragon.position.y), z))) {
+            if (mapHasVector3(this.props.world.cube_map, vec.set(Math.floor(this.geometryAndLights.dragon.position.x), Math.floor(this.geometryAndLights.dragon.position.y), z))) {
                 zOffset -= z + (this.cameraPos.dragonOffset.z - this.cameraPos.cubeOffset.z);
                 this.geometryAndLights.zCuePlane.position.copy(this.geometryAndLights.dragon.position);
                 this.geometryAndLights.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
@@ -244,11 +236,11 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
     // This function will activate the simulation every X seconds
     simulate(delta: number) {
         // Checks to see if the simulator is running (if there are still animations left to do)
-        if (this.state.simulator.is_running()) {
+        if (this.props.simulator.is_running()) {
             this.clockStuff.time += delta; // Add delta to time variable (total time between each time entering second if statement below)
             let animationPerSec = .02; // This is the amount of time you want between each animation movement!
             if (this.clockStuff.time > animationPerSec) { // If the total time is greater than the time you want...
-                this.state.simulator.execute_to_command(); // The command is executed
+                this.props.simulator.execute_to_command(); // The command is executed
                 this.clockStuff.time = 0; // Reset time to 0
             }
         }
@@ -268,7 +260,7 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         this.constantValues.cubeColors.forEach((color: string) => { // Iterate over each color
             available.set(color, []); // Set each color in available map to an empty array
             this.constantValues.cubes.get(color)!.forEach((cube) => { // For each cube (mesh with material and position) in the specified color
-                if (!mapHasVector3(this.state.world.cube_map, cube.position)) { // If the cube doesn't have a position property
+                if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
                     this.mainStuff.scene.remove(cube); // Remove from scene
                     available.get(color)!.push(cube);
                 } else { // If the cube has a position property
@@ -279,7 +271,7 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
 
         // Loop over all cubes in cube map
         // This loop will add a cube to the display if the cube doesn't have a position
-        for (let [cubePosition, colorInd] of this.state.world.cube_map) {
+        for (let [cubePosition, colorInd] of this.props.world.cube_map) {
             let color: string = this.constantValues.cubeColors[colorInd];
             if (!mapHasVector3(filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
                 let existing_cube = available.get(color)?.pop(); // Remove the last cube mesh from available list
@@ -297,7 +289,7 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
         };
 
         // After display is updated, the world state is no longer dirty
-        this.state.world.dirty = false;
+        this.props.world.dirty = false;
     }
 
     // Function that displays things after program "did mount"
@@ -316,16 +308,16 @@ export default class Display extends React.Component<DisplayProps, DisplayState>
             this.simulate(tDelta);
 
             // Update display
-            if (this.state.world.dirty) {
+            if (this.props.world.dirty) {
                 this.updateDisplay();
             };
 
             // Smoothen out the dragon
             // Draws the dragon's end position along with the arrowhelper
             // THIS IS WHERE WE MAKE THE ANIMATION SMOOTHER. LOOK AT OLD CODE!!!
-            this.geometryAndLights.dragon.position.copy(this.state.world.dragon_pos).add(this.cameraPos.dragonOffset);
-            this.geometryAndLights.dragonDir.setDirection(this.state.world.dragon_dir);
-            // zCuePlane.position.set(this.state.world.dragon_pos.x, this.state.world.dragon_pos.y, 0);
+            this.geometryAndLights.dragon.position.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
+            this.geometryAndLights.dragonDir.setDirection(this.props.world.dragon_dir);
+            // zCuePlane.position.set(this.props.world.dragon_pos.x, this.props.world.dragon_pos.y, 0);
             this.positionZCue();
 
             let z = this.constantValues.WOBBLE_MAGNITUDE * Math.sin(this.clockStuff.clock.elapsedTime * 4 * Math.PI / this.constantValues.WOBBLE_PERIOD);

@@ -1,0 +1,25 @@
+{
+    "name": "test",
+    "library": {
+        "restricted": [
+            "blocks"
+        ],
+        "required": [],
+        "granted": [
+            "move2"
+        ]
+    },
+    "world": {
+        "pos": [0, 0, 5],
+        "dir": [-1, 0, 0],
+        "cubes": [
+            {
+                "pos": [1, 1, 1],
+                "color": 0
+            }
+        ]
+    },
+    "program": "puzzles/test.kobold",
+    "goal": "run_only",
+    "instructions": "Click {go} to have me run my program!"
+}

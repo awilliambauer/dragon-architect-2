@@ -212,7 +212,7 @@ export class IncrementalSimulator {
             this.sim_state = SimulatorState.Finished;
             return;
         }
-        const [ stmt, env ] = this.execution_stack.pop()!;
+        const [stmt, env] = this.execution_stack.pop()!;
         switch (stmt.kind) {
             case StatementType.Repeat:
                 let repeat = stmt.stmt as Repeat;
@@ -258,7 +258,7 @@ export class IncrementalSimulator {
                 // we've reached a command (base case), execute it using the WorldState
                 let result = this.world.execute({
                     name: command.invoke.name,
-                    args: args, 
+                    args: args,
                     meta: stmt.meta
                 });
                 if (result instanceof RuntimeError) {
