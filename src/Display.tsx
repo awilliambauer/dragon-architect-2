@@ -1,5 +1,6 @@
 // Overview: This file contains code that displays the dragon and cubes
 
+import { CONTROLS_IF_ELSE_TITLE_ELSE } from 'blockly/msg/en';
 import { SSL_OP_COOKIE_EXCHANGE } from 'constants';
 import { stringify } from 'querystring';
 import React, { useRef, useState } from 'react';
@@ -255,7 +256,7 @@ export default class Display extends React.Component<DisplayProps> {
         // Checks to see if the simulator is running (if there are still animations left to do)
         if (this.props.simulator.is_running()) {
             this.clockStuff.time += delta; // Add delta to time variable (total time between each time entering second if statement below)
-            let animationPerSec = 1; // This is the amount of time you want between each animation movement!
+            let animationPerSec = this.dragAnimation.waitTime; // This is the amount of time you want between each animation movement!
             if (this.clockStuff.time > animationPerSec) { // If the total time is greater than the time you want...
                 this.props.simulator.execute_to_command(); // The command is executed
                 this.clockStuff.time = 0; // Reset time to 0
@@ -280,7 +281,7 @@ export default class Display extends React.Component<DisplayProps> {
             this.clockStuff.finalDragQ.set(0, 0, 1, 0);
         }
 
-        this.dragAnimation.waitTime = 19073212413789402178390*0.1; // dt
+        this.dragAnimation.waitTime = 1.1; // dt
         this.dragAnimation.animTime = Math.min(0.9, this.constantValues.MAX_ANIMATION_TIME); // dt
         this.dragAnimation.animStatus = "waiting";
         if (this.dragAnimation.animTime < this.constantValues.MIN_ANIMATION_TIME) {
@@ -359,12 +360,8 @@ export default class Display extends React.Component<DisplayProps> {
 
             // Smoothens out the dragon's movement and animation
             if (this.dragAnimation.animStatus === "waiting") {
-                console.log("JDFSLKFH");
-                console.log("WAIT TIME: " + this.dragAnimation.waitTime);
-                console.log("tDelta time: " + tDelta);
                 this.dragAnimation.waitTime -= tDelta;
                     if (this.dragAnimation.waitTime < 0) {
-                        console.log("Wait time is below 0!");
                         tDelta += this.dragAnimation.waitTime; // wait time is negative, carry over into animating
                         this.dragAnimation.animStatus = "animating";
                     }
