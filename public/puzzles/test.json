@@ -21,6 +21,6 @@
     },
     "program": "puzzles/test.kobold",
     "goal": "solution",
-    "solution": "test-solution.kobold",
+    "solution": "puzzles/test-solution.kobold",
     "instructions": "Click {go} to have me run my program!"
 }
