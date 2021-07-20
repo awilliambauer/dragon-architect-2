@@ -6,7 +6,8 @@ import { stringify } from 'querystring';
 import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import * as THREE from 'three';
-import PuzzleState from './PuzzleState';
+import { Material, Scene } from 'three';
+import PuzzleState, { GoalInfo, GoalInfoType } from './PuzzleState';
 import { IncrementalSimulator, SimulatorState } from './Simulator';
 import { mapHasVector3 } from './Util';
 import WorldState from './WorldState';
@@ -31,6 +32,7 @@ type Constants = {
     loader: THREE.TextureLoader,
     // Map where each key is a color and each value is a list of meshes
     cubes: Map<string, THREE.Mesh[]>,
+    targetCubes: Map<string, THREE.Mesh[]>,
     cubeMats: THREE.MeshLambertMaterial[]
 }
 
@@ -101,7 +103,13 @@ type DragonAnimation = {
     transitionTime: number
 }
 
-// This enum represents what stage the animation is at
+// This type holds the available and filled optimization maps
+type OptimizationMaps = {
+    available: Map<string, THREE.Mesh[]>,
+    filled: Map<THREE.Vector3, boolean>
+}
+
+// This enum represents what stage the animation is at (waiting, animating, done, null)
 enum Animation {
     waiting = "waiting",
     animating = "animating",
@@ -119,6 +127,9 @@ export default class Display extends React.Component<DisplayProps> {
     geometries: Geometries;
     dragAnimation: DragonAnimation;
     finalValues: FinalValues;
+    cubeOptMaps: OptimizationMaps;
+    targetOptMaps: OptimizationMaps;
+    puzzleInit: boolean;
 
     // The constructor sets up universal variables that hold types (which include "smaller" variables)
     constructor(props: DisplayProps) {
@@ -133,6 +144,7 @@ export default class Display extends React.Component<DisplayProps> {
             cubeColors: ["#1ca84f", "#a870b7", "#ff1a6d", "#00bcf4", "#ffc911", "#ff6e3d", "#000000", "#ffffff"],
             loader: new THREE.TextureLoader(),
             cubes: new Map<string, THREE.Mesh[]>(),
+            targetCubes: new Map<string, THREE.Mesh[]>(),
             cubeMats: []
         }
         // This is the texture of the cubes
@@ -142,6 +154,8 @@ export default class Display extends React.Component<DisplayProps> {
             this.constantValues.cubeMats.push(new THREE.MeshLambertMaterial({ color: color, map: cubeTexture }));
             this.constantValues.cubes.set(color, []);
         });
+
+        this.constantValues.targetCubes.set("targetColor", []);
 
         this.cameraPos = {
             // Camera positioning
@@ -208,7 +222,8 @@ export default class Display extends React.Component<DisplayProps> {
         }
 
         // Set the dragon's starting position and nose position
-        this.geometries.dragon.position.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
+        let startingPos = this.props.world.dragon_pos.add(this.cameraPos.dragonOffset);
+        this.geometries.dragon.position.copy(startingPos);
         this.geometries.dragonNose.setDirection(this.props.world.dragon_dir);
 
         // Set starting values for the dragon's animation
@@ -216,8 +231,20 @@ export default class Display extends React.Component<DisplayProps> {
             animStatus: Animation.null, // Indicates which stage of animation the dragon is at
             waitTime: 0, // Determined later, makes the dragon wait between movements
             animTime: 0, // Also determined later, this contains how fast the dragon animated
-            transitionTime: 1 // This is where you change how fast the dragon is moving
+            transitionTime: .4 // This is where you change how fast the dragon is moving
         }
+
+        this.cubeOptMaps = {
+            available: new Map<string, THREE.Mesh[]>(),
+            filled: new Map<THREE.Vector3, boolean>()
+        }
+
+        this.targetOptMaps = {
+            available: new Map<string, THREE.Mesh[]>(),
+            filled: new Map<THREE.Vector3, boolean>()
+        }
+
+        this.puzzleInit = false;
 
         // light.position.set(0.32,0.77,-0.56), // rotating 0,0,-1 by 50 about x then 330 about y
         this.geometries.light.position.set(-0.56, -0.32, 0.77);
@@ -272,6 +299,33 @@ export default class Display extends React.Component<DisplayProps> {
         this.geometries.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
     };
 
+    // Remove cube
+    removeCube(optMaps: OptimizationMaps, cube: THREE.Mesh<THREE.BufferGeometry, THREE.Material | Material[]>, color: string) {
+        if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
+            this.mainStuff.scene.remove(cube); // Remove from scene
+            optMaps.available.get(color)!.push(cube);
+        } else { // If the cube has a position property
+            optMaps.filled.set(cube.position, true); // Set the filled object at that cube object to true
+        }
+    }
+
+    // Add cube
+    addCube(optMaps: OptimizationMaps, cubePosition: THREE.Vector3, typeOfCube: Map<string, THREE.Mesh[]>, color: string, material: THREE.MeshLambertMaterial) {
+        if (!mapHasVector3(optMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
+            let existing_cube = optMaps.available.get(color)?.pop(); // Remove the last cube mesh from available list
+            if (existing_cube) { // If there is a cube available....
+                existing_cube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
+                this.mainStuff.scene.add(existing_cube);
+            } else { // If there isn't a cube mesh available....
+                let new_cube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, material) // ...Create a new cube mesh
+                new_cube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
+                typeOfCube.get(color)!.push(new_cube);
+                optMaps.filled.set(new_cube.position, true);
+                this.mainStuff.scene.add(new_cube);
+            }
+        }
+    }
+
     // Simulate function
     // This function will activate the simulation every X seconds
     simulate(delta: number) {
@@ -295,6 +349,9 @@ export default class Display extends React.Component<DisplayProps> {
         // Represents if a position is filled (true) or not (false)
         let filled = new Map<THREE.Vector3, boolean>();
 
+        let targetAvailable = new Map<string, THREE.Mesh[]>();
+        let targetFilled = new Map<THREE.Vector3, boolean>();
+
         // Dragon final position and animation times
         this.finalValues.finalDragPos.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
         this.finalValues.finalDragQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), this.props.world.dragon_dir); // 1,0,0 is default direction
@@ -310,22 +367,31 @@ export default class Display extends React.Component<DisplayProps> {
             this.dragAnimation.animStatus = Animation.animating;
         }
 
-        if (this.props.puzzle) {
-            // create goal cubes
+        console.log(this.puzzleInit);
+        if (this.props.puzzle && !this.puzzleInit) {
+            console.log("Entered");
+            // Create goal cubes
+            console.log(this.props.puzzle.goals.length);
+            this.props.puzzle.goals.forEach((goal: GoalInfo) => {
+                console.log("EVEN FARTHER");
+                console.log(goal.kind)
+                if (goal.kind === GoalInfoType.AddCube) {
+                    if (goal.position) {
+                        
+                        this.addCube(this.targetOptMaps, goal.position, this.constantValues.targetCubes, "targetColor", this.geometries.cubeTargetMat);
+                    }
+                }
+            });
+            this.puzzleInit = true;
         } else {
             // remove goal cubes
         }
 
         // This for loop checks for cubes that are no longer in the cube_map and should be removed
         this.constantValues.cubeColors.forEach((color: string) => { // Iterate over each color
-            available.set(color, []); // Set each color in available map to an empty array
+            this.cubeOptMaps.available.set(color, []); // Set each color in available map to an empty array
             this.constantValues.cubes.get(color)!.forEach((cube) => { // For each cube (mesh with material and position) in the specified color
-                if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
-                    this.mainStuff.scene.remove(cube); // Remove from scene
-                    available.get(color)!.push(cube);
-                } else { // If the cube has a position property
-                    filled.set(cube.position, true); // Set the filled object at that cube object to true
-                }
+                this.removeCube(this.cubeOptMaps, cube, color);
             });
         });
 
@@ -333,21 +399,8 @@ export default class Display extends React.Component<DisplayProps> {
         // This loop will add a cube to the display if the cube doesn't have a position
         for (let [cubePosition, colorInd] of this.props.world.cube_map) {
             let color: string = this.constantValues.cubeColors[colorInd];
-            if (!mapHasVector3(filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
-                let existing_cube = available.get(color)?.pop(); // Remove the last cube mesh from available list
-                if (existing_cube) { // If there is a cube available....
-                    existing_cube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
-                    this.mainStuff.scene.add(existing_cube);
-                } else { // If there isn't a cube mesh available....
-                    let new_cube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, this.constantValues.cubeMats[colorInd]) // ...Create a new cube mesh
-                    new_cube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
-                    this.constantValues.cubes.get(color)!.push(new_cube);
-                    filled.set(new_cube.position, true);
-                    this.mainStuff.scene.add(new_cube);
-                }
-            }
-        };
-
+            this.addCube(this.cubeOptMaps, cubePosition, this.constantValues.cubes, color, this.constantValues.cubeMats[this.constantValues.cubeColors.indexOf(color)]);
+        }
         // After display is updated, the world state is no longer dirty
         this.props.world.dirty = false;
     }
