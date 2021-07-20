@@ -58,14 +58,17 @@ type ClockStuff = {
     // Defines clock (used for animation), final bot position/quaternion (rotation direction)
     clock: THREE.Clock;
     oldTime: number;
-    finalDragPos: THREE.Vector3;
-    finalDragQ: THREE.Quaternion,
-    finalDragDirection: THREE.Vector3,
     time: number
 }
 
-// This type holds information about the cubes, light, plane, and dragon
-type GeometryLight = {
+// This type holds the dragon's final position and quaternion
+type FinalValues = {
+    finalDragPos: THREE.Vector3;
+    finalDragQ: THREE.Quaternion,
+}
+
+// This type holds information about the geometries of the cubes, light, plane, and dragon
+type Geometries = {
     // Cube geometry, materials, and mesh
     cubeGeo: THREE.BoxGeometry,
     targetGeo: THREE.BoxGeometry,
@@ -92,9 +95,18 @@ type GeometryLight = {
 
 // This type holds information about the dragon's animation
 type DragonAnimation = {
-    animStatus: string,
+    animStatus: Animation,
     waitTime: number,
-    animTime: number
+    animTime: number,
+    transitionTime: number
+}
+
+// This enum represents what stage the animation is at
+enum Animation {
+    waiting = "waiting",
+    animating = "animating",
+    done = "done",
+    null = "null"
 }
 
 // The Display.tsx function that does everything
@@ -104,8 +116,9 @@ export default class Display extends React.Component<DisplayProps> {
     mainStuff: Main;
     cameraPos: CameraPos;
     clockStuff: ClockStuff;
-    geometryAndLights: GeometryLight;
+    geometries: Geometries;
     dragAnimation: DragonAnimation;
+    finalValues: FinalValues;
 
     // The constructor sets up universal variables that hold types (which include "smaller" variables)
     constructor(props: DisplayProps) {
@@ -158,14 +171,17 @@ export default class Display extends React.Component<DisplayProps> {
         this.clockStuff = {
             clock: new THREE.Clock(),
             oldTime: 0,
-            finalDragPos: new THREE.Vector3(),
-            finalDragQ: new THREE.Quaternion(),
-            finalDragDirection: new THREE.Vector3(),
             time: 0
         }
 
-        // GEOLIGHTS
-        this.geometryAndLights = {
+        // Initializes values for final position and quaternion of dragon
+        this.finalValues = {
+            finalDragPos: new THREE.Vector3(),
+            finalDragQ: new THREE.Quaternion()
+        }
+
+        // Initializes values for geometries and lights
+        this.geometries = {
             // Cube geometry, materials, and mesh
             cubeGeo: new THREE.BoxGeometry(1, 1, 1),
             targetGeo: new THREE.BoxGeometry(1.1, 1.1, 1.1),
@@ -191,32 +207,35 @@ export default class Display extends React.Component<DisplayProps> {
             zCuePlane: new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 32), new THREE.MeshBasicMaterial({ color: "#686868", transparent: true, opacity: 0.8, side: THREE.DoubleSide }))
         }
 
-        this.geometryAndLights.dragon.position.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
-        this.geometryAndLights.dragonNose.setDirection(this.props.world.dragon_dir);
+        // Set the dragon's starting position and nose position
+        this.geometries.dragon.position.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
+        this.geometries.dragonNose.setDirection(this.props.world.dragon_dir);
 
+        // Set starting values for the dragon's animation
         this.dragAnimation = {
-            animStatus: "nothing",
-            waitTime: 0,
-            animTime: 0
+            animStatus: Animation.null, // Indicates which stage of animation the dragon is at
+            waitTime: 0, // Determined later, makes the dragon wait between movements
+            animTime: 0, // Also determined later, this contains how fast the dragon animated
+            transitionTime: 1 // This is where you change how fast the dragon is moving
         }
 
         // light.position.set(0.32,0.77,-0.56), // rotating 0,0,-1 by 50 about x then 330 about y
-        this.geometryAndLights.light.position.set(-0.56, -0.32, 0.77);
-        this.mainStuff.scene.add(this.geometryAndLights.light);
+        this.geometries.light.position.set(-0.56, -0.32, 0.77);
+        this.mainStuff.scene.add(this.geometries.light);
         this.mainStuff.scene.add(new THREE.AmbientLight("#404040"));
 
         let planeTexture = this.constantValues.loader.load("media/outlined_cube.png");
         planeTexture.wrapS = THREE.RepeatWrapping;
         planeTexture.wrapT = THREE.RepeatWrapping;
         planeTexture.repeat.set(100, 100);
-        this.geometryAndLights.planeMaterial.setValues({ map: planeTexture, side: THREE.DoubleSide });
-        this.geometryAndLights.plane = new THREE.Mesh(this.geometryAndLights.planeGeometry, this.geometryAndLights.planeMaterial);
-        this.mainStuff.scene.add(this.geometryAndLights.plane);
+        this.geometries.planeMaterial.setValues({ map: planeTexture, side: THREE.DoubleSide });
+        this.geometries.plane = new THREE.Mesh(this.geometries.planeGeometry, this.geometries.planeMaterial);
+        this.mainStuff.scene.add(this.geometries.plane);
 
-        this.geometryAndLights.dragon.add(this.geometryAndLights.dragonNose);
+        this.geometries.dragon.add(this.geometries.dragonNose);
         // texture: constantValues.loader.load("media/y-cue.png");
-        this.mainStuff.scene.add(this.geometryAndLights.zCuePlane);
-        this.mainStuff.scene.add(this.geometryAndLights.dragon);
+        this.mainStuff.scene.add(this.geometries.zCuePlane);
+        this.mainStuff.scene.add(this.geometries.dragon);
 
         // Skybox
         let path = "media/skybox/";
@@ -238,19 +257,19 @@ export default class Display extends React.Component<DisplayProps> {
         // Find nearest filled cell below dragon
         // Use dragon.position (instead of this.props.dragon_pos), so zOffset is correct when animating
         // Use Math.floor to compensate for dragonOffset
-        let zOffset = this.geometryAndLights.dragon.position.z;
+        let zOffset = this.geometries.dragon.position.z;
         let vec = new THREE.Vector3();
-        for (let z = Math.floor(this.geometryAndLights.dragon.position.z); z >= 0; z--) {
-            if (mapHasVector3(this.props.world.cube_map, vec.set(Math.floor(this.geometryAndLights.dragon.position.x), Math.floor(this.geometryAndLights.dragon.position.y), z))) {
+        for (let z = Math.floor(this.geometries.dragon.position.z); z >= 0; z--) {
+            if (mapHasVector3(this.props.world.cube_map, vec.set(Math.floor(this.geometries.dragon.position.x), Math.floor(this.geometries.dragon.position.y), z))) {
                 zOffset -= z + (this.cameraPos.dragonOffset.z - this.cameraPos.cubeOffset.z);
-                this.geometryAndLights.zCuePlane.position.copy(this.geometryAndLights.dragon.position);
-                this.geometryAndLights.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
+                this.geometries.zCuePlane.position.copy(this.geometries.dragon.position);
+                this.geometries.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
                 return;
             }
         }
         // position when there's no cube below
-        this.geometryAndLights.zCuePlane.position.copy(this.geometryAndLights.dragon.position);
-        this.geometryAndLights.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
+        this.geometries.zCuePlane.position.copy(this.geometries.dragon.position);
+        this.geometries.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
     };
 
     // Simulate function
@@ -259,8 +278,7 @@ export default class Display extends React.Component<DisplayProps> {
         // Checks to see if the simulator is running (if there are still animations left to do)
         if (this.props.simulator.is_running()) {
             this.clockStuff.time += delta; // Add delta to time variable (total time between each time entering second if statement below)
-            let animationPerSec = 0.5; // This is the amount of time you want between each animation movement!
-            if (this.clockStuff.time > animationPerSec) { // If the total time is greater than the time you want...
+            if (this.clockStuff.time > this.dragAnimation.transitionTime) { // If the total time is greater than the time you want...
                 this.props.simulator.execute_to_command(); // The command is executed
                 this.clockStuff.time = 0; // Reset time to 0
             }
@@ -278,19 +296,18 @@ export default class Display extends React.Component<DisplayProps> {
         let filled = new Map<THREE.Vector3, boolean>();
 
         // Dragon final position and animation times
-        this.clockStuff.finalDragPos.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
-        this.clockStuff.finalDragQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), this.props.world.dragon_dir); // 1,0,0 is default direction
+        this.finalValues.finalDragPos.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
+        this.finalValues.finalDragQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), this.props.world.dragon_dir); // 1,0,0 is default direction
         // hack to avoid weird dip when rotating to face -x direction
         if (this.props.world.dragon_dir.x === -1) {
-            this.clockStuff.finalDragQ.set(0, 0, 1, 0);
+            this.finalValues.finalDragQ.set(0, 0, 1, 0);
         }
 
-        this.dragAnimation.waitTime = 0.2; // dt
-        this.dragAnimation.animTime = Math.min(0.9, this.constantValues.MAX_ANIMATION_TIME); // dt
-        this.dragAnimation.animStatus = "waiting";
+        this.dragAnimation.waitTime = this.dragAnimation.transitionTime*0.1;
+        this.dragAnimation.animTime = Math.min(this.dragAnimation.transitionTime*0.9, this.constantValues.MAX_ANIMATION_TIME);
+        this.dragAnimation.animStatus = Animation.waiting;
         if (this.dragAnimation.animTime < this.constantValues.MIN_ANIMATION_TIME) {
-            this.dragAnimation.animTime = 0;
-            this.dragAnimation.animStatus = "animating";
+            this.dragAnimation.animStatus = Animation.animating;
         }
 
         if (this.props.puzzle) {
@@ -322,7 +339,7 @@ export default class Display extends React.Component<DisplayProps> {
                     existing_cube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
                     this.mainStuff.scene.add(existing_cube);
                 } else { // If there isn't a cube mesh available....
-                    let new_cube: THREE.Mesh = new THREE.Mesh(this.geometryAndLights.cubeGeo, this.constantValues.cubeMats[colorInd]) // ...Create a new cube mesh
+                    let new_cube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, this.constantValues.cubeMats[colorInd]) // ...Create a new cube mesh
                     new_cube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
                     this.constantValues.cubes.get(color)!.push(new_cube);
                     filled.set(new_cube.position, true);
@@ -358,8 +375,8 @@ export default class Display extends React.Component<DisplayProps> {
             // Smoothen out the dragon
             // Draws the dragon's end position along with the arrowhelper
             // THIS IS WHERE WE MAKE THE ANIMATION SMOOTHER. LOOK AT OLD CODE!!!
-            // this.geometryAndLights.dragon.position.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
-            // this.geometryAndLights.dragonNose.setDirection(this.props.world.dragon_dir);
+            // this.geometries.dragon.position.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
+            // this.geometries.dragonNose.setDirection(this.props.world.dragon_dir);
             // zCuePlane.position.set(this.props.world.dragon_pos.x, this.props.world.dragon_pos.y, 0);
             this.positionZCue();
 
@@ -368,31 +385,30 @@ export default class Display extends React.Component<DisplayProps> {
             let v = new THREE.Vector3(0, y, z);
 
             // Smoothens out the dragon's movement and animation
-            if (this.dragAnimation.animStatus === "waiting") {
+            if (this.dragAnimation.animStatus === Animation.waiting) {
                 this.dragAnimation.waitTime -= tDelta;
                 if (this.dragAnimation.waitTime <= 0) {
-                    // console.log("Wait time is below 0!");
                     tDelta += this.dragAnimation.waitTime; // wait time is negative, carry over into animating
-                    this.dragAnimation.animStatus = "animating";
+                    this.dragAnimation.animStatus = Animation.animating;
                 }
             }
-            if (this.dragAnimation.animStatus === "animating") {
-                this.geometryAndLights.dragon.position.lerp(this.clockStuff.finalDragPos, Math.min(tDelta / this.dragAnimation.animTime, 1));
-                this.geometryAndLights.dragon.quaternion.slerp(this.clockStuff.finalDragQ, Math.min(tDelta / this.dragAnimation.animTime, 1));
+            if (this.dragAnimation.animStatus === Animation.animating) {
+                this.geometries.dragon.position.lerp(this.finalValues.finalDragPos, Math.min(tDelta / this.dragAnimation.animTime, 1));
+                this.geometries.dragon.quaternion.slerp(this.finalValues.finalDragQ, Math.min(tDelta / this.dragAnimation.animTime, 1));
                 this.dragAnimation.animTime -= tDelta;
                 if (this.dragAnimation.animTime <= 0) {
-                    this.geometryAndLights.dragon.position.copy(this.clockStuff.finalDragPos);
-                    this.geometryAndLights.dragon.quaternion.copy(this.clockStuff.finalDragQ);
-                    this.dragAnimation.animStatus = "done";
+                    this.geometries.dragon.position.copy(this.finalValues.finalDragPos);
+                    this.geometries.dragon.quaternion.copy(this.finalValues.finalDragQ);
+                    this.dragAnimation.animStatus = Animation.done;
                 }
             }
 
             // Smoothly move the camera towards its position relative to the dragon
-            let newCamPos = v.add(this.cameraPos.relativeCamPos).add(this.geometryAndLights.dragon.position);
+            let newCamPos = v.add(this.cameraPos.relativeCamPos).add(this.geometries.dragon.position);
             this.mainStuff.camera.position.lerp(newCamPos, this.constantValues.TRANSLATION_SMOOTHNESS * tDelta);
 
             // Smoothly rotate the camera to look at the dragon
-            this.mainStuff.camera.lookAt(this.geometryAndLights.dragon.position);
+            this.mainStuff.camera.lookAt(this.geometries.dragon.position);
             let newCamQ = this.mainStuff.camera.quaternion.clone();
             let oldCamQ = this.mainStuff.camera.quaternion.clone();
             this.mainStuff.camera.quaternion.copy(oldCamQ);
