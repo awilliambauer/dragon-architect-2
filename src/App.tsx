@@ -23,12 +23,8 @@ class App extends React.Component<{}, GameState> {
     let world = new WorldState();
     this.state = {
       world: world,
-      sim: new IncrementalSimulator(world, parse(`
-repeat 4 times
-    repeat 2 times
-      Forward(2)
-    Right()
-`) as Program)
+      sim: new IncrementalSimulator(world, parse(``) as Program),
+      puzzle: undefined
     }
     this.state.sim.set_running();
     this.state.world.mark_dirty();
@@ -38,7 +34,13 @@ repeat 4 times
     // load the puzzle specification from puzzles/test.json
     // and then use it to set the game state
     PuzzleState.make_from_file("puzzles/test.json").then(p => {
-      let sim = new IncrementalSimulator(p.start_world, parse(``) as Program);
+      let sim = new IncrementalSimulator(p.start_world, parse(`
+repeat 4 times
+    repeat 2 times
+      Forward(4)
+    PlaceCube(1)
+    Right()
+`) as Program);
       sim.sim_state = SimulatorState.Running;
       this.setState({
         world: p.start_world,

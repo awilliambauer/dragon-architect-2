@@ -367,14 +367,14 @@ export default class Display extends React.Component<DisplayProps> {
             this.dragAnimation.animStatus = Animation.animating;
         }
 
-        console.log(this.puzzleInit);
+        //console.log(this.puzzleInit);
         if (this.props.puzzle && !this.puzzleInit) {
-            console.log("Entered");
+            // console.log("Entered");
             // Create goal cubes
-            console.log(this.props.puzzle.goals.length);
+            // console.log(this.props.puzzle.goals.length);
             this.props.puzzle.goals.forEach((goal: GoalInfo) => {
-                console.log("EVEN FARTHER");
-                console.log(goal.kind)
+                // console.log("EVEN FARTHER");
+                // console.log(goal.kind)
                 if (goal.kind === GoalInfoType.AddCube) {
                     if (goal.position) {
                         
