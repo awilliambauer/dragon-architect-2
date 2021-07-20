@@ -198,9 +198,16 @@ export function exportCode(code: string) {
 
 }
 
-// xml string to dom then to workspace
-export function xmlToWorkspace(xml: string) {
-    return Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(xml), mainWorkspace);
+// // xml string to dom then to workspace
+// export function xmlToWorkspace(xml: string) {
+//     return Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(xml), mainWorkspace);
+// }
+
+export function text_to_blocks(code: string) {
+    let xml = exportCode(code);
+    let dom = Blockly.Xml.textToDom(xml);
+    let workspace = Blockly.Xml.domToWorkspace(dom, mainWorkspace);
+    return workspace;
 }
 
 function print_block(indent: string, block: Blockly.Block) {
