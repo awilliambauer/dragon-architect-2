@@ -191,6 +191,9 @@ export default class Display extends React.Component<DisplayProps> {
             zCuePlane: new THREE.Mesh(new THREE.PlaneBufferGeometry(1, 1, 32), new THREE.MeshBasicMaterial({ color: "#686868", transparent: true, opacity: 0.8, side: THREE.DoubleSide }))
         }
 
+        this.geometryAndLights.dragon.position.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
+        this.geometryAndLights.dragonNose.setDirection(this.props.world.dragon_dir);
+
         this.dragAnimation = {
             animStatus: "nothing",
             waitTime: 0,
@@ -256,7 +259,7 @@ export default class Display extends React.Component<DisplayProps> {
         // Checks to see if the simulator is running (if there are still animations left to do)
         if (this.props.simulator.is_running()) {
             this.clockStuff.time += delta; // Add delta to time variable (total time between each time entering second if statement below)
-            let animationPerSec = this.dragAnimation.waitTime; // This is the amount of time you want between each animation movement!
+            let animationPerSec = 0.5; // This is the amount of time you want between each animation movement!
             if (this.clockStuff.time > animationPerSec) { // If the total time is greater than the time you want...
                 this.props.simulator.execute_to_command(); // The command is executed
                 this.clockStuff.time = 0; // Reset time to 0
@@ -275,13 +278,14 @@ export default class Display extends React.Component<DisplayProps> {
         let filled = new Map<THREE.Vector3, boolean>();
 
         // Dragon final position and animation times
-        this.clockStuff.finalDragPos.copy(this.geometryAndLights.dragon.position).add(this.cameraPos.dragonOffset);
-        this.clockStuff.finalDragQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), this.clockStuff.finalDragDirection); // 1,0,0 is default direction
-        if (this.clockStuff.finalDragDirection.x==-1) {
+        this.clockStuff.finalDragPos.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
+        this.clockStuff.finalDragQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), this.props.world.dragon_dir); // 1,0,0 is default direction
+        // hack to avoid weird dip when rotating to face -x direction
+        if (this.props.world.dragon_dir.x === -1) {
             this.clockStuff.finalDragQ.set(0, 0, 1, 0);
         }
 
-        this.dragAnimation.waitTime = 1.1; // dt
+        this.dragAnimation.waitTime = 0.2; // dt
         this.dragAnimation.animTime = Math.min(0.9, this.constantValues.MAX_ANIMATION_TIME); // dt
         this.dragAnimation.animStatus = "waiting";
         if (this.dragAnimation.animTime < this.constantValues.MIN_ANIMATION_TIME) {
@@ -354,8 +358,8 @@ export default class Display extends React.Component<DisplayProps> {
             // Smoothen out the dragon
             // Draws the dragon's end position along with the arrowhelper
             // THIS IS WHERE WE MAKE THE ANIMATION SMOOTHER. LOOK AT OLD CODE!!!
-            this.geometryAndLights.dragon.position.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
-            this.geometryAndLights.dragonNose.setDirection(this.props.world.dragon_dir);
+            // this.geometryAndLights.dragon.position.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
+            // this.geometryAndLights.dragonNose.setDirection(this.props.world.dragon_dir);
             // zCuePlane.position.set(this.props.world.dragon_pos.x, this.props.world.dragon_pos.y, 0);
             this.positionZCue();
 
@@ -365,20 +369,12 @@ export default class Display extends React.Component<DisplayProps> {
 
             // Smoothens out the dragon's movement and animation
             if (this.dragAnimation.animStatus === "waiting") {
-<<<<<<< HEAD
                 this.dragAnimation.waitTime -= tDelta;
-                    if (this.dragAnimation.waitTime < 0) {
-=======
-                // console.log("JDFSLKFH");
-                // console.log("WAIT TIME: " + this.dragAnimation.waitTime);
-                // console.log("tDelta time: " + tDelta);
-                this.dragAnimation.waitTime -= tDelta;
-                    if (this.dragAnimation.waitTime < 0) {
-                        // console.log("Wait time is below 0!");
->>>>>>> c998ca9bd40a0154c17ecdc0ff13aaede20bcdd4
-                        tDelta += this.dragAnimation.waitTime; // wait time is negative, carry over into animating
-                        this.dragAnimation.animStatus = "animating";
-                    }
+                if (this.dragAnimation.waitTime <= 0) {
+                    // console.log("Wait time is below 0!");
+                    tDelta += this.dragAnimation.waitTime; // wait time is negative, carry over into animating
+                    this.dragAnimation.animStatus = "animating";
+                }
             }
             if (this.dragAnimation.animStatus === "animating") {
                 this.geometryAndLights.dragon.position.lerp(this.clockStuff.finalDragPos, Math.min(tDelta / this.dragAnimation.animTime, 1));
@@ -405,8 +401,8 @@ export default class Display extends React.Component<DisplayProps> {
             this.mainStuff.renderer.render(this.mainStuff.scene, this.mainStuff.camera);
         };
         animate();
-
     }
+
     render() {
         return (
             <div id="three-js" ref={this.divRef} />
