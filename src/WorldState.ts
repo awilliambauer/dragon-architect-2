@@ -32,6 +32,14 @@ export default class WorldState {
         this.cube_map = new Map<THREE.Vector3, number>();
     }
 
+    mark_dirty() {
+        this.dirty = true;
+    }
+
+    mark_clean() {
+        this.dirty = false;
+    }
+
     execute(command: SimCommand): void | RuntimeError {
         switch (command.name) {
             case "forward":
@@ -78,7 +86,7 @@ export default class WorldState {
                 return runtime_error(RuntimeErrorCode.CustomError, 
                     `Unknown command ${command.name}`, command.meta);
         }
-        this.dirty = true;
+        this.mark_dirty();
     }
 
     // custom serialization functions needed since JSON module can't handle Map objects

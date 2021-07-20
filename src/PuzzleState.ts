@@ -2,7 +2,7 @@ import _ from "lodash"
 import * as THREE from "three"
 import { GameState } from "./App"
 import parse, { SyntaxError } from "./Parser"
-import run from "./Simulator"
+import run, {SimulatorState} from "./Simulator"
 import { mapHasVector3 } from "./Util"
 import WorldState from "./WorldState"
 
@@ -128,6 +128,35 @@ export default class PuzzleState {
                     RemoveCube: check that this cube does not exist
                     DragonPos: check dragon's position
         */
+
+        if(gamestate.sim.sim_state !== SimulatorState.Finished){
+            console.log("sim_state != Finished");
+            return false;
+        }
+
+        let posRequired;
+        for (let goal of this.goals) {
+            switch(goal.kind) {
+                case GoalInfoType.RunOnly:
+                    return true;
+                case GoalInfoType.MinCube:
+                    let minRequired = goal.value as number;
+                    let cubeNum = gamestate.world.cube_map.size;
+                    return (minRequired <= cubeNum);
+
+                case GoalInfoType.AddCube:
+                    posRequired = goal.position as THREE.Vector3;
+                    return mapHasVector3(gamestate.world.cube_map, posRequired);
+                case GoalInfoType.RemoveCube:
+                    posRequired = goal.position as THREE.Vector3;
+                    return !mapHasVector3(gamestate.world.cube_map, posRequired);
+                
+                case GoalInfoType.DragonPos:
+                    let dragonPosRequired = goal.position as THREE.Vector3;
+                    return gamestate.sim.world.dragon_pos.equals(dragonPosRequired);
+
+            }
+        }
        return false;
     }
 

@@ -402,7 +402,7 @@ export default class Display extends React.Component<DisplayProps> {
             this.addCube(this.cubeOptMaps, cubePosition, this.constantValues.cubes, color, this.constantValues.cubeMats[this.constantValues.cubeColors.indexOf(color)]);
         }
         // After display is updated, the world state is no longer dirty
-        this.props.world.dirty = false;
+        this.props.world.mark_clean();
     }
 
     // Function that displays things after program "did mount"
