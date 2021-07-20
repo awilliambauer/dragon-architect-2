@@ -135,8 +135,8 @@ export default class PuzzleState {
         }
 
         let posRequired;
-        for (let goal of this.goals){
-            switch(goal.kind){
+        for (let goal of this.goals) {
+            switch(goal.kind) {
                 case GoalInfoType.RunOnly:
                     return true;
                 case GoalInfoType.MinCube:
@@ -146,14 +146,14 @@ export default class PuzzleState {
 
                 case GoalInfoType.AddCube:
                     posRequired = goal.position as THREE.Vector3;
-                    return gamestate.world.cube_map.has(posRequired);
+                    return mapHasVector3(gamestate.world.cube_map, posRequired);
                 case GoalInfoType.RemoveCube:
                     posRequired = goal.position as THREE.Vector3;
-                    return !gamestate.world.cube_map.has(posRequired);
+                    return !mapHasVector3(gamestate.world.cube_map, posRequired);
                 
                 case GoalInfoType.DragonPos:
                     let dragonPosRequired = goal.position as THREE.Vector3;
-                    return gamestate.sim.world.dragon_pos === dragonPosRequired;
+                    return gamestate.sim.world.dragon_pos.equals(dragonPosRequired);
 
             }
         }
