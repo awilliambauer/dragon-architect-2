@@ -206,12 +206,39 @@ export class IncrementalSimulator {
         return this.sim_state === SimulatorState.Running;
     }
 
+    set_running() {
+        this.sim_state = SimulatorState.Running;
+    }
+
+    is_finished(): boolean {
+        return this.sim_state === SimulatorState.Finished;
+    }
+
+    set_finished() {
+        this.sim_state = SimulatorState.Finished;
+    }
+
+    is_stopped(): boolean {
+        return this.sim_state === SimulatorState.Stopped;
+    }
+
+    set_stopped() {
+        this.sim_state = SimulatorState.Stopped;
+    }
+
     execute_to_command(): void | RuntimeError {
-        if (this.execution_stack.length === 0 || this.sim_state !== SimulatorState.Running) {
-            // TODO figure out what should happen here
-            this.sim_state = SimulatorState.Finished;
+        // an empty execution_stack indicates there's nothing left to run, so mark as finished
+        if (this.execution_stack.length === 0) {
+            this.set_finished();
             return;
         }
+
+        // don't execute unless the simulator is running
+        if (!this.is_running()) {
+            // this could be an error
+            return;
+        }
+
         const [stmt, env] = this.execution_stack.pop()!;
         switch (stmt.kind) {
             case StatementType.Repeat:

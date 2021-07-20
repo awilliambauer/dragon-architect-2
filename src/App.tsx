@@ -30,6 +30,8 @@ repeat 4 times
     Right()
 `) as Program)
     }
+    this.state.sim.set_running();
+    this.state.world.mark_dirty();
   }
 
   componentDidMount() {
@@ -45,7 +47,7 @@ repeat 4 times
       });
     });
   }
-  
+
   run_program() {
     const program = blocks_to_text();
     const ast = parse(program);
