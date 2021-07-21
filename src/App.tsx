@@ -38,7 +38,13 @@ repeat 4 times
     // load the puzzle specification from puzzles/test.json
     // and then use it to set the game state
     PuzzleState.make_from_file("puzzles/test.json").then(p => {
-      let sim = new IncrementalSimulator(p.start_world, parse(``) as Program);
+      let sim = new IncrementalSimulator(p.start_world, parse(`
+repeat 4 times
+    repeat 2 times
+      Forward(4)
+    PlaceCube(1)
+    Right()
+`) as Program);
       sim.sim_state = SimulatorState.Running;
       this.setState({
         world: p.start_world,
