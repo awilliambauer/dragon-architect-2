@@ -6,11 +6,13 @@ import WorldState from './WorldState';
 import run, { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
 import parse, { Program, SyntaxError } from './Parser';
 import PuzzleState from './PuzzleState';
+import {Run} from './RunButton'
 
 export type GameState = {
   world: WorldState,
   puzzle?: PuzzleState
   simulator: IncrementalSimulator
+  reset: Boolean
 }
 
 class App extends React.Component<{}, GameState> {
@@ -22,6 +24,7 @@ class App extends React.Component<{}, GameState> {
     // set up initial state, will get overwritten in componentDidMount
     let world = new WorldState();
     this.state = {
+      reset: false,
       world: world,
       simulator: new IncrementalSimulator(world, parse(`
 repeat 4 times
@@ -49,7 +52,9 @@ repeat 4 times
       this.setState({
         world: p.start_world,
         puzzle: p,
-        simulator: sim
+        simulator: sim,
+        reset: false
+
       });
     });
   }
@@ -65,6 +70,8 @@ repeat 4 times
   }
 
   render() {
+    //console.log(this.state.reset); 'true'
+    
     return (
       <div className="App">
         {/* Navigation bar */}
@@ -72,7 +79,10 @@ repeat 4 times
             Blockly
             Control buttons  */}
         <button onClick={() => console.log(blocks_to_text())}>blocks_to_text</button>
-        <button onClick={() => this.run_program()}>Run Program</button>
+        {/* <button onClick={() => this.run_program()}>Run Program</button> */}
+        <Run reset = {false} onClick = {() => {this.run_program(); this.setState({reset: true})}}/>
+        
+
         {/* <button onClick={() => this.change_state()} */}
         <div id="main-view-code">
           <BlocklyComp {...this.state} />
