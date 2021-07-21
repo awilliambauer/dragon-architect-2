@@ -1,8 +1,8 @@
-import _ from "lodash"
+import _, { reject } from "lodash"
 import * as THREE from "three"
 import { GameState } from "./App"
 import parse, { SyntaxError } from "./Parser"
-import run, {SimulatorState} from "./Simulator"
+import run, { SimulatorState } from "./Simulator"
 import { mapHasVector3 } from "./Util"
 import WorldState from "./WorldState"
 
@@ -129,14 +129,14 @@ export default class PuzzleState {
                     DragonPos: check dragon's position
         */
 
-        if(gamestate.sim.sim_state !== SimulatorState.Finished){
+        if (gamestate.sim.sim_state !== SimulatorState.Finished) {
             console.log("sim_state != Finished");
             return false;
         }
 
         let posRequired;
         for (let goal of this.goals) {
-            switch(goal.kind) {
+            switch (goal.kind) {
                 case GoalInfoType.RunOnly:
                     return true;
                 case GoalInfoType.MinCube:
@@ -150,74 +150,97 @@ export default class PuzzleState {
                 case GoalInfoType.RemoveCube:
                     posRequired = goal.position as THREE.Vector3;
                     return !mapHasVector3(gamestate.world.cube_map, posRequired);
-                
+
                 case GoalInfoType.DragonPos:
                     let dragonPosRequired = goal.position as THREE.Vector3;
                     return gamestate.sim.world.dragon_pos.equals(dragonPosRequired);
 
             }
         }
-       return false;
+        return false;
     }
 
     static make_from_file(filename: string) {
+        let state = new PuzzleState();
+
+        /// read in starting program from file
+        let fetchProgram = (data: PuzzleSpec) => {
+            return new Promise<PuzzleSpec>((resolve, reject) => {
+                if (data.program) {
+                    fetch(data.program)
+                        .then(response => response.text())
+                        .then(text => {
+                            state.start_code = text;
+                            resolve(data)
+                        })
+                        .catch(error => {
+                            reject(`Encountered error loading program from ${data.program}, as specified in ${filename}: ${error}`);
+                        });
+                } else {
+                    resolve(data);
+                }
+            });
+        }
+
+        /// set up the puzzle's solution, potentially reading it from a file
+        let fetchSolution = (data: PuzzleSpec) => {
+            return new Promise<PuzzleSpec>((resolve, reject) => {
+                if (data.goal === GoalType.Solution) {
+                    // these goals depend on the world state after a solution is run, so read in solution from file
+                    if (data.solution) {
+                        fetch(data.solution)
+                            .then(response => response.text())
+                            .then(text => {
+                                let program = parse(text);  // parse solution
+                                if (program instanceof SyntaxError) {
+                                    reject(`Syntax error when parsing solution ${text} from ${filename}: ${program}`);
+                                } else {
+                                    // run solution and use the differences from starting state to generate goals
+                                    let world = make_world_from_spec(data.world);
+                                    run(world, program);
+                                    state.goals = make_goals_from_world(world, state.start_world);
+                                    resolve(data);
+                                }
+                            })
+                            .catch(error => {
+                                reject(`Encountered error loading solution from ${data.solution}, as specified in ${filename}: ${error}`);
+                            })
+                    } else {
+                        reject(`Puzzle specification ${filename} has goal type ${data.goal}, but does not provide solution file`);
+                    }
+                    // otherwise we have a single goal, either MinCube or RunOnly
+                } else if (data.goal === GoalType.MinCube) {
+                    state.goals = [{
+                        kind: GoalInfoType.MinCube,
+                        value: data.goalValue
+                    }];
+                    resolve(data);
+                } else if (data.goal === GoalType.RunOnly) {
+                    state.goals = [{
+                        kind: GoalInfoType.RunOnly
+                    }];
+                    resolve(data);
+                } else {
+                    reject(`Unrecognized goal type ${data.goal} in ${filename}`);
+                }
+            });
+        }
+
         return new Promise<PuzzleState>(resolve => {
-            let state = new PuzzleState();
+            // TODO: library and instructions
+            // TODO: puzzle names/ids will matter once puzzle packs/unlocks are a thing                   
             fetch(filename)
-                .then(response => { console.log(response); return response.json() })
+                .then(response => { return response.json() })
                 .then((data: PuzzleSpec) => {
                     state.start_world = make_world_from_spec(data.world);
-
-                    // TODO: library and instructions
-                    // TODO: puzzle names/ids will matter once puzzle packs/unlocks are a thing
-
-                    // read in starting program from file
-                    if (data.program) {
-                        fetch(data.program)
-                            .then(response => response.text())
-                            .then(text => state.start_code = text)
-                            .catch(error => {
-                                console.error(`Encountered error loading program from ${data.program}, as specified in ${filename}:`, error);
-                            })
-                    }
-
-                    if (data.goal === GoalType.Solution) {
-                        // these goals depend on the world state after a solution is run, so read in solution from file
-                        if (data.solution) {
-                            fetch(data.solution)
-                                .then(response => response.text())
-                                .then(text => {
-                                    let program = parse(text);  // parse solution
-                                    if (program instanceof SyntaxError) {
-                                        console.error(`Syntax error when parsing solution ${text} from ${filename}:`, program);
-                                    } else {
-                                        // run solution and use the differences from starting state to generate goals
-                                        let world = make_world_from_spec(data.world);
-                                        run(world, program);
-                                        state.goals = make_goals_from_world(world, state.start_world);
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error(`Encountered error loading solution from ${data.solution}, as specified in ${filename}:`, error);
-                                })
-                        } else {
-                            console.error(`Puzzle specification ${filename} has goal type ${data.goal}, but does not provide solution file`);
-                        }
-                        // otherwise we have a single goal, either MinCube or RunOnly
-                    } else if (data.goal === GoalType.MinCube) {
-                        state.goals = [{
-                            kind: GoalInfoType.MinCube,
-                            value: data.goalValue
-                        }];
-                    } else if (data.goal === GoalType.RunOnly) {
-                        state.goals = [{
-                            kind: GoalInfoType.RunOnly
-                        }];
-                    } else {
-                        console.error(`Unrecognized goal type ${data.goal} in ${filename}`);
-                    }
+                    return data;
+                })
+                .then(fetchProgram)
+                .then(fetchSolution)
+                .then(() => {
                     resolve(state);
-                });
+                })
+                .catch(error => console.error(error));
         });
     }
 }
