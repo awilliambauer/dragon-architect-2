@@ -6,7 +6,7 @@ import parse, {
     ExpressionType, Invocation, Meta, Ident, Program,
     SyntaxError, Statement, StatementType, Repeat, Execute, Command, TopLevelStatement
 } from './Parser';
-import { help } from 'yargs';
+import { GameState } from './App';
 
 
 
@@ -88,7 +88,7 @@ export function breakStmtRepNum(stmt: Statement) {
 // a recursive function that turns parsed code strings to a huge xml string
 export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: string) {
 
-    if(program === []){
+    if(program.length === 0){
         return "";
     }
     //for (let s of program){
@@ -449,9 +449,9 @@ function customBlocklyInit() {
     });
 }
 
-export default class BlocklyComp extends React.Component {
-    constructor() {
-        super({});
+export default class BlocklyComp extends React.Component<GameState> {
+    constructor(props: GameState) {
+        super(props);
         customBlocklyInit();
     }
 
