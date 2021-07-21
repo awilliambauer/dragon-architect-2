@@ -1,23 +1,9 @@
 // Overview: This file contains code that displays the dragon and cubes
 
-import { CONTROLS_IF_ELSE_TITLE_ELSE } from 'blockly/msg/en';
-import { SSL_OP_COOKIE_EXCHANGE } from 'constants';
-import { stringify } from 'querystring';
-import React, { useRef, useState } from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
 import * as THREE from 'three';
-import PuzzleState from './PuzzleState';
-import { IncrementalSimulator, SimulatorState } from './Simulator';
+import { GameState } from './App';
 import { mapHasVector3 } from './Util';
-import WorldState from './WorldState';
-
-// This is the state for the entire program
-// It's passed in from the App file with world and simulator objects
-type DisplayProps = {
-    world: WorldState,
-    simulator: IncrementalSimulator
-    puzzle?: PuzzleState
-}
 
 // All constant variables
 type Constants = {
@@ -110,7 +96,7 @@ enum Animation {
 }
 
 // The Display.tsx function that does everything
-export default class Display extends React.Component<DisplayProps> {
+export default class Display extends React.Component<GameState> {
     divRef: React.RefObject<HTMLDivElement>;
     constantValues: Constants;
     mainStuff: Main;
@@ -121,7 +107,7 @@ export default class Display extends React.Component<DisplayProps> {
     finalValues: FinalValues;
 
     // The constructor sets up universal variables that hold types (which include "smaller" variables)
-    constructor(props: DisplayProps) {
+    constructor(props: GameState) {
         super(props);
         this.constantValues = {
             WOBBLE_PERIOD: 4,

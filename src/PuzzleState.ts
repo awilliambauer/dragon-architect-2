@@ -129,7 +129,7 @@ export default class PuzzleState {
                     DragonPos: check dragon's position
         */
 
-        if(gamestate.sim.sim_state !== SimulatorState.Finished){
+        if(gamestate.simulator.sim_state !== SimulatorState.Finished){
             console.log("sim_state != Finished");
             return false;
         }
@@ -153,7 +153,7 @@ export default class PuzzleState {
                 
                 case GoalInfoType.DragonPos:
                     let dragonPosRequired = goal.position as THREE.Vector3;
-                    return gamestate.sim.world.dragon_pos === dragonPosRequired;
+                    return gamestate.simulator.world.dragon_pos === dragonPosRequired;
 
             }
         }

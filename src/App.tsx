@@ -1,16 +1,16 @@
 import React from 'react';
 import * as THREE from 'three';
-import BlocklyComp, { blocks_to_text } /*{ print_blocks }*/ from './BlocklyComp';
+import BlocklyComp, { blocks_to_text } from './BlocklyComp';
 import Display from './Display';
 import WorldState from './WorldState';
-import run, { load_stdlib, IncrementalSimulator, SimulatorState, RecursiveSimulator } from './Simulator';
+import run, { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
 import parse, { Program, SyntaxError } from './Parser';
 import PuzzleState from './PuzzleState';
 
 export type GameState = {
   world: WorldState,
   puzzle?: PuzzleState
-  sim: IncrementalSimulator
+  simulator: IncrementalSimulator
 }
 
 class App extends React.Component<{}, GameState> {
@@ -23,14 +23,14 @@ class App extends React.Component<{}, GameState> {
     let world = new WorldState();
     this.state = {
       world: world,
-      sim: new IncrementalSimulator(world, parse(`
+      simulator: new IncrementalSimulator(world, parse(`
 repeat 4 times
     repeat 2 times
       Forward(2)
     Right()
 `) as Program)
     }
-    this.state.sim.set_running();
+    this.state.simulator.set_running();
     this.state.world.mark_dirty();
   }
 
@@ -43,7 +43,7 @@ repeat 4 times
       this.setState({
         world: p.start_world,
         puzzle: p,
-        sim: sim
+        simulator: sim
       });
     });
   }
@@ -69,10 +69,10 @@ repeat 4 times
         <button onClick={() => this.run_program()}>Run Program</button>
         {/* <button onClick={() => this.change_state()} */}
         <div id="main-view-code">
-          <BlocklyComp />
+          <BlocklyComp {...this.state} />
         </div>
         <div id="main-view-game">
-          <Display world={this.state.world} puzzle={this.state.puzzle} simulator={this.state.sim} />
+          <Display {...this.state} />
         </div>
         {/* Game area
             Camera controls
