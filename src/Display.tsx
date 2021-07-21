@@ -16,7 +16,7 @@ import WorldState from './WorldState';
 // It's passed in from the App file with world and simulator objects
 type DisplayProps = {
     world: WorldState,
-    simulator: IncrementalSimulator
+    simulator: IncrementalSimulator,
     puzzle?: PuzzleState
 }
 
@@ -300,7 +300,7 @@ export default class Display extends React.Component<DisplayProps> {
     };
 
     // Remove cube
-    removeCube(optMaps: OptimizationMaps, cube: THREE.Mesh<THREE.BufferGeometry, THREE.Material | Material[]>, color: string) {
+    removeCube(optMaps: OptimizationMaps, cube: THREE.Mesh<THREE.BufferGeometry>, color: string) {
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
             this.mainStuff.scene.remove(cube); // Remove from scene
             optMaps.available.get(color)!.push(cube);
@@ -341,17 +341,6 @@ export default class Display extends React.Component<DisplayProps> {
 
     // This function will update the display (what you see on the screen) using the this.dirty flag
     updateDisplay() {
-        // The "available" and "filled" maps are solely for efficiency. Cubes can be reused so we don't have to keep creating them
-        // A map where the keys are colors and the values are cube meshes
-        // This map shows all of the available meshes, or the meshes that don't have a position
-        let available = new Map<string, THREE.Mesh[]>();
-        // A map whose keys are positions and values are booleans
-        // Represents if a position is filled (true) or not (false)
-        let filled = new Map<THREE.Vector3, boolean>();
-
-        let targetAvailable = new Map<string, THREE.Mesh[]>();
-        let targetFilled = new Map<THREE.Vector3, boolean>();
-
         // Dragon final position and animation times
         this.finalValues.finalDragPos.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
         this.finalValues.finalDragQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), this.props.world.dragon_dir); // 1,0,0 is default direction
@@ -360,31 +349,31 @@ export default class Display extends React.Component<DisplayProps> {
             this.finalValues.finalDragQ.set(0, 0, 1, 0);
         }
 
+        // waitTime is determined by taking 10% of the transitionTime
+        // animTime is determined by taking the other 90% of the transitionTime (or the maximum animation time if that value is too big)
         this.dragAnimation.waitTime = this.dragAnimation.transitionTime*0.1;
         this.dragAnimation.animTime = Math.min(this.dragAnimation.transitionTime*0.9, this.constantValues.MAX_ANIMATION_TIME);
         this.dragAnimation.animStatus = Animation.waiting;
-        if (this.dragAnimation.animTime < this.constantValues.MIN_ANIMATION_TIME) {
-            this.dragAnimation.animStatus = Animation.animating;
+        if (this.dragAnimation.animTime < this.constantValues.MIN_ANIMATION_TIME) { // If animTime is lower than min animTime...
+            this.dragAnimation.animStatus = Animation.animating; // ...set Animation enum to animating
         }
 
-        //console.log(this.puzzleInit);
-        if (this.props.puzzle && !this.puzzleInit) {
-            // console.log("Entered");
-            // Create goal cubes
-            // console.log(this.props.puzzle.goals.length);
-            this.props.puzzle.goals.forEach((goal: GoalInfo) => {
-                // console.log("EVEN FARTHER");
-                // console.log(goal.kind)
-                if (goal.kind === GoalInfoType.AddCube) {
-                    if (goal.position) {
-                        
-                        this.addCube(this.targetOptMaps, goal.position, this.constantValues.targetCubes, "targetColor", this.geometries.cubeTargetMat);
+        // Placing puzzle cubes!
+        if (this.props.puzzle && !this.puzzleInit) { // If the state has a puzzle and it hasn't been initielized yet
+            this.props.puzzle.goals.forEach((goal: GoalInfo) => { // Iterate through each cube that should be placed for the puzzle
+                if (goal.kind === GoalInfoType.AddCube) { // If goal.kind is AddCube...
+                    if (goal.position) { //  And if there is a goal.position...
+                        this.addCube(this.targetOptMaps, goal.position, this.constantValues.targetCubes, "targetColor", this.geometries.cubeTargetMat); // Use addCube()
                     }
                 }
             });
-            this.puzzleInit = true;
-        } else {
-            // remove goal cubes
+            this.puzzleInit = true; // Set puzzleInit to true to show that puzzle cubes have been placed
+        } else if (!this.props.puzzle && this.puzzleInit){ // If there is no longer a puzzle in the state but the puzzle has been initialized
+            this.targetOptMaps.filled.forEach((filled: boolean, position: THREE.Vector3) => { // For each cube.position in the targetFilled map
+                let targetCube = new THREE.Mesh(this.geometries.targetGeo, this.geometries.cubeTargetMat);
+                targetCube.position.copy(position);
+                this.removeCube(this.targetOptMaps, targetCube, "targetColor"); // Remove the puzzle cube from the map
+            });
         }
 
         // This for loop checks for cubes that are no longer in the cube_map and should be removed
