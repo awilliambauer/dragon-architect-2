@@ -1,0 +1,17 @@
+{
+    "name": "Tutorial part 3",
+    "tag": "tutorial3",
+    "library": {
+        "restricted": ["down"],
+        "required": ["move2"],
+        "granted": []
+    },
+    "world": {
+        "pos": [0, 0, 0],
+        "dir": [1, 0, 0]
+    },
+    "program": "puzzles/code/tutorial3.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/tutorial3-solution.kobold",
+    "instructions": "Help me get to {pinkboxGround}! A {right} tells me to turn right."
+}

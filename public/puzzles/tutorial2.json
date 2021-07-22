@@ -1,0 +1,17 @@
+{
+    "name": "Tutorial part 2",
+    "tag": "tutorial2",
+    "library": {
+        "restricted": ["up"],
+        "required": ["move2"],
+        "granted": []
+    },
+    "world": {
+        "pos": [0, 0, 0],
+        "dir": [1, 0, 0]
+    },
+    "program": "puzzles/code/tutorial2.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/tutorial2-solution.kobold",
+    "instructions": "I need to get to the {pinkboxGround}. Another {forward} may help."
+}

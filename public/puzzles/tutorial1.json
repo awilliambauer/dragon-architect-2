@@ -1,0 +1,18 @@
+{
+    "name": "Tutorial part 1",
+    "tag": "tutorial1",
+    "library": {
+        "restricted": ["repeat"],
+        "required": [],
+        "granted": [
+            "move2"
+        ]
+    },
+    "world": {
+        "pos": [0, 0, 0],
+        "dir": [1, 0, 0]
+    },
+    "program": "puzzles/code/tutorial1.kobold",
+    "goal": "run_only",
+    "instructions": "Click {run} to run the program!"
+}
