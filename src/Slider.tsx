@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import { GameState } from './App';
 import { Material } from 'three';
 import { GoalInfo, GoalInfoType } from './PuzzleState';
-import { mapHasMesh, mapHasVector3 } from './Util';
 import Blockly from 'blockly';
 import mainStuff from 'three';
 import styled from 'styled-components';

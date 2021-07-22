@@ -6,8 +6,9 @@ import WorldState from './WorldState';
 import run, { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
 import parse, { Program, SyntaxError } from './Parser';
 import PuzzleState from './PuzzleState';
-import { Run } from './RunButton'
+import { Run } from './RunButton';
 import _ from 'lodash';
+import Slider from './Slider';
 
 export type GameState = {
   program: Program
@@ -53,7 +54,7 @@ repeat 4 times
 repeat 4 times
     repeat 2 times
       Forward(4)
-    PlaceCube(1)
+    PlaceCube(2)
     Right()
 `) as Program;
       let sim = new IncrementalSimulator(p.start_world, defaultProgram);
@@ -120,6 +121,9 @@ repeat 4 times
         
 
         {/* <button onClick={() => this.change_state()} */}
+        <div id="slider">
+          <Slider {...this.state} />
+        </div>
         <div id="main-view-code">
           <BlocklyComp {...this.state} />
         </div>
