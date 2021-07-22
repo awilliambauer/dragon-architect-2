@@ -206,8 +206,7 @@ export default class Display extends React.Component<GameState> {
         }
 
         // Set the dragon's starting position and nose position from the world props
-        let startingPos = this.props.world.dragon_pos.add(this.cameraPos.dragonOffset);
-        this.geometries.dragon.position.copy(startingPos);
+        this.geometries.dragon.position.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
         this.geometries.dragonNose.setDirection(this.props.world.dragon_dir);
 
         // Set starting values for the dragon's animation
