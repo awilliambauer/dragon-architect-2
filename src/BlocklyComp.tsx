@@ -257,7 +257,7 @@ export function blocks_to_text(): string{
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
     _.forEach(top, (block) => {
         text += (block_to_text("", "", block) + "\n");
-        console.log(Blockly.Xml.domToText(Blockly.Xml.blockToDom(block)));
+        //console.log(Blockly.Xml.domToText(Blockly.Xml.blockToDom(block)));
     });
     exportCode(text);
     return text;
