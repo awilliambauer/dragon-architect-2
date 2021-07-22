@@ -198,7 +198,7 @@ export default class Display extends React.Component<GameState> {
             // Dragon
             dragonGeometry: new THREE.SphereGeometry(0.5, 32, 32),
             dragon: new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), new THREE.MeshLambertMaterial({ color: "#f56e90" })),
-            dragonNose: new THREE.ArrowHelper(new THREE.Vector3(-1, 0, 0), new THREE.Vector3(0, 0, 0), 1, "#ff0000", 0.5, 0.2),
+            dragonNose: new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), 1, "#ff0000", 0.5, 0.2),
             geometry: new THREE.PlaneBufferGeometry(1, 1, 32),
 
             // zCue plane
