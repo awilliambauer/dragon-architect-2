@@ -17,14 +17,14 @@ const COLOR_MOVE_1 = '#0075A6';
 const COLOR_PROCS = '#7C478B';
 // const COLOR_UNUSED_1 = '#B63551';
 // const COLOR_UNUSED_2 = '#A88217';
-// const COLOR_TEASER = '#707070';
+const COLOR_TEASER = '#707070';
 // Blockly.FieldColour.COLOURS
 
 // class KoboldLangOps {
 //     block_to_kobold: Map<string, ()>
 // }
 
-
+// var restricted_list = ["remove","repeat","defproc"];
 
 declare module "blockly" {
     interface Block {
@@ -280,7 +280,17 @@ function makeShadowNum(num: number, id?: string) {
     }
     return '<shadow type="math_number"><field name="NUM">' + num + '</field></shadow>';
 };
+function disableBlock(disabled: boolean){
+    if (disabled) {
+        return ' disabled="true"';
+    }
+    else {
+        return '';
+    }
+}
 
+
+//' + disableBlock(disable_move) + '
 const COMMANDS = {
     move2: { block: '<block type="Forward"><value name="VALUE">' + makeShadowNum(1) + '</value></block><block type="Left"></block><block type="Right"></block>' },
     //set: { block: '<block type="Set"><value name="VALUE">' + makeShadowNum(1) + '</value></block>' },
@@ -290,7 +300,7 @@ const COMMANDS = {
     down: { block: '<block type="Down"><value name="VALUE">' + makeShadowNum(1) + '</value></block>', teaser: '<block type="Down_teaser"><value name="VALUE">' + makeShadowNum(1) + '</value></block>', pack: 'up' },
     repeat: {
         block: '<block type="controls_repeat_ext"><value name="TIMES">' + makeShadowNum(10) + '</value></block>',
-        // teaser: '<block type="controls_repeat_teaser"><value name="TIMES">' + makeShadowNum(10) + '</value></block>', pack: 'repeat'
+        teaser: '<block type="controls_repeat_teaser"><value name="TIMES">' + makeShadowNum(10) + '</value></block>', pack: 'repeat'
     },
     // counting_loop: {
     //     block: '<block type="controls_for"><value name="COUNTER"><block type="variables_get" default="true"><field name="VAR">i</field></block></value>' +
@@ -343,6 +353,7 @@ function customBlocklyInit() {
                         type: "input_value",
                         name: "VALUE",
                         check: "Number"
+                        
                     }
                 ],
                 previousStatement: true,
@@ -352,6 +363,28 @@ function customBlocklyInit() {
             });
         }
     };
+    // Blockly.Blocks['Down_teaser'] = {
+    //     init: function(this: Blockly.Block) {
+    //         this.jsonInit({
+    //             message0: "down by %1",
+    //             args0: [
+    //                 {
+    //                     type: "input_value",
+    //                     name: "VALUE",
+    //                     check: "Number"
+    //                 }
+    //             ],
+    //             previousStatement:true,
+    //             nextStatement:true,
+    //             inputsInline:true,
+    //             colour:COLOR_TEASER
+    //         });
+    //         // this.locked = true;
+    //         // this.packName = "up";
+            
+    //     }
+        
+    // };
     KoboldConvert.set("Down", (block: Blockly.Block) => {
         return `Down(${block.getInput("VALUE")?.connection?.targetBlock()?.getFieldValue("NUM")})`
     });
@@ -453,9 +486,13 @@ export default class BlocklyComp extends React.Component<GameState> {
     constructor(props: GameState) {
         super(props);
         customBlocklyInit();
+        
     }
 
+
     render() {
+        console.log("blockly renders");
+        //this.componentDidMount();
         return (
             <div id="blocklyDiv" style={{ width: '100%' }}></div>
         )
@@ -464,17 +501,33 @@ export default class BlocklyComp extends React.Component<GameState> {
     componentDidMount() {
         let ws = Blockly.inject('blocklyDiv',
             { toolbox: document.getElementById('toolbox')! });
-        this.updateToolbox(ws);
+        let restricted_list = this.props.restrictedBlockList;
+        this.updateToolbox(ws, restricted_list);
+    }
+    componentDidUpdate(){
+        let ws = Blockly.inject('blocklyDiv',
+        { toolbox: document.getElementById('toolbox')! });
+        let restricted_list = this.props.restrictedBlockList;
+        this.updateToolbox(ws, restricted_list);
     }
 
-    updateToolbox(workspace: Blockly.WorkspaceSvg) {
+    updateToolbox(workspace: Blockly.WorkspaceSvg, restricted_list: Array<String>) {
         let toolXML = '<xml id="toolbox" style="display: none">';
-
+        //disable_move = true;
         // add each block from COMMANDS to the toolbox
+        console.log("list in updateTB: " + restricted_list);
         _.forEach(COMMANDS, function (data, _name) {
-            toolXML += data.block;
+            //console.log(restricted_list);
+            console.log(restricted_list.includes("repeat"));
+            if ( !restricted_list.includes(_name) ) {
+                toolXML += data.block;
+            }
         });
+        
         toolXML += '</xml>';
+        console.log(toolXML);
+        
         workspace.updateToolbox(toolXML);
+
     }
 }

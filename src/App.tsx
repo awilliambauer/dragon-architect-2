@@ -17,6 +17,7 @@ export type GameState = {
   simulator: IncrementalSimulator
   reset: boolean
   lastSavedWorld: WorldState | undefined
+  restrictedBlockList: Array<String>
 }
 
 class App extends React.Component<{}, GameState> {
@@ -39,7 +40,8 @@ repeat 4 times
       reset: false,
       world: world,
       simulator: new IncrementalSimulator(world, defaultProgram),
-      lastSavedWorld: undefined
+      lastSavedWorld: undefined,
+      restrictedBlockList: ["remove","repeat","defproc"]
     }
     this.state.simulator.set_running();
     this.state.world.mark_dirty();
@@ -85,6 +87,7 @@ repeat 4 times
         world: this.state.lastSavedWorld!,
         lastSavedWorld: undefined
       }, () => { this.state.world.mark_dirty() })
+      
     }
 
     //switch the button 
@@ -94,7 +97,19 @@ repeat 4 times
 
   }
 
+  // each time when this is called, an extra block should reveal at the toolbox
+  update_restricted_list() {
+    if(this.state.restrictedBlockList.length > 0) {
+      this.setState({
+        restrictedBlockList: this.state.restrictedBlockList.slice(1)
+      });
+      //console.log(this.state.restrictedBlockList);
+    }
+  }
+
   render() {
+    console.log("app rerendering");
+    //console.log(this.state.restrictedBlockList);
     return (
       <div className="App">
         {/* Navigation bar */}
@@ -102,6 +117,7 @@ repeat 4 times
             Blockly
             Control buttons  */}
         <Run reset={this.state.reset} onClick={() => { this.run_program() }} />
+        <button onClick={() => { this.update_restricted_list() }}>Update Restricted List</button>
         {/* <button onClick={() => this.change_state()} */}
         <div id="slider">
           <Slider {...this.state} />
