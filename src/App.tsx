@@ -119,9 +119,6 @@ repeat 4 times
         <Run reset={this.state.reset} onClick={() => { this.run_program() }} />
         <button onClick={() => { this.update_restricted_list() }}>Update Restricted List</button>
         {/* <button onClick={() => this.change_state()} */}
-        <div id="slider">
-          <Slider {...this.state} />
-        </div>
         <div id="main-view-code">
           <BlocklyComp {...this.state} />
         </div>
