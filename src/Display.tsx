@@ -1,5 +1,5 @@
 // Overview: This file contains code that displays the dragon and cubes
-import React, {ChangeEvent} from 'react';
+import React, { ChangeEvent } from 'react';
 import * as THREE from 'three';
 import { GameState } from './App';
 import { Material } from 'three';
@@ -370,7 +370,7 @@ export default class Display extends React.Component<GameState> {
         if (this.dragAnimation.animTime < this.constantValues.MIN_ANIMATION_TIME) { // If animTime is lower than min animTime...
             this.dragAnimation.animStatus = Animation.animating; // ...set Animation enum to animating
         }
-
+        
         // Placing puzzle cubes!
         if (this.props.puzzle && this.puzzleInit !== this.props.puzzle.name) { // If the state has a puzzle and it hasn't been initielized yet
             console.log("state has puzzle, has not been initialized");
@@ -480,7 +480,7 @@ export default class Display extends React.Component<GameState> {
     }
 
     handleSlideChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        //use value from event to set animations per second
+        // use value from event to set animations per second
         this.dragAnimation.animPerSec = parseFloat(e.target.value); // "+" sign makes this value a number
     }
 
