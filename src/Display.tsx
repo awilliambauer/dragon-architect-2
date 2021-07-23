@@ -1,11 +1,12 @@
 // Overview: This file contains code that displays the dragon and cubes
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import * as THREE from 'three';
 import { GameState } from './App';
 import { Material } from 'three';
 import { GoalInfo, GoalInfoType } from './PuzzleState';
 import { mapHasVector3 } from './Util';
 import Blockly from 'blockly';
+import Slider from './Slider';
 
 // All constant variables
 type Constants = {
@@ -87,7 +88,7 @@ type DragonAnimation = {
     animStatus: Animation,
     waitTime: number,
     animTime: number,
-    transitionTime: number
+    animPerSec: number
 }
 
 // This type holds the available and filled optimization maps
@@ -214,7 +215,7 @@ export default class Display extends React.Component<GameState> {
             animStatus: Animation.null,
             waitTime: 0,
             animTime: 0,
-            transitionTime: .4
+            animPerSec: .4
         }
 
         // OptimizationMaps for cubes that the dragon places
@@ -332,7 +333,7 @@ export default class Display extends React.Component<GameState> {
         // Checks to see if the simulator is running (if there are still animations left to do)
         if (this.props.simulator.is_running()) {
             this.clockStuff.time += delta; // Add delta to time variable (total time between each time entering second if statement below)
-            if (this.clockStuff.time > this.dragAnimation.transitionTime) { // If the total time is greater than the time you want...
+            if (this.clockStuff.time > this.dragAnimation.animPerSec) { // If the total time is greater than the time you want...
                 this.props.simulator.execute_to_command(); // The command is executed
                 this.clockStuff.time = 0; // Reset time to 0
             }
@@ -349,15 +350,15 @@ export default class Display extends React.Component<GameState> {
             this.finalValues.finalDragQ.set(0, 0, 1, 0);
         }
 
-        // waitTime is determined by taking 10% of the transitionTime
-        // animTime is determined by taking the other 90% of the transitionTime (or the maximum animation time if that value is too big)
-        this.dragAnimation.waitTime = this.dragAnimation.transitionTime * 0.1;
-        this.dragAnimation.animTime = Math.min(this.dragAnimation.transitionTime * 0.9, this.constantValues.MAX_ANIMATION_TIME);
+        // waitTime is determined by taking 10% of the animPerSec
+        // animTime is determined by taking the other 90% of the animPerSec (or the maximum animation time if that value is too big)
+        this.dragAnimation.waitTime = this.dragAnimation.animPerSec * 0.1;
+        this.dragAnimation.animTime = Math.min(this.dragAnimation.animPerSec * 0.9, this.constantValues.MAX_ANIMATION_TIME);
         this.dragAnimation.animStatus = Animation.waiting;
         if (this.dragAnimation.animTime < this.constantValues.MIN_ANIMATION_TIME) { // If animTime is lower than min animTime...
             this.dragAnimation.animStatus = Animation.animating; // ...set Animation enum to animating
         }
-
+        
         // Placing puzzle cubes!
         if (this.props.puzzle && !this.puzzleInit) { // If the state has a puzzle and it hasn't been initielized yet
             this.props.puzzle.goals.forEach((goal: GoalInfo) => { // Iterate through each cube that should be placed for the puzzle
@@ -444,6 +445,7 @@ export default class Display extends React.Component<GameState> {
                     this.geometries.dragon.position.copy(this.finalValues.finalDragPos); // End the animation, send dragon to final positions
                     this.geometries.dragon.quaternion.copy(this.finalValues.finalDragQ);
                     this.dragAnimation.animStatus = Animation.done;
+                    this.dragAnimation.animTime = 0.1;
                 }
             }
 
@@ -464,9 +466,16 @@ export default class Display extends React.Component<GameState> {
         animate();
     }
 
+    handleSlideChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        // use value from event to set animations per second
+        this.dragAnimation.animPerSec = parseFloat(e.target.value); // "+" sign makes this value a number
+    }
+
     render() {
         return (
-            <div id="three-js" ref={this.divRef} />
+            <div id="three-js" ref={this.divRef}>
+                <Slider onChange={this.handleSlideChange} />
+            </div>
         );
     }
 }
