@@ -4,11 +4,13 @@ import BlocklyComp, { blocks_to_text } from './BlocklyComp';
 import Display from './Display';
 import WorldState from './WorldState';
 import run, { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
-import parse, { Program, SyntaxError } from './Parser';
+import parse, {EMPTY_PROGRAM, Program, SyntaxError } from './Parser';
 import PuzzleState from './PuzzleState';
 import { Run } from './RunButton';
 import _ from 'lodash';
 import Slider from './Slider';
+import { TEXT_CHANGECASE_TOOLTIP } from 'blockly/msg/en';
+// import * as GOAL from "../public/puzzles/test.json"
 
 export type GameState = {
   program: Program
@@ -17,8 +19,12 @@ export type GameState = {
   simulator: IncrementalSimulator
   reset: boolean
   lastSavedWorld: WorldState | undefined
-  restrictedBlockList: Array<String>
+  loading: boolean
 }
+
+const puzzle_sequence = ["puzzles/tutorial2.json"];
+// "puzzles/tutorial2.json", "puzzles/tutorial3.json"
+let puzzle_index = 0;
 
 class App extends React.Component<{}, GameState> {
 
@@ -26,33 +32,32 @@ class App extends React.Component<{}, GameState> {
     super(props);
     load_stdlib();
 
-    // set up initial state, will get overwritten in componentDidMount
-    let world = new WorldState();
-    let defaultProgram = parse(`
-repeat 4 times
-    repeat 2 times
-      Forward(4)
-    PlaceCube(1)
-    Right()
-`) as Program;
+//     // set up initial state, will get overwritten in componentDidMount
+//     let world = new WorldState();
+//     let defaultProgram = parse(`
+// repeat 4 times
+//     repeat 2 times
+//       Forward(4)
+//     PlaceCube(1)
+//     Right()
+// `) as Program;
     this.state = {
-      program: defaultProgram,
+      program: EMPTY_PROGRAM,
       reset: false,
-      world: world,
-      simulator: new IncrementalSimulator(world, defaultProgram),
+      world: new WorldState(),
+      simulator: new IncrementalSimulator(new WorldState(), EMPTY_PROGRAM),
       lastSavedWorld: undefined,
-      restrictedBlockList: ["remove","repeat","defproc"]
+      // restrictedBlockList: ["remove","repeat","defproc"]
+      loading: true
     }
-    this.state.simulator.set_running();
-    this.state.world.mark_dirty();
+    // this.state.simulator.set_running();
+    // this.state.world.mark_dirty();
 
   }
 
-  componentDidMount() {
-    // load the puzzle specification from puzzles/test.json
-    // and then use it to set the game state
-    PuzzleState.make_from_file("puzzles/test.json").then(p => {
-      let sim = new IncrementalSimulator(p.start_world, parse('') as Program);
+  load_puzzle(puzzle_file: string) {
+    PuzzleState.make_from_file(puzzle_file, () => this.win_puzzle()).then(p => {
+      let sim = new IncrementalSimulator(p.start_world, EMPTY_PROGRAM);
       const ast = parse(p.start_code);
       if (ast instanceof SyntaxError) {
         console.error(`Syntax Error: ${ast}`);
@@ -62,9 +67,36 @@ repeat 4 times
           world: p.start_world,
           puzzle: p,
           simulator: sim,
+          loading: false
         });
       }
     });
+  }
+
+  load_sandbox() {
+    let world = new WorldState();
+    world.mark_dirty();
+    let sim = new IncrementalSimulator(world, parse('') as Program);
+    this.setState({
+      world: world,
+      puzzle: undefined,
+      simulator: sim
+    })
+  }
+
+  win_puzzle() {
+    puzzle_index++;
+    if (puzzle_index < puzzle_sequence.length) {
+      this.load_puzzle(puzzle_sequence[puzzle_index]);
+    } else {
+      this.load_sandbox();
+    }
+  }
+
+  componentDidMount() {
+    //load the first puzzle once the page has loaded
+    this.load_puzzle(puzzle_sequence[puzzle_index]);
+    
   }
 
   run_program() {
@@ -97,44 +129,53 @@ repeat 4 times
 
   }
 
-  // each time when this is called, an extra block should reveal at the toolbox
-  update_restricted_list() {
-    if(this.state.restrictedBlockList.length > 0) {
-      this.setState({
-        restrictedBlockList: this.state.restrictedBlockList.slice(1)
-      });
-      //console.log(this.state.restrictedBlockList);
-    }
-  }
+  // // each time when this is called, an extra block should reveal at the toolbox
+  // update_restricted_list() {
+  //   if(this.state.restrictedBlockList.length > 0) {
+  //     this.setState({
+  //       restrictedBlockList: this.state.restrictedBlockList.slice(1)
+  //     });
+  //     //console.log(this.state.restrictedBlockList);
+  //   }
+  // }
 
   render() {
-    console.log("app rerendering");
-    //console.log(this.state.restrictedBlockList);
-    return (
-      <div className="App">
-        {/* Navigation bar */}
-        {/* Code area
+    
+    
+    // return (
+    //   <div className="App">
+    //     {/* Navigation bar */}
+    //     {/* Code area
+    if (this.state.loading) {
+      return (
+        <h1>Loading...</h1>
+      )
+    } else {
+      return (
+        <div className="App">
+          {/* Navigation bar*/}
+          {/* Code area}
             Blockly
             Control buttons  */}
-        <Run reset={this.state.reset} onClick={() => { this.run_program() }} />
-        <button onClick={() => { this.update_restricted_list() }}>Update Restricted List</button>
-        {/* <button onClick={() => this.change_state()} */}
-        <div id="slider">
-          <Slider {...this.state} />
+          <Run reset={this.state.reset} onClick={() => { this.run_program() }} />
+          {/* <button onClick={() => this.change_state()} */}
+          {/* <div id="slider">
+            <Slider {...this.state} />
+          </div> */}
+          <div id="main-view-code">
+            <BlocklyComp {...this.state} />
+          </div>
+          <div id="main-view-game">
+            <Display {...this.state} />
+          </div>
+          {/* Game area
+              Camera controls
+              3D view
+              Other controls
+              Instructions   */}
         </div>
-        <div id="main-view-code">
-          <BlocklyComp {...this.state} />
-        </div>
-        <div id="main-view-game">
-          <Display {...this.state} />
-        </div>
-        {/* Game area
-            Camera controls
-            3D view
-            Other controls
-            Instructions   */}
-      </div>
-    );
+      );
+    }
   }
 }
 

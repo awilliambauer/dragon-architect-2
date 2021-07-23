@@ -1,11 +1,12 @@
 // Overview: This file contains code that displays the dragon and cubes
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import * as THREE from 'three';
 import { GameState } from './App';
 import { Material } from 'three';
 import { GoalInfo, GoalInfoType } from './PuzzleState';
 import { mapHasVector3 } from './Util';
 import Blockly from 'blockly';
+import Slider from './Slider';
 
 // All constant variables
 type Constants = {
@@ -87,7 +88,7 @@ type DragonAnimation = {
     animStatus: Animation,
     waitTime: number,
     animTime: number,
-    transitionTime: number
+    animPerSec: number
 }
 
 // This type holds the available and filled optimization maps
@@ -118,7 +119,7 @@ export default class Display extends React.Component<GameState> {
     finalValues: FinalValues;
     cubeOptMaps: OptimizationMaps;
     goalOptMaps: OptimizationMaps;
-    puzzleInit: boolean;
+    puzzleInit: string;
 
     // Constructor method!
     constructor(props: GameState) {
@@ -207,14 +208,13 @@ export default class Display extends React.Component<GameState> {
 
         // Set the dragon's starting position and nose position from the world props
         this.geometries.dragon.position.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
-        this.geometries.dragonNose.setDirection(this.props.world.dragon_dir);
 
         // Set starting values for the dragon's animation
         this.dragAnimation = {
             animStatus: Animation.null,
             waitTime: 0,
             animTime: 0,
-            transitionTime: .4
+            animPerSec: .4
         }
 
         // OptimizationMaps for cubes that the dragon places
@@ -243,7 +243,7 @@ export default class Display extends React.Component<GameState> {
         this.storageMaps.goalCubes.set(`#${this.geometries.dragonGoalMat.color.getHexString()}`, []);
 
         // Set puzzle initialization = false. This means that a puzzle has not been drawn on the display
-        this.puzzleInit = false;
+        this.puzzleInit = "";
 
         // Setting up light
         this.geometries.light.position.set(-0.56, -0.32, 0.77);
@@ -301,9 +301,12 @@ export default class Display extends React.Component<GameState> {
 
     // Remove cube
     removeCube(optMaps: OptimizationMaps, cube: THREE.Mesh<THREE.BufferGeometry>, color: string) {
+        console.log("removeCube Called");
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
             this.mainStuff.scene.remove(cube); // Remove from scene
-            optMaps.available.get(color)!.push(cube);
+            if (cube !== undefined) {
+                optMaps.available.get(color)!.push(cube);
+            }
         } else { // If the cube has a position property
             optMaps.filled.set(cube.position, true); // Set the filled object at that cube object to true
         }
@@ -332,9 +335,19 @@ export default class Display extends React.Component<GameState> {
         // Checks to see if the simulator is running (if there are still animations left to do)
         if (this.props.simulator.is_running()) {
             this.clockStuff.time += delta; // Add delta to time variable (total time between each time entering second if statement below)
-            if (this.clockStuff.time > this.dragAnimation.transitionTime) { // If the total time is greater than the time you want...
+            if (this.clockStuff.time > this.dragAnimation.animPerSec) { // If the total time is greater than the time you want...
                 this.props.simulator.execute_to_command(); // The command is executed
                 this.clockStuff.time = 0; // Reset time to 0
+                console.log("checking if simulator finished");
+                if (this.props.simulator.is_finished()) {
+                    console.log("simulator finished, calling check_completed");
+                    console.log("puzzle: " + this.props.puzzle);
+                    this.props.puzzle?.check_completed(this.props);
+                }
+                else{
+                    console.log("simulator not finished");
+                }
+                console.log("done");
             }
         }
     }
@@ -349,17 +362,18 @@ export default class Display extends React.Component<GameState> {
             this.finalValues.finalDragQ.set(0, 0, 1, 0);
         }
 
-        // waitTime is determined by taking 10% of the transitionTime
-        // animTime is determined by taking the other 90% of the transitionTime (or the maximum animation time if that value is too big)
-        this.dragAnimation.waitTime = this.dragAnimation.transitionTime * 0.1;
-        this.dragAnimation.animTime = Math.min(this.dragAnimation.transitionTime * 0.9, this.constantValues.MAX_ANIMATION_TIME);
+        // waitTime is determined by taking 10% of the animPerSec
+        // animTime is determined by taking the other 90% of the animPerSec (or the maximum animation time if that value is too big)
+        this.dragAnimation.waitTime = this.dragAnimation.animPerSec * 0.1;
+        this.dragAnimation.animTime = Math.min(this.dragAnimation.animPerSec * 0.9, this.constantValues.MAX_ANIMATION_TIME);
         this.dragAnimation.animStatus = Animation.waiting;
         if (this.dragAnimation.animTime < this.constantValues.MIN_ANIMATION_TIME) { // If animTime is lower than min animTime...
             this.dragAnimation.animStatus = Animation.animating; // ...set Animation enum to animating
         }
 
         // Placing puzzle cubes!
-        if (this.props.puzzle && !this.puzzleInit) { // If the state has a puzzle and it hasn't been initielized yet
+        if (this.props.puzzle && this.puzzleInit !== this.props.puzzle.name) { // If the state has a puzzle and it hasn't been initielized yet
+            console.log("state has puzzle, has not been initialized");
             this.props.puzzle.goals.forEach((goal: GoalInfo) => { // Iterate through each cube that should be placed for the puzzle
                 if (goal.kind === GoalInfoType.AddCube) { // If goal.kind is AddCube...
                     if (goal.position) { //  And if there is a goal.position...
@@ -372,8 +386,8 @@ export default class Display extends React.Component<GameState> {
                     }
                 }
             });
-            this.puzzleInit = true; // Set puzzleInit to true to show that puzzle cubes have been placed
-        } else if (!this.props.puzzle && this.puzzleInit){ // If there is no longer a puzzle in the state but the puzzle has been initialized
+            this.puzzleInit = this.props.puzzle.name; // Set puzzleInit to true to show that puzzle cubes have been placed
+        } else if (!this.props.puzzle && this.puzzleInit !== ""){ // If there is no longer a puzzle in the state but the puzzle has been initialized
             this.goalOptMaps.filled.forEach((filled: boolean, position: THREE.Vector3) => { // For each cube.position in the targetFilled map
                 let targetCube = new THREE.Mesh(this.geometries.goalGeo, this.geometries.cubeGoalMat);
                 targetCube.position.copy(position);
@@ -444,6 +458,7 @@ export default class Display extends React.Component<GameState> {
                     this.geometries.dragon.position.copy(this.finalValues.finalDragPos); // End the animation, send dragon to final positions
                     this.geometries.dragon.quaternion.copy(this.finalValues.finalDragQ);
                     this.dragAnimation.animStatus = Animation.done;
+                    this.dragAnimation.animTime = 0.1;
                 }
             }
 
@@ -464,9 +479,16 @@ export default class Display extends React.Component<GameState> {
         animate();
     }
 
+    handleSlideChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        //use value from event to set animations per second
+        this.dragAnimation.animPerSec = parseFloat(e.target.value); // "+" sign makes this value a number
+    }
+
     render() {
         return (
-            <div id="three-js" ref={this.divRef} />
+            <div id="three-js" ref={this.divRef}>
+                <Slider onChange={this.handleSlideChange} />
+            </div>
         );
     }
 }
