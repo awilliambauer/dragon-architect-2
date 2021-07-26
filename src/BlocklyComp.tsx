@@ -88,20 +88,20 @@ export function breakStmtRepNum(stmt: Statement) {
 // a recursive function that turns parsed code strings to a huge xml string
 export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: string) {
 
-    if(program.length === 0){
+    if (program.length === 0) {
         return "";
     }
     //for (let s of program){
             
-    switch(program[0].kind) {
+    switch (program[0].kind) {
         case "procedure": //block is a procedure
             let xmlPro = "";
             let pro = program[0].body;
 
             xmlPro = xmlHelper(pro, xmlPro);
 
-            xmlPro = '<block type = "procedures_defnoreturn"><field name="NAME">' +program[0].name+
-            '</field><statement name="STACK">' + xmlPro;
+            xmlPro = '<block type = "procedures_defnoreturn"><field name="NAME">' +program[0].name +
+                '</field><statement name="STACK">' + xmlPro;
             xmlPro += '</statement></block>';
             xml = xml + xmlPro;
 
@@ -111,43 +111,43 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
             let block = breakStmt(program[0] as Statement);
             if (block) {
                 if (block.name === "Left" || block.name === "Right" || block.name === 'RemoveCube') {
-                    if(program.length === 1) {
+                    if (program.length === 1) {
                         return '<block type="'+block.name + '"></block>';
                     }
-                    xml = '<block type="'+block.name + '"><next>'+ xmlHelper(program.slice(1),"") + '</next></block>';
+                    xml = '<block type="' + block.name + '"><next>' + xmlHelper(program.slice(1), "") + '</next></block>';
                 }
 
-                else if ( block.name === 'PlaceCube'){
+                else if (block.name === 'PlaceCube') {
                     let expr = block.args;
                     let color = 0;
-                    if(expr[0].kind === ExpressionType.Number) { 
+                    if (expr[0].kind === ExpressionType.Number) { 
                         color = expr[0].expression as number;
                     }
                     
-                    if(program.length === 1) {
-                        return '<block type="'+block.name +'"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field></block>';
+                    if (program.length === 1) {
+                        return '<block type="' + block.name +'"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field></block>';
                     }
-                    xml = '<block type="'+block.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field><next>'+
-                    xmlHelper(program.slice(1),"") + '</next></block>';
+                    xml = '<block type="' + block.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field><next>'+
+                        xmlHelper(program.slice(1), "") + '</next></block>';
                     
                 }
                         
-                else{
+                else {
                     let expr = block.args;
-                    if (expr[0].kind === ExpressionType.Number){ 
+                    if (expr[0].kind === ExpressionType.Number) { 
                         
-                        if(program.length === 1) {
-                            return '<block type="'+block.name +'"><value name="VALUE">' + makeShadowNum(expr[0].expression as number)+
+                        if (program.length === 1) {
+                            return '<block type="' + block.name + '"><value name="VALUE">' + makeShadowNum(expr[0].expression as number) + 
                                 '</value></block>';
                         }
                         
-                        xml = '<block type="'+block.name + '"><value name="VALUE">' +  makeShadowNum(expr[0].expression as number) +
-                            '</value><next>'+ xmlHelper(program.slice(1),"") + '</next></block>';
+                        xml = '<block type="' + block.name + '"><value name="VALUE">' +  makeShadowNum(expr[0].expression as number) +
+                            '</value><next>'+ xmlHelper(program.slice(1), "") + '</next></block>';
                         
                     }
                 }
             }
-            else{ //block is a repeat
+            else { //block is a repeat
                 let xmlRep = "";
                 let rep = breakStmtRep(program[0] as Statement);
                 
@@ -162,14 +162,14 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
 
             
                 xmlRep = '<block type="controls_repeat_ext"><value name="TIMES"><shadow type="math_number"><field name="NUM">'
-                    + breakStmtRepNum(program[0] as Statement)+ '</field></shadow></value><statement name="DO">' + xmlRep;
+                    + breakStmtRepNum(program[0] as Statement) + '</field></shadow></value><statement name="DO">' + xmlRep;
 
                 
                 xmlRep += '</statement>';
-                if(program.length > 1) {
+                if (program.length > 1) {
                     xml = xml + xmlRep + '<next>' + xmlHelper(program.slice(1),"") + '</next></block>';
                 }
-                else{
+                else {
                     xml = xml + xmlRep + '</block>';
                 }
 
@@ -189,7 +189,7 @@ export function exportCode(code: string) {
     //determine number of block groups
     let xml = '<xml>';
     let program = parse(code);
-    if( !(program instanceof SyntaxError)) {
+    if (!(program instanceof SyntaxError)) {
         xml += xmlHelper(program.body, "");
     }
     
@@ -198,10 +198,6 @@ export function exportCode(code: string) {
 
 }
 
-// // xml string to dom then to workspace
-// export function xmlToWorkspace(xml: string) {
-//     return Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(xml), mainWorkspace);
-// }
 
 export function text_to_blocks(code: string) {
     let xml = exportCode(code);
@@ -242,7 +238,7 @@ export function block_to_text(str: string, indent: string, block: Blockly.Block)
         str += indent + convert_fn(block) + "\n";
     }
     if (children.length > 0) {
-        for(let child of children) {
+        for (let child of children) {
             str = block_to_text(str, (indent + "\t"), child);   
         }
     }
@@ -252,27 +248,16 @@ export function block_to_text(str: string, indent: string, block: Blockly.Block)
     return str;
 }
 
-export function blocks_to_text(): string{
+export function blocks_to_text(): string {
     let text = "";
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
     _.forEach(top, (block) => {
         text += (block_to_text("", "", block) + "\n");
-        //console.log(Blockly.Xml.domToText(Blockly.Xml.blockToDom(block)));
     });
     exportCode(text);
     return text;
 }
 
-// The following is just to test block(s)_to_text.
-// To test if blocks_to_text() work, uncomment it
-// and comment the original print_blocks() in line 69
-//
-// export function print_blocks(){ 
-//     let top = Blockly.getMainWorkspace().getTopBlocks(true);
-//     _.forEach(top, (block) =>{
-//         console.log(blocks_to_text());
-//     });
-// }
 
 function makeShadowNum(num: number, id?: string) {
     if (id) {
@@ -280,17 +265,8 @@ function makeShadowNum(num: number, id?: string) {
     }
     return '<shadow type="math_number"><field name="NUM">' + num + '</field></shadow>';
 };
-function disableBlock(disabled: boolean){
-    if (disabled) {
-        return ' disabled="true"';
-    }
-    else {
-        return '';
-    }
-}
 
 
-//' + disableBlock(disable_move) + '
 const COMMANDS = {
     move2: { block: '<block type="Forward"><value name="VALUE">' + makeShadowNum(1) + '</value></block><block type="Left"></block><block type="Right"></block>' },
     //set: { block: '<block type="Set"><value name="VALUE">' + makeShadowNum(1) + '</value></block>' },
@@ -363,28 +339,6 @@ function customBlocklyInit() {
             });
         }
     };
-    // Blockly.Blocks['Down_teaser'] = {
-    //     init: function(this: Blockly.Block) {
-    //         this.jsonInit({
-    //             message0: "down by %1",
-    //             args0: [
-    //                 {
-    //                     type: "input_value",
-    //                     name: "VALUE",
-    //                     check: "Number"
-    //                 }
-    //             ],
-    //             previousStatement:true,
-    //             nextStatement:true,
-    //             inputsInline:true,
-    //             colour:COLOR_TEASER
-    //         });
-    //         // this.locked = true;
-    //         // this.packName = "up";
-            
-    //     }
-        
-    // };
     KoboldConvert.set("Down", (block: Blockly.Block) => {
         return `Down(${block.getInput("VALUE")?.connection?.targetBlock()?.getFieldValue("NUM")})`
     });
@@ -483,6 +437,8 @@ function customBlocklyInit() {
 }
 
 export default class BlocklyComp extends React.Component<GameState> {
+    workspace?: Blockly.WorkspaceSvg
+
     constructor(props: GameState) {
         super(props);
         customBlocklyInit();
@@ -491,41 +447,36 @@ export default class BlocklyComp extends React.Component<GameState> {
 
 
     render() {
-        console.log("blockly renders");
-        //this.componentDidMount();
+        
         return (
             <div id="blocklyDiv" style={{ width: '100%' }}></div>
         )
     }
 
     componentDidMount() {
-        let ws = Blockly.inject('blocklyDiv',
+        this.workspace = Blockly.inject('blocklyDiv',
             { toolbox: document.getElementById('toolbox')! });
-        let restricted_list = this.props.restrictedBlockList;
-        this.updateToolbox(ws, restricted_list);
+        this.updateToolbox(this.workspace);
     }
     componentDidUpdate(){
-        let ws = Blockly.inject('blocklyDiv',
-        { toolbox: document.getElementById('toolbox')! });
-        let restricted_list = this.props.restrictedBlockList;
-        this.updateToolbox(ws, restricted_list);
+        if (this.workspace) {
+            this.updateToolbox(this.workspace);
+        }
     }
 
-    updateToolbox(workspace: Blockly.WorkspaceSvg, restricted_list: Array<String>) {
+    updateToolbox(workspace: Blockly.WorkspaceSvg) {
         let toolXML = '<xml id="toolbox" style="display: none">';
-        //disable_move = true;
-        // add each block from COMMANDS to the toolbox
-        console.log("list in updateTB: " + restricted_list);
-        _.forEach(COMMANDS, function (data, _name) {
+        
+        _.forEach(COMMANDS, (data, name) => {
             //console.log(restricted_list);
-            console.log(restricted_list.includes("repeat"));
-            if ( !restricted_list.includes(_name) ) {
+            //console.log(restricted_list.includes("repeat"));
+            if ( !_.includes(this.props.puzzle?.library.restricted, name)) {
                 toolXML += data.block;
             }
         });
         
         toolXML += '</xml>';
-        console.log(toolXML);
+        //console.log(toolXML);
         
         workspace.updateToolbox(toolXML);
 

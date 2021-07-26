@@ -12,7 +12,7 @@ import Slider from './Slider';
 type Constants = {
     WOBBLE_PERIOD: number,
     WOBBLE_MAGNITUDE: number,
-    TRANSLATION_SMOOTHNESS: number, // The relative speed at which the camera will catch up.
+    TRANSLATION_SMOOTHNESS: number, // relative speed at which the camera will catch up.
     ROTATION_SMOOTHNESS: number, // The relative speed at which the camera will catch up.
     MAX_ANIMATION_TIME: number, // if animation would take longer than this, take this time and then just sit idle
     MIN_ANIMATION_TIME: number, // if animation would take less than this, just don't bother animating anything
@@ -301,7 +301,6 @@ export default class Display extends React.Component<GameState> {
 
     // Remove cube
     removeCube(optMaps: OptimizationMaps, cube: THREE.Mesh<THREE.BufferGeometry>, color: string) {
-        console.log("removeCube Called");
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
             this.mainStuff.scene.remove(cube); // Remove from scene
             if (cube !== undefined) {
@@ -338,16 +337,9 @@ export default class Display extends React.Component<GameState> {
             if (this.clockStuff.time > this.dragAnimation.animPerSec) { // If the total time is greater than the time you want...
                 this.props.simulator.execute_to_command(); // The command is executed
                 this.clockStuff.time = 0; // Reset time to 0
-                console.log("checking if simulator finished");
                 if (this.props.simulator.is_finished()) {
-                    console.log("simulator finished, calling check_completed");
-                    console.log("puzzle: " + this.props.puzzle);
                     this.props.puzzle?.check_completed(this.props);
                 }
-                else{
-                    console.log("simulator not finished");
-                }
-                console.log("done");
             }
         }
     }
@@ -373,7 +365,6 @@ export default class Display extends React.Component<GameState> {
         
         // Placing puzzle cubes!
         if (this.props.puzzle && this.puzzleInit !== this.props.puzzle.name) { // If the state has a puzzle and it hasn't been initielized yet
-            console.log("state has puzzle, has not been initialized");
             this.props.puzzle.goals.forEach((goal: GoalInfo) => { // Iterate through each cube that should be placed for the puzzle
                 if (goal.kind === GoalInfoType.AddCube) { // If goal.kind is AddCube...
                     if (goal.position) { //  And if there is a goal.position...
@@ -387,12 +378,16 @@ export default class Display extends React.Component<GameState> {
                 }
             });
             this.puzzleInit = this.props.puzzle.name; // Set puzzleInit to true to show that puzzle cubes have been placed
+        
         } else if (!this.props.puzzle && this.puzzleInit !== ""){ // If there is no longer a puzzle in the state but the puzzle has been initialized
-            this.goalOptMaps.filled.forEach((filled: boolean, position: THREE.Vector3) => { // For each cube.position in the targetFilled map
-                let targetCube = new THREE.Mesh(this.geometries.goalGeo, this.geometries.cubeGoalMat);
-                targetCube.position.copy(position);
-                this.removeCube(this.goalOptMaps, targetCube, "targetColor"); // Remove the puzzle cube from the map
-            });
+            let map = this.goalOptMaps.filled;
+            if ( Object.entries(map).length !== 0){
+                this.goalOptMaps.filled.forEach((filled: boolean, position: THREE.Vector3) => { // For each cube.position in the targetFilled map
+                    let targetCube = new THREE.Mesh(this.geometries.goalGeo, this.geometries.cubeGoalMat);
+                    targetCube.position.copy(position);
+                    this.removeCube(this.goalOptMaps, targetCube, "targetColor"); // Remove the puzzle cube from the map
+                });
+            }
         }
 
         // This for loop checks for cubes that are no longer in the cube_map and should be removed

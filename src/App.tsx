@@ -22,7 +22,7 @@ export type GameState = {
   loading: boolean
 }
 
-const puzzle_sequence = ["puzzles/tutorial2.json"];
+const puzzle_sequence = ["puzzles/tutorial2.json", "puzzles/tutorial1.json", "puzzles/tutorial3.json"];
 // "puzzles/tutorial2.json", "puzzles/tutorial3.json"
 let puzzle_index = 0;
 
@@ -129,23 +129,8 @@ class App extends React.Component<{}, GameState> {
 
   }
 
-  // // each time when this is called, an extra block should reveal at the toolbox
-  // update_restricted_list() {
-  //   if(this.state.restrictedBlockList.length > 0) {
-  //     this.setState({
-  //       restrictedBlockList: this.state.restrictedBlockList.slice(1)
-  //     });
-  //     //console.log(this.state.restrictedBlockList);
-  //   }
-  // }
-
   render() {
     
-    
-    // return (
-    //   <div className="App">
-    //     {/* Navigation bar */}
-    //     {/* Code area
     if (this.state.loading) {
       return (
         <h1>Loading...</h1>

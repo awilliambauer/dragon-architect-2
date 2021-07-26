@@ -2,7 +2,7 @@ import _ from "lodash"
 import * as THREE from "three"
 import { GameState } from "./App"
 import parse, { SyntaxError } from "./Parser"
-import run, { SimulatorState } from "./Simulator"
+import run from "./Simulator"
 import { mapHasVector3 } from "./Util"
 import WorldState from "./WorldState"
 
@@ -115,6 +115,19 @@ export default class PuzzleState {
     start_world: WorldState = new WorldState()
     goals: GoalInfo[] = []
     instructions: string = ""
+    library: LibrarySpec = {
+        restricted: [],
+        required: [],
+        granted: []
+    }
+    name: string = ""
+    win_callback: () => void = () => {}
+
+    check_completed(gamestate: GameState) {
+        if (this.is_complete(gamestate)) {
+            this.win_callback();
+        }
+    }
 
     is_complete(gamestate: GameState): boolean {
         // return true if the current game state matches the goals
@@ -128,14 +141,13 @@ export default class PuzzleState {
                     RemoveCube: check that this cube does not exist
                     DragonPos: check dragon's position
         */
-
-        if(gamestate.simulator.sim_state !== SimulatorState.Finished){
-            console.log("sim_state != Finished");
+        if (!gamestate.simulator.is_finished()) {
             return false;
         }
 
         let posRequired;
         for (let goal of this.goals) {
+            //console.log("goal.kind: " + goal.kind);
             switch (goal.kind) {
                 case GoalInfoType.RunOnly:
                     return true;
@@ -153,15 +165,16 @@ export default class PuzzleState {
 
                 case GoalInfoType.DragonPos:
                     let dragonPosRequired = goal.position as THREE.Vector3;
-                    return gamestate.simulator.world.dragon_pos.equals(dragonPosRequired);
+                    return gamestate.world.dragon_pos.equals(dragonPosRequired);
 
             }
         }
         return false;
     }
 
-    static make_from_file(filename: string) {
+    static make_from_file(filename: string, win_callback: () => void) {
         let state = new PuzzleState();
+        state.win_callback = win_callback;
 
         /// read in starting program from file
         let fetchProgram = (data: PuzzleSpec) => {
@@ -233,6 +246,8 @@ export default class PuzzleState {
                 .then(response => { return response.json() })
                 .then((data: PuzzleSpec) => {
                     state.start_world = make_world_from_spec(data.world);
+                    state.library = data.library;
+                    state.name = data.name;
                     return data;
                 })
                 .then(fetchProgram)
