@@ -661,6 +661,10 @@ export class Parser {
     }
 }
 
+export const EMPTY_PROGRAM = {
+    body: []
+}
+
 export default function parse(program: string): Program | SyntaxError {
     const lexer = new Lexer(program);
     const tokens = lexer.lex_all();
