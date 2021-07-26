@@ -381,7 +381,7 @@ export default class Display extends React.Component<GameState> {
         
         } else if (!this.props.puzzle && this.puzzleInit !== ""){ // If there is no longer a puzzle in the state but the puzzle has been initialized
             let map = this.goalOptMaps.filled;
-            if ( Object.entries(map).length !== 0){
+            if (Object.entries(map).length !== 0) {
                 this.goalOptMaps.filled.forEach((filled: boolean, position: THREE.Vector3) => { // For each cube.position in the targetFilled map
                     let targetCube = new THREE.Mesh(this.geometries.goalGeo, this.geometries.cubeGoalMat);
                     targetCube.position.copy(position);
