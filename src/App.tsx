@@ -5,11 +5,12 @@ import Display from './Display';
 import WorldState from './WorldState';
 import run, { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
 import parse, {EMPTY_PROGRAM, Program, SyntaxError } from './Parser';
-import PuzzleState from './PuzzleState';
+import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
 import { Run } from './RunButton';
 import _ from 'lodash';
 import Slider from './Slider';
 import { TEXT_CHANGECASE_TOOLTIP } from 'blockly/msg/en';
+import PuzzleManager from './PuzzleManager';
 // import * as GOAL from "../public/puzzles/test.json"
 
 export type GameState = {
@@ -27,10 +28,13 @@ const puzzle_sequence = ["puzzles/tutorial2.json", "puzzles/tutorial1.json", "pu
 let puzzle_index = 0;
 
 class App extends React.Component<{}, GameState> {
+  puzzle_manager: PuzzleManager
 
   constructor(props: {}) {
     super(props);
     load_stdlib();
+    this.puzzle_manager = new PuzzleManager();
+    this.puzzle_manager.initialize();
 
 //     // set up initial state, will get overwritten in componentDidMount
 //     let world = new WorldState();
@@ -67,7 +71,9 @@ class App extends React.Component<{}, GameState> {
           world: p.start_world,
           puzzle: p,
           simulator: sim,
-          loading: false
+          loading: false,
+          reset: false,
+          lastSavedWorld: undefined
         });
       }
     });
@@ -79,8 +85,10 @@ class App extends React.Component<{}, GameState> {
     let sim = new IncrementalSimulator(world, parse('') as Program);
     this.setState({
       world: world,
-      puzzle: undefined,
-      simulator: sim
+      puzzle: SANDBOX_STATE,
+      simulator: sim,
+      reset: false,
+      lastSavedWorld: undefined
     })
   }
 
@@ -119,7 +127,6 @@ class App extends React.Component<{}, GameState> {
         world: this.state.lastSavedWorld!,
         lastSavedWorld: undefined
       }, () => { this.state.world.mark_dirty() })
-      
     }
 
     //switch the button 
@@ -138,6 +145,8 @@ class App extends React.Component<{}, GameState> {
     } else {
       return (
         <div className="App">
+          {/* <PackSelect manager={this.puzzle_manager}/>
+          <PuzzleSelect manager={this.puzzle_manager}/> */}
           {/* Navigation bar*/}
           {/* Code area}
             Blockly

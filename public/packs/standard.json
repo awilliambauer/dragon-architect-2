@@ -1,0 +1,24 @@
+{
+    "name": "standard",
+    "seqs": [
+        {
+            "name": "Tutorial Puzzles",
+            "tag": "tutorial",
+            "puzzles": [
+                "tutorial1",
+                "tutorial2",
+                "tutorial3"
+            ],
+            "connections": [
+                {
+                    "start": "tutorial1",
+                    "dest": "tutorial2"
+                },
+                {
+                    "start": "tutorial2",
+                    "dest": "tutorial3"
+                }
+            ]
+        }
+    ]
+}

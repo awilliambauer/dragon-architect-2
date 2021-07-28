@@ -129,7 +129,7 @@ export default class Display extends React.Component<GameState> {
         this.constantValues = {
             WOBBLE_PERIOD: 4,
             WOBBLE_MAGNITUDE: 0.05,
-            TRANSLATION_SMOOTHNESS: 1.5, 
+            TRANSLATION_SMOOTHNESS: 1.5,
             ROTATION_SMOOTHNESS: 5.0,
             MAX_ANIMATION_TIME: .4,
             MIN_ANIMATION_TIME: 0.1,
@@ -391,22 +391,16 @@ export default class Display extends React.Component<GameState> {
         if (this.dragAnimation.animTime < this.constantValues.MIN_ANIMATION_TIME) { // If animTime is lower than min animTime...
             this.dragAnimation.animStatus = Animation.animating; // ...set Animation enum to animating
         }
-        
+
         // Placing puzzle cubes!
         if (this.props.puzzle && this.puzzleInit !== this.props.puzzle.name) { // If the state has a puzzle and it hasn't been initielized yet
-            
+
             // First remove goal cubes already placed...
-            let map = this.goalOptMaps.filled;
-            // console.log("Size of the filled map!: " + this.goalOptMaps.filled.size);
-            // console.log("Size of the filled map (Object......)!: " + Object.entries(map).length);
-            // if (this.goalOptMaps.filled.size !== 0) { 
-            if (Object.entries(map).length !== 0) {
-                this.goalOptMaps.filled.forEach((cube: THREE.Mesh, position: THREE.Vector3) => { // For each cube.position in the targetFilled map
-                    this.removePuzzleCube(this.goalOptMaps, cube, `#${this.geometries.cubeGoalMat.color}`); // Remove the puzzle cube from the map
-                    this.removePuzzleCube(this.goalOptMaps, cube, `#${this.geometries.dragonGoalMat.color}`); // Remove dragon puzzle cubes
-                });
-            }
-            
+            this.goalOptMaps.filled.forEach((cube: THREE.Mesh, position: THREE.Vector3) => { // For each cube.position in the targetFilled map
+                this.removePuzzleCube(this.goalOptMaps, cube, `#${this.geometries.cubeGoalMat.color.getHexString()}`); // Remove the puzzle cube from the map
+                this.removePuzzleCube(this.goalOptMaps, cube, `#${this.geometries.dragonGoalMat.color.getHexString()}`); // Remove dragon puzzle cubes
+            });
+
             // ...then start adding in the goal cubes depending on goal type
             this.props.puzzle.goals.forEach((goal: GoalInfo) => { // Iterate through each cube that should be placed for the puzzle
                 if (goal.kind === GoalInfoType.AddCube) { // If goal.kind is AddCube...
@@ -421,7 +415,7 @@ export default class Display extends React.Component<GameState> {
                 }
             });
             this.puzzleInit = this.props.puzzle.name; // Set puzzleInit to true to show that puzzle cubes have been placed
-        
+
         }
 
         // This for loop checks for cubes that are no longer in the cube_map and should be removed
@@ -561,7 +555,7 @@ export default class Display extends React.Component<GameState> {
     render() {
         return (
             <div id="three-js" ref={this.divRef}>
-                <div id="game-controls-bar-top" className="game-controls-bar puzzleModeUI sandboxModeUI" style={{display: "flex"}}>
+                <div id="game-controls-bar-top" className="game-controls-bar puzzleModeUI sandboxModeUI" style={{ display: "flex" }}>
                     <CameraTiltDown onClickTiltDown={this.tiltCameraDown} />
                     <CameraTiltUp onClickTiltUp={this.tiltCameraUp} />
                     <CameraRotateRight onClickRotateRight={this.rotateCameraRight} />

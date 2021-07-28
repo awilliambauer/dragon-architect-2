@@ -259,3 +259,5 @@ export default class PuzzleState {
         });
     }
 }
+
+export let SANDBOX_STATE = new PuzzleState();
