@@ -21,7 +21,7 @@ export default class Slider extends React.Component<SliderVals> {
 
     render() {
         return (
-            <div style={{color: "red", direction: "rtl"}}>
+            <div style={{color: "black", direction: "rtl"}}>
                 <h1>Slider</h1>
                 <input type="range" min={0.01} max={2} step={0.01} className="slider" onChange={this.props.onChange} />
             </div>
