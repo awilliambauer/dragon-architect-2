@@ -1,5 +1,5 @@
 // Overview: This file contains code that displays the dragon and cubes
-import React, { ChangeEvent } from 'react';
+import React, { ButtonHTMLAttributes, ChangeEvent, DetailedHTMLProps } from 'react';
 import * as THREE from 'three';
 import { GameState } from './App';
 import { Material } from 'three';
@@ -7,6 +7,7 @@ import { GoalInfo, GoalInfoType } from './PuzzleState';
 import { mapHasVector3 } from './Util';
 import Blockly from 'blockly';
 import Slider from './Slider';
+import { CameraZoomIn, CameraZoomOut, CameraRotateRight, CameraRotateLeft, CameraTiltDown, CameraTiltUp } from './CameraPositioning';
 
 // All constant variables
 type Constants = {
@@ -25,7 +26,6 @@ type StorageMaps = {
     cubes: Map<string, THREE.Mesh[]>, // Map that holds all placed cubes categorized by color
     goalCubes: Map<string, THREE.Mesh[]>, // Map that holds all placed goal cubes (or puzzle cubes) categorized by color
     cubeMats: Map<string, THREE.MeshLambertMaterial>, // List containing the materials of each cube "in order" of color
-    goalCubeMats: Map<string, THREE.MeshLambertMaterial>
 }
 
 // All variables that store information about the camera
@@ -33,7 +33,9 @@ type CameraPos = {
     relativeCamPos: THREE.Vector3,
     // Offsets are needed to make dragon appear above the placement of the cubes, and to appear in the center of the plane
     dragonOffset: THREE.Vector3, // How much the dragon is offSet from center of position
-    cubeOffset: THREE.Vector3 // How much cubes are offset from center of position
+    cubeOffset: THREE.Vector3, // How much cubes are offset from center of position
+    relativeCamPosMag: number,
+    upVector: THREE.Vector3
 }
 
 // The camera, scene, and renderer variables
@@ -94,7 +96,7 @@ type DragonAnimation = {
 // This type holds the available and filled optimization maps
 type OptimizationMaps = {
     available: Map<string, THREE.Mesh[]>, // Map that contains all cubes that don't currently have positions
-    filled: Map<THREE.Vector3, boolean>// Map that contains all positions on the display that are currently filled
+    filled: Map<THREE.Vector3, THREE.Mesh>// Map that contains all positions on the display that are currently filled
 }
 
 // This enum represents what stage the animation is at (waiting, animating, done, null) and is used by the animStatus variable
@@ -129,7 +131,7 @@ export default class Display extends React.Component<GameState> {
             WOBBLE_MAGNITUDE: 0.05,
             TRANSLATION_SMOOTHNESS: 1.5, 
             ROTATION_SMOOTHNESS: 5.0,
-            MAX_ANIMATION_TIME: 0.2,
+            MAX_ANIMATION_TIME: .4,
             MIN_ANIMATION_TIME: 0.1,
             loader: new THREE.TextureLoader(),
         }
@@ -138,8 +140,7 @@ export default class Display extends React.Component<GameState> {
             cubeColors: Blockly.FieldColour.COLOURS,
             cubes: new Map<string, THREE.Mesh[]>(),
             goalCubes: new Map<string, THREE.Mesh[]>(),
-            cubeMats: new Map<string, THREE.MeshLambertMaterial>(),
-            goalCubeMats: new Map<string, THREE.MeshLambertMaterial>()
+            cubeMats: new Map<string, THREE.MeshLambertMaterial>()
         }
 
         this.cameraPos = {
@@ -147,7 +148,9 @@ export default class Display extends React.Component<GameState> {
             relativeCamPos: new THREE.Vector3(-15, 0, 12),
             // Offsets are needed to make dragon appear above the placement of the cubes, and to appear in the center of the plane
             dragonOffset: new THREE.Vector3(0.5, 0.5, 1.5), // How much the dragon is offSet from center of position
-            cubeOffset: new THREE.Vector3(0.5, 0.5, 0.5) // How much cubes are offset from center of position
+            cubeOffset: new THREE.Vector3(0.5, 0.5, 0.5), // How much cubes are offset from center of position
+            relativeCamPosMag: 0,
+            upVector: new THREE.Vector3(0, 0, 1)
         }
 
         this.mainStuff = {
@@ -220,13 +223,13 @@ export default class Display extends React.Component<GameState> {
         // OptimizationMaps for cubes that the dragon places
         this.cubeOptMaps = {
             available: new Map<string, THREE.Mesh[]>(),
-            filled: new Map<THREE.Vector3, boolean>()
+            filled: new Map<THREE.Vector3, THREE.Mesh>()
         }
 
         // OptimizationMaps for goal cubes defined by puzzleState
         this.goalOptMaps = {
             available: new Map<string, THREE.Mesh[]>(),
-            filled: new Map<THREE.Vector3, boolean>()
+            filled: new Map<THREE.Vector3, THREE.Mesh>()
         }
 
         // This is the texture of the cubes that are placed by the dragon
@@ -244,6 +247,8 @@ export default class Display extends React.Component<GameState> {
 
         // Set puzzle initialization = false. This means that a puzzle has not been drawn on the display
         this.puzzleInit = "";
+
+        this.cameraPos.relativeCamPosMag = this.cameraPos.relativeCamPos.length() - 0.5;
 
         // Setting up light
         this.geometries.light.position.set(-0.56, -0.32, 0.77);
@@ -275,6 +280,13 @@ export default class Display extends React.Component<GameState> {
         let cubeLoader = new THREE.CubeTextureLoader();
         this.mainStuff.scene.background = cubeLoader.load(backgroundTexture);
 
+        // Initialize available maps for cubes, goal cubes, and dragon goal cubes
+        this.storageMaps.cubeColors.forEach((color: string) => {
+            this.cubeOptMaps.available.set(color, []); // Set each color in available map to an empty array
+        });
+        this.goalOptMaps.available.set(`#${this.geometries.cubeGoalMat.color.getHexString()}`, []);
+        this.goalOptMaps.available.set(`#${this.geometries.dragonGoalMat.color.getHexString()}`, []);
+
         // Craete divRed
         this.divRef = React.createRef();
     }
@@ -299,6 +311,11 @@ export default class Display extends React.Component<GameState> {
         this.geometries.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
     };
 
+    // Turns degrees to radians (useful for camera rotations and tilts)
+    degreesToRadians(deg: number) {
+        return deg / 180 * Math.PI;
+    };
+
     // Remove cube
     removeCube(optMaps: OptimizationMaps, cube: THREE.Mesh<THREE.BufferGeometry>, color: string) {
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
@@ -307,7 +324,19 @@ export default class Display extends React.Component<GameState> {
                 optMaps.available.get(color)!.push(cube);
             }
         } else { // If the cube has a position property
-            optMaps.filled.set(cube.position, true); // Set the filled object at that cube object to true
+            optMaps.filled.set(cube.position, cube); // Set the filled object at that cube object to true
+        }
+    }
+
+    // Remove cube
+    removePuzzleCube(optMaps: OptimizationMaps, cube: THREE.Mesh<THREE.BufferGeometry>, color: string) {
+        if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
+            this.mainStuff.scene.remove(cube); // Remove from scene
+            if (cube !== undefined) {
+                optMaps.available.get(color)!.push(cube);
+            }
+        } else { // If the cube has a position property
+            optMaps.filled.set(cube.position, cube); // Set the filled object at that cube object to true
         }
     }
 
@@ -319,11 +348,11 @@ export default class Display extends React.Component<GameState> {
                 existing_cube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
                 this.mainStuff.scene.add(existing_cube);
             } else { // If there isn't a cube mesh available....
-                let new_cube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, material) // ...Create a new cube mesh
-                new_cube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
-                typeOfCube.get(`#${material.color.getHexString()}`)!.push(new_cube);
-                optMaps.filled.set(new_cube.position, true);
-                this.mainStuff.scene.add(new_cube);
+                let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, material) // ...Create a new cube mesh
+                newCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
+                typeOfCube.get(`#${material.color.getHexString()}`)!.push(newCube);
+                optMaps.filled.set(newCube.position, newCube);
+                this.mainStuff.scene.add(newCube);
             }
         }
     }
@@ -365,6 +394,20 @@ export default class Display extends React.Component<GameState> {
         
         // Placing puzzle cubes!
         if (this.props.puzzle && this.puzzleInit !== this.props.puzzle.name) { // If the state has a puzzle and it hasn't been initielized yet
+            
+            // First remove goal cubes already placed...
+            let map = this.goalOptMaps.filled;
+            // console.log("Size of the filled map!: " + this.goalOptMaps.filled.size);
+            // console.log("Size of the filled map (Object......)!: " + Object.entries(map).length);
+            // if (this.goalOptMaps.filled.size !== 0) { 
+            if (Object.entries(map).length !== 0) {
+                this.goalOptMaps.filled.forEach((cube: THREE.Mesh, position: THREE.Vector3) => { // For each cube.position in the targetFilled map
+                    this.removePuzzleCube(this.goalOptMaps, cube, `#${this.geometries.cubeGoalMat.color}`); // Remove the puzzle cube from the map
+                    this.removePuzzleCube(this.goalOptMaps, cube, `#${this.geometries.dragonGoalMat.color}`); // Remove dragon puzzle cubes
+                });
+            }
+            
+            // ...then start adding in the goal cubes depending on goal type
             this.props.puzzle.goals.forEach((goal: GoalInfo) => { // Iterate through each cube that should be placed for the puzzle
                 if (goal.kind === GoalInfoType.AddCube) { // If goal.kind is AddCube...
                     if (goal.position) { //  And if there is a goal.position...
@@ -379,20 +422,10 @@ export default class Display extends React.Component<GameState> {
             });
             this.puzzleInit = this.props.puzzle.name; // Set puzzleInit to true to show that puzzle cubes have been placed
         
-        } else if (!this.props.puzzle && this.puzzleInit !== ""){ // If there is no longer a puzzle in the state but the puzzle has been initialized
-            let map = this.goalOptMaps.filled;
-            if (Object.entries(map).length !== 0) {
-                this.goalOptMaps.filled.forEach((filled: boolean, position: THREE.Vector3) => { // For each cube.position in the targetFilled map
-                    let targetCube = new THREE.Mesh(this.geometries.goalGeo, this.geometries.cubeGoalMat);
-                    targetCube.position.copy(position);
-                    this.removeCube(this.goalOptMaps, targetCube, "targetColor"); // Remove the puzzle cube from the map
-                });
-            }
         }
 
         // This for loop checks for cubes that are no longer in the cube_map and should be removed
         this.storageMaps.cubeColors.forEach((color: string) => { // Iterate over each color
-            this.cubeOptMaps.available.set(color, []); // Set each color in available map to an empty array
             this.storageMaps.cubes.get(color)!.forEach((cube) => { // For each cube (mesh with material and position) in the specified color
                 this.removeCube(this.cubeOptMaps, cube, color);
             });
@@ -453,7 +486,6 @@ export default class Display extends React.Component<GameState> {
                     this.geometries.dragon.position.copy(this.finalValues.finalDragPos); // End the animation, send dragon to final positions
                     this.geometries.dragon.quaternion.copy(this.finalValues.finalDragQ);
                     this.dragAnimation.animStatus = Animation.done;
-                    this.dragAnimation.animTime = 0.1;
                 }
             }
 
@@ -474,15 +506,70 @@ export default class Display extends React.Component<GameState> {
         animate();
     }
 
+    // This method is passed into the Slider file. Each time it's called, the animPerSec changes
     handleSlideChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         // use value from event to set animations per second
-        this.dragAnimation.animPerSec = parseFloat(e.target.value); // "+" sign makes this value a number
+        this.dragAnimation.animPerSec = parseFloat(e.target.value);
+    }
+
+    // ZoomIn method passed to cameraPositioning file. Manipulates relativeCamPos by .8
+    zoomInCamera = (e: React.MouseEvent<HTMLElement>) => {
+        if (this.cameraPos.relativeCamPosMag > 5) { // Ensures that the camera doesn't zoom in too far
+            this.cameraPos.relativeCamPos.multiplyScalar(.8);
+            this.cameraPos.relativeCamPosMag = this.cameraPos.relativeCamPos.length() - 0.5; // Updates realtiveCamPosMag
+        }
+    }
+
+    // ZoomOut method passed to cameraPositioning file. Manipulates relativeCamPos by 1.2
+    zoomOutCamera = (e: React.MouseEvent<HTMLElement>) => {
+        if (this.cameraPos.relativeCamPosMag < 100) { // Ensures the camera doesn't zoom out too far
+            this.cameraPos.relativeCamPos.multiplyScalar(1.2);
+            this.cameraPos.relativeCamPosMag = this.cameraPos.relativeCamPos.length() - 0.5; // Updates realtiveCamPosMag
+        }
+    }
+
+    // RotateRight method passed into cameraPositioning
+    rotateCameraRight = (e: React.MouseEvent<HTMLElement>) => {
+        let q = new THREE.Quaternion();
+        q.setFromAxisAngle(this.cameraPos.upVector, this.degreesToRadians(10)); // Create now quaternion based off of current dragon pos and 10 degrees
+        this.cameraPos.relativeCamPos.applyQuaternion(q);
+    }
+
+    // RotateLeft method passed into cameraPositioning
+    rotateCameraLeft = (e: React.MouseEvent<HTMLElement>) => {
+        let q = new THREE.Quaternion();
+        q.setFromAxisAngle(this.cameraPos.upVector, this.degreesToRadians(-10)); // Create now quaternion based off of current dragon pos and -10 degrees
+        this.cameraPos.relativeCamPos.applyQuaternion(q);
+    }
+
+    // TiltUp method passed into cameraPositioning
+    tiltCameraUp = (e: React.MouseEvent<HTMLElement>) => {
+        let q = new THREE.Quaternion();
+        // Sets the new quaternion to the current camPos and crosses it with the "upVector" (0, 0, 1)
+        q.setFromAxisAngle(this.cameraPos.relativeCamPos.clone().cross(this.cameraPos.upVector).normalize(), this.degreesToRadians(10));
+        this.cameraPos.relativeCamPos.applyQuaternion(q);
+    }
+
+    // TiltDown method passed into cameraPositioning
+    tiltCameraDown = (e: React.MouseEvent<HTMLElement>) => {
+        let q = new THREE.Quaternion();
+        // Sets the new quaternion to the current camPos and crosses it with the "upVector" (0, 0, 1)
+        q.setFromAxisAngle(this.cameraPos.relativeCamPos.clone().cross(this.cameraPos.upVector).normalize(), this.degreesToRadians(-10));
+        this.cameraPos.relativeCamPos.applyQuaternion(q);
     }
 
     render() {
         return (
             <div id="three-js" ref={this.divRef}>
-                <Slider onChange={this.handleSlideChange} />
+                <div id="game-controls-bar-top" className="game-controls-bar puzzleModeUI sandboxModeUI" style={{display: "flex"}}>
+                    <CameraTiltDown onClickTiltDown={this.tiltCameraDown} />
+                    <CameraTiltUp onClickTiltUp={this.tiltCameraUp} />
+                    <CameraRotateRight onClickRotateRight={this.rotateCameraRight} />
+                    <CameraRotateLeft onClickRotateLeft={this.rotateCameraLeft} />
+                    <CameraZoomIn onClickZoomIn={this.zoomInCamera} />
+                    <CameraZoomOut onClickZoomOut={this.zoomOutCamera} />
+                    <Slider onChange={this.handleSlideChange} />
+                </div>
             </div>
         );
     }
