@@ -4,7 +4,7 @@ import BlocklyComp, { blocks_to_text } from './BlocklyComp';
 import Display from './Display';
 import WorldState from './WorldState';
 import run, { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
-import parse, {EMPTY_PROGRAM, Program, SyntaxError } from './Parser';
+import parse, { EMPTY_PROGRAM, Program, SyntaxError } from './Parser';
 import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
 import { Run } from './RunButton';
 import _ from 'lodash';
@@ -36,15 +36,15 @@ class App extends React.Component<{}, GameState> {
     this.puzzle_manager = new PuzzleManager();
     this.puzzle_manager.initialize();
 
-//     // set up initial state, will get overwritten in componentDidMount
-//     let world = new WorldState();
-//     let defaultProgram = parse(`
-// repeat 4 times
-//     repeat 2 times
-//       Forward(4)
-//     PlaceCube(1)
-//     Right()
-// `) as Program;
+    //     // set up initial state, will get overwritten in componentDidMount
+    //     let world = new WorldState();
+    //     let defaultProgram = parse(`
+    // repeat 4 times
+    //     repeat 2 times
+    //       Forward(4)
+    //     PlaceCube(1)
+    //     Right()
+    // `) as Program;
     this.state = {
       program: EMPTY_PROGRAM,
       reset: false,
@@ -104,7 +104,7 @@ class App extends React.Component<{}, GameState> {
   componentDidMount() {
     //load the first puzzle once the page has loaded
     this.load_puzzle(puzzle_sequence[puzzle_index]);
-    
+
   }
 
   run_program() {
@@ -137,7 +137,7 @@ class App extends React.Component<{}, GameState> {
   }
 
   render() {
-    
+
     if (this.state.loading) {
       return (
         <h1>Loading...</h1>
@@ -145,7 +145,7 @@ class App extends React.Component<{}, GameState> {
     } else {
       return (
         <div className="App">
-          
+
           {/* <PackSelect manager={this.puzzle_manager}/>
           <PuzzleSelect manager={this.puzzle_manager}/> */}
           {/* Navigation bar*/}
@@ -153,18 +153,18 @@ class App extends React.Component<{}, GameState> {
             Blockly
             Control buttons  */}
           <Run reset={this.state.reset} onClick={() => { this.run_program() }} />
-          {/* <button onClick={() => this.change_state()} */}
-          {/* <div id="slider">
-            <Slider {...this.state} />
-          </div> */}
-          <p typeof="instructions">
-          {this.state.puzzle?.instructions as string}
-          </p>
           <div id="main-view-code">
             <BlocklyComp {...this.state} />
           </div>
           <div id="main-view-game">
             <Display {...this.state} />
+            <div id="instructions-display" className="goal-section instructions">
+              <div id="instructions-goal">
+                {this.state.puzzle &&
+                  <p dangerouslySetInnerHTML={{ __html: this.state.puzzle?.instructions }} />
+                }
+              </div>
+            </div>
           </div>
           {/* Game area
               Camera controls

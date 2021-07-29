@@ -6,6 +6,66 @@ import run from "./Simulator"
 import { mapHasVector3 } from "./Util"
 import WorldState from "./WorldState"
 
+const IMG_FILE_MAP = new Map([
+    ["forward", "media/forward.png"],
+    ["set", "media/blockSvgs/set.svg"],
+    ["left", "media/blockSvgs/left.svg"],
+    ["right", "media/right.png"],
+    ["placecube", "media/placecube.png"],
+    ["removecube", "media/removecube.png"],
+    ["variable", "media/variable.png"],
+    ["rotate", "media/rotate.png"],
+    ["scroll", "media/scroll.png"],
+    ["square", "media/procsquare.png"],
+    ["x", "media/x.png"],
+    ["forwardx", "media/forwardx.png"],
+    ["get", "media/get.png"],
+    ["up", "media/up.png"],
+    ["down", "media/down.png"],
+    ["repeat", "media/repeat.png"],
+    ["repeat4", "media/blockSvgs/repeat4.svg"],
+    ["repeat5", "media/blockSvgs/repeat5.svg"],
+    ["repeat9", "media/blockSvgs/repeat9.svg"],
+    ["SquareProc", "media/blockSvgs/SquareProc.svg"],
+    ["upcube", "media/upcube.png"],
+    ["FixedCastleProc", "media/blockSvgs/FixedCastleProc.svg"],
+    ["FixedTowerProc", "media/blockSvgs/FixedTowerProc.svg"],
+    ["FixedWallProc", "media/blockSvgs/FixedWallProc.svg"],
+    ["go", "media/run.png"],
+    ["rotateCW", "media/rotateCWButton.png"],
+    ["rotateCCW", "media/rotateCCWButton.png"],
+    ["camera", "media/cameraControls.png"],
+    ["learn", "media/learnButton.png"],
+    ["workshop", "media/workshopButton.png"],
+    ["clear", "media/clearSandboxButton.png"],
+    ["speedSlider", "media/speedSlider.png"],
+    ["done", "media/doneButton.png"],
+    ["pinkboxGround", "media/pinkboxGround.png"],
+    ["pinkboxUp", "media/pinkboxUp.png"],
+    ["castle", "media/blockSvgs/castle.svg"],
+    ["wall", "media/blockSvgs/wall.svg"],
+    ["tower", "media/blockSvgs/tower.svg"],
+    ["towerlayer", "media/blockSvgs/towerlayer.svg"],
+    ["towertop", "media/blockSvgs/towertop.svg"],
+    ["wallsheet", "media/blockSvgs/wallsheet.svg"],
+    ["walltop", "media/blockSvgs/walltop.svg"],
+    ["pillarProc", "media/blockSvgs/pillarProc.svg"],
+    ["procDef", "media/blockSvgs/procDef.svg"],
+    ["procedure", "media/proc.png"],
+    ["bridge", "media/bridge.png"],
+    ["cube", "media/cube.png"],
+    ["purple_cube", "media/purple_cube.png"],
+    ["menu_btn", "media/menu_btn.png"]]);
+
+// replace each word inside {} with the corresponding html produced by makeImgHtml (if applicable)
+function process_instruction_string(str: string) {
+    return "Goal: " + str.replace(/{(\w+)}/g, (match, id) => {
+        return IMG_FILE_MAP.has(id)
+            ? `<object class="instructions-img" data="${IMG_FILE_MAP.get(id)}"></object>`
+            : match;
+    });
+}
+
 export enum GoalInfoType {
     DragonPos = "position",  // goals only care about dragon position, not direction
     AddCube = "addcube",
@@ -121,7 +181,7 @@ export default class PuzzleState {
         granted: []
     }
     name: string = ""
-    win_callback: () => void = () => {}
+    win_callback: () => void = () => { }
 
     check_completed(gamestate: GameState) {
         if (this.is_complete(gamestate)) {
@@ -176,18 +236,6 @@ export default class PuzzleState {
         let state = new PuzzleState();
         state.win_callback = win_callback;
 
-        let fetchInstruction = (data: PuzzleSpec) => {
-            return new Promise<PuzzleSpec>((resolve, reject) => {
-                if (data.program) {
-                    state.instructions = data.instructions;
-                    //console.log("instructions changed");
-                    resolve(data);
-                }
-                else {
-                    resolve(data);
-                }
-            });
-        }
         /// read in starting program from file
         let fetchProgram = (data: PuzzleSpec) => {
             return new Promise<PuzzleSpec>((resolve, reject) => {
@@ -252,7 +300,6 @@ export default class PuzzleState {
         }
 
         return new Promise<PuzzleState>(resolve => {
-            // TODO: library and instructions
             // TODO: puzzle names/ids will matter once puzzle packs/unlocks are a thing                   
             fetch(filename)
                 .then(response => { return response.json() })
@@ -260,11 +307,11 @@ export default class PuzzleState {
                     state.start_world = make_world_from_spec(data.world);
                     state.library = data.library;
                     state.name = data.name;
+                    state.instructions = process_instruction_string(data.instructions)
                     return data;
                 })
                 .then(fetchProgram)
                 .then(fetchSolution)
-                .then(fetchInstruction)
                 .then(() => {
                     resolve(state);
                 })
