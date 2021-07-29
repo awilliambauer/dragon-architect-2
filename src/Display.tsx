@@ -343,13 +343,29 @@ export default class Display extends React.Component<GameState> {
     // Add cube
     addCube(optMaps: OptimizationMaps, cubePosition: THREE.Vector3, typeOfCube: Map<string, THREE.Mesh[]>, material: THREE.MeshLambertMaterial) {
         if (!mapHasVector3(optMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
-            let existing_cube = optMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
-            if (existing_cube) { // If there is a cube available....
-                existing_cube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
-                this.mainStuff.scene.add(existing_cube);
+            let existingCube = optMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
+            if (existingCube) { // If there is a cube available....
+                existingCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
+                this.mainStuff.scene.add(existingCube);
             } else { // If there isn't a cube mesh available....
                 let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, material) // ...Create a new cube mesh
                 newCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
+                typeOfCube.get(`#${material.color.getHexString()}`)!.push(newCube);
+                optMaps.filled.set(newCube.position, newCube);
+                this.mainStuff.scene.add(newCube);
+            }
+        }
+    }
+
+    addDragonCube(optMaps: OptimizationMaps, cubePosition: THREE.Vector3, typeOfCube: Map<string, THREE.Mesh[]>, material: THREE.MeshLambertMaterial) {
+        if (!mapHasVector3(optMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
+            let existingCube = optMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
+            if (existingCube) { // If there is a cube available....
+                existingCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
+                this.mainStuff.scene.add(existingCube);
+            } else { // If there isn't a cube mesh available....
+                let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, material) // ...Create a new cube mesh
+                newCube.position.copy(cubePosition).add(this.cameraPos.dragonOffset);
                 typeOfCube.get(`#${material.color.getHexString()}`)!.push(newCube);
                 optMaps.filled.set(newCube.position, newCube);
                 this.mainStuff.scene.add(newCube);
@@ -410,7 +426,7 @@ export default class Display extends React.Component<GameState> {
                 }
                 if (goal.kind === GoalInfoType.DragonPos) {
                     if (goal.position) {
-                        this.addCube(this.goalOptMaps, goal.position, this.storageMaps.goalCubes, this.geometries.dragonGoalMat);
+                        this.addDragonCube(this.goalOptMaps, goal.position, this.storageMaps.goalCubes, this.geometries.dragonGoalMat);
                     }
                 }
             });
