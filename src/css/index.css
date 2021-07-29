@@ -46,6 +46,8 @@ body {
     flex-direction: column;
     display: -webkit-flex;
     -webkit-flex-direction: column;
+    font-weight: 400;
+    line-height: 1.5;
 }
 
 /* header */
