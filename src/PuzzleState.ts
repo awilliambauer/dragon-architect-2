@@ -176,6 +176,18 @@ export default class PuzzleState {
         let state = new PuzzleState();
         state.win_callback = win_callback;
 
+        let fetchInstruction = (data: PuzzleSpec) => {
+            return new Promise<PuzzleSpec>((resolve, reject) => {
+                if (data.program) {
+                    state.instructions = data.instructions;
+                    //console.log("instructions changed");
+                    resolve(data);
+                }
+                else {
+                    resolve(data);
+                }
+            });
+        }
         /// read in starting program from file
         let fetchProgram = (data: PuzzleSpec) => {
             return new Promise<PuzzleSpec>((resolve, reject) => {
@@ -252,6 +264,7 @@ export default class PuzzleState {
                 })
                 .then(fetchProgram)
                 .then(fetchSolution)
+                .then(fetchInstruction)
                 .then(() => {
                     resolve(state);
                 })

@@ -145,6 +145,7 @@ class App extends React.Component<{}, GameState> {
     } else {
       return (
         <div className="App">
+          
           {/* <PackSelect manager={this.puzzle_manager}/>
           <PuzzleSelect manager={this.puzzle_manager}/> */}
           {/* Navigation bar*/}
@@ -156,6 +157,9 @@ class App extends React.Component<{}, GameState> {
           {/* <div id="slider">
             <Slider {...this.state} />
           </div> */}
+          <p typeof="instructions">
+          {this.state.puzzle?.instructions as string}
+          </p>
           <div id="main-view-code">
             <BlocklyComp {...this.state} />
           </div>
