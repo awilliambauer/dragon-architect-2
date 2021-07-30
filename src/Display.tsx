@@ -328,7 +328,7 @@ export default class Display extends React.Component<GameState> {
         }
     }
 
-    // Remove cube
+    // Removes puzzle cube
     removePuzzleCube(optMaps: OptimizationMaps, cube: THREE.Mesh<THREE.BufferGeometry>, color: string) {
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
             this.mainStuff.scene.remove(cube); // Remove from scene
@@ -357,6 +357,7 @@ export default class Display extends React.Component<GameState> {
         }
     }
 
+    // This adds a dragon position cube (only difference is the offSet - it's 1 z-value higher for the dragon)
     addDragonCube(optMaps: OptimizationMaps, cubePosition: THREE.Vector3, typeOfCube: Map<string, THREE.Mesh[]>, material: THREE.MeshLambertMaterial) {
         if (!mapHasVector3(optMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
             let existingCube = optMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
@@ -574,8 +575,8 @@ export default class Display extends React.Component<GameState> {
                 <div id="game-controls-bar-top" className="game-controls-bar puzzleModeUI sandboxModeUI" style={{ display: "flex" }}>
                     <CameraTiltDown onClickTiltDown={this.tiltCameraDown} />
                     <CameraTiltUp onClickTiltUp={this.tiltCameraUp} />
-                    <CameraRotateRight onClickRotateRight={this.rotateCameraRight} />
                     <CameraRotateLeft onClickRotateLeft={this.rotateCameraLeft} />
+                    <CameraRotateRight onClickRotateRight={this.rotateCameraRight} />
                     <CameraZoomIn onClickZoomIn={this.zoomInCamera} />
                     <CameraZoomOut onClickZoomOut={this.zoomOutCamera} />
                     <Slider onChange={this.handleSlideChange} />

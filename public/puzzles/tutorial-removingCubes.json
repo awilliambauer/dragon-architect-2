@@ -1,0 +1,22 @@
+{
+    "name": "Removing Cubes",
+    "format_version": 2,
+    "library": {
+        "restricted": ["blocks"],
+        "required": ["move2", "place"],
+        "granted": ["remove"]
+    },
+    "world": {
+        "cubes": [
+            {"pos": [3,0,0], "color": 1},
+            {"pos": [4,0,0], "color": 1},
+            {"pos": [5,0,0], "color": 1}
+        ],
+        "pos": [0, 0, 0],
+        "dir": [1, 0, 0]
+    },
+    "program": "puzzles/code/tutorial-removingCubes.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/tutorial-removingCubes-solution.kobold",
+    "instructions": "Help me remove all the cubes. Another {removecube} might help"
+}
