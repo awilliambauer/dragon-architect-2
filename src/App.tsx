@@ -1,6 +1,6 @@
 import React from 'react';
 import * as THREE from 'three';
-import BlocklyComp, { blocks_to_text } from './BlocklyComp';
+import BlocklyComp, { blocks_to_text, text_to_blocks } from './BlocklyComp';
 import Display from './Display';
 import WorldState from './WorldState';
 import run, { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
@@ -20,10 +20,19 @@ export type GameState = {
   simulator: IncrementalSimulator
   reset: boolean
   lastSavedWorld: WorldState | undefined
-  loading: boolean
+  //loading: boolean
+  view: ViewType
 }
 
-const puzzle_sequence = ["puzzles/tutorial2.json", "puzzles/tutorial1.json", "puzzles/tutorial3.json"];
+export enum ViewType {
+  Loading = "loading",
+  Normal = "normal",
+  PuzzleSelect = "puzzleSelect", //
+  Progress = "progress", //
+  PuzzlePause = "puzzlePause"
+}
+
+const puzzle_sequence = ["puzzles/tutorial2.json", "puzzles/tutorial4.json", "puzzles/tutorial3.json"];
 // "puzzles/tutorial2.json", "puzzles/tutorial3.json"
 let puzzle_index = 0;
 
@@ -52,7 +61,7 @@ class App extends React.Component<{}, GameState> {
       simulator: new IncrementalSimulator(new WorldState(), EMPTY_PROGRAM),
       lastSavedWorld: undefined,
       // restrictedBlockList: ["remove","repeat","defproc"]
-      loading: true
+      view: ViewType.Loading
     }
     // this.state.simulator.set_running();
     // this.state.world.mark_dirty();
@@ -71,10 +80,11 @@ class App extends React.Component<{}, GameState> {
           world: p.start_world,
           puzzle: p,
           simulator: sim,
-          loading: false,
+          view: ViewType.Normal,
           reset: false,
           lastSavedWorld: undefined
         });
+        text_to_blocks(p.start_code);
       }
     });
   }
@@ -92,10 +102,23 @@ class App extends React.Component<{}, GameState> {
     })
   }
 
+  dialog() {
+    let world = new WorldState();
+    world.mark_dirty();
+    let sim = new IncrementalSimulator(world, parse('') as Program);
+    this.setState({
+      world: world,
+      puzzle: SANDBOX_STATE,
+      simulator: sim,
+      reset: false,
+      view: ViewType.PuzzlePause
+    })
+  }
   win_puzzle() {
     puzzle_index++;
     if (puzzle_index < puzzle_sequence.length) {
-      this.load_puzzle(puzzle_sequence[puzzle_index]);
+      this.dialog();
+      //this.load_puzzle(puzzle_sequence[puzzle_index]);
     } else {
       this.load_sandbox();
     }
@@ -136,13 +159,29 @@ class App extends React.Component<{}, GameState> {
 
   }
 
+  continue() {
+    this.setState({
+      view: ViewType.Normal
+    })
+    //puzzle_index++;
+    this.load_puzzle(puzzle_sequence[puzzle_index]);
+  }
+
   render() {
 
-    if (this.state.loading) {
+    if (this.state.view === ViewType.Loading) {
       return (
         <h1>Loading...</h1>
       )
-    } else {
+    } 
+    else if (this.state.view === ViewType.PuzzlePause) {
+      console.log("hhhhh");
+      return <div className="App">
+        <p>Good job! Click continue to go to the next puzzle!</p>
+        <button onClick={()=> {this.continue()}}>Continue</button>
+      </div>
+    }
+    else {
       return (
         <div className="App">
 
