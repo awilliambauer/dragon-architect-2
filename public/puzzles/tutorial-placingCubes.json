@@ -11,7 +11,7 @@
         "dir": [1, 0, 0]
     },
     "program": "puzzles/code/tutorial-placingCubes.kobold",
-    "goal": "solution",
-    "solution": "puzzles/code/tutorial-placingCubes-solution.kobold",
+    "goal": "min_cube",
+    "goalValue": "4",
     "instructions": "Help me place 4 {cube}! You'll need some more {placecube} blocks"
 }
