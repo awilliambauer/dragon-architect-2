@@ -1,0 +1,17 @@
+{
+    "name": "Placing Cubes",
+    "format_version": 2,
+    "library": {
+        "restricted": ["blocks"],
+        "required": ["move2"],
+        "granted": ["place"]
+    },
+    "world": {
+        "pos": [0, 0, 0],
+        "dir": [1, 0, 0]
+    },
+    "program": "puzzles/code/tutorial-placingCubes.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/tutorial-placingCubes-solution.kobold",
+    "instructions": "Help me place 4 {cube}! You'll need some more {placecube} blocks"
+}

@@ -23,7 +23,7 @@ export type GameState = {
   loading: boolean
 }
 
-const puzzle_sequence = ["puzzles/tutorial2.json", "puzzles/tutorial1.json", "puzzles/tutorial3.json"];
+const puzzle_sequence = ["puzzles/tutorial-placingCubes.json", "puzzles/tutorial-removingCubes.json"];
 // "puzzles/tutorial2.json", "puzzles/tutorial3.json"
 let puzzle_index = 0;
 
