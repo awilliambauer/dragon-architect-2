@@ -7,8 +7,7 @@ import parse, {
     SyntaxError, Statement, StatementType, Repeat, Execute, Command, TopLevelStatement
 } from './Parser';
 import { GameState } from './App';
-
-
+import './BlocklyExtensions';
 
 const COLOR_MOVE_1 = '#0075A6';
 // const COLOR_MOVE_2 = '#B84B26';
@@ -26,36 +25,6 @@ const COLOR_TEASER = '#707070';
 
 // var restricted_list = ["remove","repeat","defproc"];
 
-declare module "blockly" {
-    interface Block {
-        getNested(): Blockly.Block[]
-    }
-
-    interface ProcedureBlock extends Block {
-        /**
-         * Return the signature of this procedure definition.
-         * @return {!Array} Tuple containing three elements:
-         *     - (string) the name of the defined procedure,
-         *     - (Array) a list of all its arguments,
-         *     - (boolean) that it DOES have a return value.
-         * @this {Blockly.Block}
-         */
-        getProcedureDef(): [string, string[], boolean]
-    }
-}
-
-Blockly.Block.prototype.getNested = function () {
-    let blocks = [];
-    for (let i = 0, input; (input = this.inputList[i]); i++) {
-        if (input.connection) {
-            let child = input.connection.targetBlock();
-            if (child) {
-                blocks.push(child);
-            }
-        }
-    }
-    return blocks;
-};
 
 const KoboldConvert = new Map<string, (block: Blockly.Block) => string>();
 

@@ -8,10 +8,7 @@ import parse, { EMPTY_PROGRAM, Program, SyntaxError } from './Parser';
 import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
 import { Run } from './RunButton';
 import _ from 'lodash';
-import Slider from './Slider';
-import { TEXT_CHANGECASE_TOOLTIP } from 'blockly/msg/en';
 import PuzzleManager from './PuzzleManager';
-// import * as GOAL from "../public/puzzles/test.json"
 
 export type GameState = {
   program: Program
@@ -20,7 +17,6 @@ export type GameState = {
   simulator: IncrementalSimulator
   reset: boolean
   lastSavedWorld: WorldState | undefined
-  //loading: boolean
   view: ViewType
 }
 
@@ -32,10 +28,6 @@ export enum ViewType {
   PuzzlePause = "puzzlePause"
 }
 
-const puzzle_sequence = ["puzzles/tutorial-placingCubes.json", "puzzles/tutorial-removingCubes.json"];
-// "puzzles/tutorial2.json", "puzzles/tutorial3.json"
-let puzzle_index = 0;
-
 class App extends React.Component<{}, GameState> {
   puzzle_manager: PuzzleManager
 
@@ -43,29 +35,21 @@ class App extends React.Component<{}, GameState> {
     super(props);
     load_stdlib();
     this.puzzle_manager = new PuzzleManager();
-    this.puzzle_manager.initialize();
+    this.puzzle_manager.initialize()
+      .then(() => {
+        this.setState({
+          view: ViewType.Normal
+        }, () => this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle()}.json`));
+      })
 
-    //     // set up initial state, will get overwritten in componentDidMount
-    //     let world = new WorldState();
-    //     let defaultProgram = parse(`
-    // repeat 4 times
-    //     repeat 2 times
-    //       Forward(4)
-    //     PlaceCube(1)
-    //     Right()
-    // `) as Program;
     this.state = {
       program: EMPTY_PROGRAM,
       reset: false,
       world: new WorldState(),
       simulator: new IncrementalSimulator(new WorldState(), EMPTY_PROGRAM),
       lastSavedWorld: undefined,
-      // restrictedBlockList: ["remove","repeat","defproc"]
       view: ViewType.Loading
     }
-    // this.state.simulator.set_running();
-    // this.state.world.mark_dirty();
-
   }
 
   load_puzzle(puzzle_file: string) {
@@ -102,34 +86,17 @@ class App extends React.Component<{}, GameState> {
     })
   }
 
-  dialog() {
-    let world = new WorldState();
-    world.mark_dirty();
-    let sim = new IncrementalSimulator(world, parse('') as Program);
+  // when the user completes a puzzle
+  win_puzzle() {
     this.setState({
-      world: world,
-      puzzle: SANDBOX_STATE,
-      simulator: sim,
-      reset: false,
       view: ViewType.PuzzlePause
     })
   }
-  win_puzzle() {
-    puzzle_index++;
-    if (puzzle_index < puzzle_sequence.length) {
-      this.dialog();
-      //this.load_puzzle(puzzle_sequence[puzzle_index]);
-    } else {
-      this.load_sandbox();
-    }
-  }
 
   componentDidMount() {
-    //load the first puzzle once the page has loaded
-    this.load_puzzle(puzzle_sequence[puzzle_index]);
-
   }
 
+  // run the user's current block program
   run_program() {
     if (!this.state.reset) { // run program
       this.setState({
@@ -159,12 +126,17 @@ class App extends React.Component<{}, GameState> {
 
   }
 
+  // when user clicks the "continue" button after completing a puzzle
   continue() {
     this.setState({
       view: ViewType.Normal
-    })
-    //puzzle_index++;
-    this.load_puzzle(puzzle_sequence[puzzle_index]);
+    });
+    let puzzle = this.puzzle_manager.next_puzzle();
+    if (puzzle) {
+      this.load_puzzle(`puzzles/${puzzle}.json`);
+    } else {
+      this.load_sandbox();
+    }
   }
 
   render() {
@@ -173,12 +145,12 @@ class App extends React.Component<{}, GameState> {
       return (
         <h1>Loading...</h1>
       )
-    } 
+    }
     else if (this.state.view === ViewType.PuzzlePause) {
       console.log("hhhhh");
       return <div className="App">
         <p>Good job! Click continue to go to the next puzzle!</p>
-        <button onClick={()=> {this.continue()}}>Continue</button>
+        <button onClick={() => { this.continue() }}>Continue</button>
       </div>
     }
     else {
