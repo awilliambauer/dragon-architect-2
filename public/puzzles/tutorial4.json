@@ -13,5 +13,5 @@
     "program": "puzzles/code/tutorial4.kobold",
     "goal": "solution",
     "solution": "puzzles/code/tutorial4-solution.kobold",
-    "instructions": "Help me place two {purple_cube}! Use {placecube} then change the color!"
+    "instructions": "Help me place two {purple_cube}! Use {placecube}!"
 }
