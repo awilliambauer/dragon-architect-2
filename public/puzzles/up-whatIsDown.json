@@ -1,6 +1,6 @@
 {
     "name": "What is Down?",
-    "format_version": 2,
+    "format_version": 1,
     "library": {
         "required": ["move2"],
         "granted": ["down"]

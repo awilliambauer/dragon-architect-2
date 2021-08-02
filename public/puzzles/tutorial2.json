@@ -1,5 +1,6 @@
 {
     "name": "Tutorial part 2",
+    "format_version": 1,
     "tag": "tutorial2",
     "library": {
         "restricted": ["up"],
