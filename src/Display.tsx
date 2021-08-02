@@ -573,12 +573,12 @@ export default class Display extends React.Component<GameState> {
         return (
             <div id="three-js" ref={this.divRef}>
                 <div id="game-controls-bar-top" className="game-controls-bar puzzleModeUI sandboxModeUI" style={{ display: "flex" }}>
-                    <CameraTiltDown onClickTiltDown={this.tiltCameraDown} />
-                    <CameraTiltUp onClickTiltUp={this.tiltCameraUp} />
-                    <CameraRotateLeft onClickRotateLeft={this.rotateCameraLeft} />
-                    <CameraRotateRight onClickRotateRight={this.rotateCameraRight} />
-                    <CameraZoomIn onClickZoomIn={this.zoomInCamera} />
-                    <CameraZoomOut onClickZoomOut={this.zoomOutCamera} />
+                    <CameraTiltDown onClickFunction={this.tiltCameraDown} />
+                    <CameraTiltUp onClickFunction={this.tiltCameraUp} />
+                    <CameraRotateLeft onClickFunction={this.rotateCameraLeft} />
+                    <CameraRotateRight onClickFunction={this.rotateCameraRight} />
+                    <CameraZoomIn onClickFunction={this.zoomInCamera} />
+                    <CameraZoomOut onClickFunction={this.zoomOutCamera} />
                     <Slider onChange={this.handleSlideChange} />
                 </div>
             </div>
