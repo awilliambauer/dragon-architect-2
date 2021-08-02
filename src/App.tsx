@@ -28,6 +28,13 @@ export enum ViewType {
   PuzzlePause = "puzzlePause"
 }
 
+<<<<<<< Updated upstream
+=======
+const puzzle_sequence = ["puzzles/up-bridge.json"];
+// "puzzles/tutorial2.json", "puzzles/tutorial3.json"
+let puzzle_index = 0;
+
+>>>>>>> Stashed changes
 class App extends React.Component<{}, GameState> {
   puzzle_manager: PuzzleManager
 
