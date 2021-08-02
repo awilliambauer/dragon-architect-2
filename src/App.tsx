@@ -69,8 +69,7 @@ class App extends React.Component<{}, GameState> {
           lastSavedWorld: undefined
         });
         text_to_blocks(p.start_code);
-        freeze_all_blocks();
-
+        // freeze_all_blocks();
       }
     });
   }
@@ -141,22 +140,15 @@ class App extends React.Component<{}, GameState> {
   }
 
   render() {
-    
+
     if (this.state.view === ViewType.Loading) {
       return (
         <h1>Loading...</h1>
       )
     }
-    else if (this.state.view === ViewType.PuzzlePause) {
-      return <div className="App">
-        <p>Good job! Click continue to go to the next puzzle!</p>
-        <button onClick={() => { this.continue() }}>Continue</button>
-      </div>
-    }
     else {
       return (
         <div className="App">
-
           {/* <PackSelect manager={this.puzzle_manager}/>
           <PuzzleSelect manager={this.puzzle_manager}/> */}
           {/* Navigation bar*/}
@@ -167,6 +159,11 @@ class App extends React.Component<{}, GameState> {
           <div id="main-view-code">
             <BlocklyComp {...this.state} />
           </div>
+          {this.state.view === ViewType.PuzzlePause &&
+            <div style={{ width: '300px', height: '400px', left: '300px', position: 'absolute'}}>
+              <p>Good job! Click continue to go to the next puzzle!</p>
+              <button onClick={() => { this.continue() }}>Continue</button>
+            </div>}
           <div id="main-view-game">
             <Display {...this.state} />
             <div id="instructions-display" className="goal-section instructions">
@@ -182,7 +179,7 @@ class App extends React.Component<{}, GameState> {
               3D view
               Other controls
               Instructions   */}
-          
+
         </div>
       );
     }
