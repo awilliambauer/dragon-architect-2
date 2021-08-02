@@ -1,6 +1,6 @@
 import React from 'react';
 import * as THREE from 'three';
-import BlocklyComp, { blocks_to_text, text_to_blocks } from './BlocklyComp';
+import BlocklyComp, { freeze_all_blocks, blocks_to_text, text_to_blocks } from './BlocklyComp';
 import Display from './Display';
 import WorldState from './WorldState';
 import run, { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
@@ -69,6 +69,8 @@ class App extends React.Component<{}, GameState> {
           lastSavedWorld: undefined
         });
         text_to_blocks(p.start_code);
+        freeze_all_blocks();
+
       }
     });
   }
@@ -123,7 +125,6 @@ class App extends React.Component<{}, GameState> {
     this.setState({
       reset: !this.state.reset
     });
-
   }
 
   // when user clicks the "continue" button after completing a puzzle
@@ -140,14 +141,13 @@ class App extends React.Component<{}, GameState> {
   }
 
   render() {
-
+    
     if (this.state.view === ViewType.Loading) {
       return (
         <h1>Loading...</h1>
       )
     }
     else if (this.state.view === ViewType.PuzzlePause) {
-      console.log("hhhhh");
       return <div className="App">
         <p>Good job! Click continue to go to the next puzzle!</p>
         <button onClick={() => { this.continue() }}>Continue</button>
@@ -182,6 +182,7 @@ class App extends React.Component<{}, GameState> {
               3D view
               Other controls
               Instructions   */}
+          
         </div>
       );
     }
