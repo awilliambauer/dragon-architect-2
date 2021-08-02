@@ -1,6 +1,6 @@
 import React from 'react';
 import * as THREE from 'three';
-import BlocklyComp, { freeze_all_blocks, blocks_to_text, text_to_blocks } from './BlocklyComp';
+import BlocklyComp, { blocks_to_text, text_to_blocks } from './BlocklyComp';
 import Display from './Display';
 import WorldState from './WorldState';
 import run, { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
@@ -28,13 +28,6 @@ export enum ViewType {
   PuzzlePause = "puzzlePause"
 }
 
-<<<<<<< Updated upstream
-=======
-const puzzle_sequence = ["puzzles/up-bridge.json"];
-// "puzzles/tutorial2.json", "puzzles/tutorial3.json"
-let puzzle_index = 0;
-
->>>>>>> Stashed changes
 class App extends React.Component<{}, GameState> {
   puzzle_manager: PuzzleManager
 
@@ -76,7 +69,6 @@ class App extends React.Component<{}, GameState> {
           lastSavedWorld: undefined
         });
         text_to_blocks(p.start_code);
-        // freeze_all_blocks();
       }
     });
   }
@@ -131,6 +123,7 @@ class App extends React.Component<{}, GameState> {
     this.setState({
       reset: !this.state.reset
     });
+
   }
 
   // when user clicks the "continue" button after completing a puzzle
@@ -153,9 +146,17 @@ class App extends React.Component<{}, GameState> {
         <h1>Loading...</h1>
       )
     }
+    else if (this.state.view === ViewType.PuzzlePause) {
+      console.log("hhhhh");
+      return <div className="App">
+        <p>Good job! Click continue to go to the next puzzle!</p>
+        <button onClick={() => { this.continue() }}>Continue</button>
+      </div>
+    }
     else {
       return (
         <div className="App">
+
           {/* <PackSelect manager={this.puzzle_manager}/>
           <PuzzleSelect manager={this.puzzle_manager}/> */}
           {/* Navigation bar*/}
@@ -166,11 +167,6 @@ class App extends React.Component<{}, GameState> {
           <div id="main-view-code">
             <BlocklyComp {...this.state} />
           </div>
-          {this.state.view === ViewType.PuzzlePause &&
-            <div style={{ width: '300px', height: '400px', left: '300px', position: 'absolute'}}>
-              <p>Good job! Click continue to go to the next puzzle!</p>
-              <button onClick={() => { this.continue() }}>Continue</button>
-            </div>}
           <div id="main-view-game">
             <Display {...this.state} />
             <div id="instructions-display" className="goal-section instructions">
@@ -186,7 +182,6 @@ class App extends React.Component<{}, GameState> {
               3D view
               Other controls
               Instructions   */}
-
         </div>
       );
     }

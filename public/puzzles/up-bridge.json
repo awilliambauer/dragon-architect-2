@@ -1,0 +1,16 @@
+{
+    "name": "Building a Bridge",
+    "format_version": 2,
+    "library": {
+        "required": ["move2", "place", "up", "down"],
+        "granted": ["camera_controls"]
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [0, -1, 0]
+    },
+    "program": "puzzles/code/up-bridge.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/up-bridge-solution.kobold",
+    "instructions": "I want to put a cube in each of these blue spaces, like this: {bridge}"
+}

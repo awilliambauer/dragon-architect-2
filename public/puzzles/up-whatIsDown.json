@@ -1,0 +1,15 @@
+{
+    "name": "What is Down?",
+    "format_version": 2,
+    "library": {
+        "required": ["move2"],
+        "granted": ["down"]
+    },
+    "world": {
+        "pos": [0, -2, 3], 
+        "dir": [0, 1, 0]
+    },
+    "goal": "solution",
+    "solution": "puzzles/code/up-whatIsDown-solution.kobold",
+    "instructions": "Help me get to the {pinkboxGround}! {down} tells me to go down"
+}
