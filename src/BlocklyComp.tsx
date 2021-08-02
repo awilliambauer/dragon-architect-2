@@ -221,10 +221,19 @@ export function blocks_to_text(): string {
     let text = "";
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
     _.forEach(top, (block) => {
+        //block.setMovable(false);
         text += (block_to_text("", "", block) + "\n");
     });
-    exportCode(text);
+    //console.log(text);
+    //exportCode(text);
     return text;
+}
+
+export function freeze_all_blocks() {
+    let top = Blockly.getMainWorkspace().getTopBlocks(true);
+    _.forEach(top, (block) => {
+        block.setMovable(false);
+    });
 }
 
 
