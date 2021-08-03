@@ -1,4 +1,5 @@
-import parse, { Lexer, SyntaxError } from './Parser';
+import _ from 'lodash';
+import parse, { Lexer, Program, SyntaxError } from './Parser';
 import { StdLibText } from './StdLib';
 
 test("lexer-empty", () => {
@@ -112,4 +113,31 @@ test("parse-stdlib", () => {
     let result = parse(StdLibText);
     // console.log(JSON.stringify(result, null, 2));
     expect(result instanceof SyntaxError).toBe(false);
+});
+
+test("parse-one-attribute", () => {
+    let result = parse(`
+@hello=there
+command x()
+`);
+    // console.log(JSON.stringify(result, null, 2));
+    expect(result instanceof SyntaxError).toBe(false);
+    expect(_.first((result as Program).body)?.meta.attributes.get("hello") === "there").toBe(true);
+});
+
+test("parse-multi-attribute", () => {
+    let result = parse(`
+@hello=there
+@ihave=thehighground
+command x()
+@youunderestimate=mypower
+repeat 4 times
+    command foo()
+`);
+    // console.log(JSON.stringify(result, null, 2));
+    expect(result instanceof SyntaxError).toBe(false);
+    expect(_.first((result as Program).body)?.meta.attributes.get("hello") === "there").toBe(true);
+    expect(_.first((result as Program).body)?.meta.attributes.get("ihave") === "thehighground").toBe(true);
+    expect(_.first((result as Program).body)?.meta.attributes.has("foo")).toBe(false);
+    expect(((result as Program).body[1]).meta.attributes.get("youunderestimate") === "mypower").toBe(true);
 });

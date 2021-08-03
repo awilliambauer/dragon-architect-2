@@ -102,9 +102,7 @@ export class SyntaxError extends Error {
 
 export type Meta = {
     location: FileLocation
-    // attributes: [string, string][] // array of (string, string) tuples
-    // leaving attributes unimplemented for now
-    // potentially useful for special modes where execution should differ in some way
+    attributes: Map<string, string>
 };
 
 export type Invocation = {
@@ -420,9 +418,9 @@ export class Parser {
         return last !== undefined && token_equal(last, expected);
     }
 
-    new_meta(start: FileLocation): Meta {
+    new_meta(start: FileLocation, attributes?: Map<string, string>): Meta {
         const loc = new FileLocation(start.start, this.last_location.end);
-        return { location: loc };
+        return { location: loc, attributes: attributes ? attributes : new Map()};
     }
 
     match_ident(): string | SyntaxError {
@@ -510,15 +508,41 @@ export class Parser {
         return { name: name, args: args };
     }
 
-    // TODO match_attributes
+    match_attributes(): Map<string, string> | SyntaxError {
+        let attribs = new Map<string, string>();
+        while (this.peek_token(this.make_check_token(TokenType.Symbol, '@'))) {
+            let next = this.next();
+            if (next instanceof SyntaxError) {
+                return next;
+            }
+            let key = this.match_ident();
+            if (key instanceof SyntaxError) {
+                return key;
+            }
+            let eq = this.match_token(this.make_check_token(TokenType.Symbol, '='));
+            if (eq instanceof SyntaxError) {
+                return eq;
+            }
+            let val = this.match_ident();
+            if (val instanceof SyntaxError) {
+                return val;
+            }
+            let n = this.match_token(this.make_ws_token(WhitespaceType.Newline));
+            if (n instanceof SyntaxError) {
+                return n;
+            }
+            attribs.set(key, val);
+        }
+        return attribs;
+    }
 
-    match_statement(): Statement | null | SyntaxError {
+    match_statement(attributes?: Map<string, string>): Statement | null | SyntaxError {
         const start = this.next_location();
         const next = this.next();
         if (next instanceof SyntaxError) {
             return next;
         }
-        const meta = this.new_meta(start);
+        const meta = this.new_meta(start, attributes);
         switch (next.kind) {
             case TokenType.Keyword:
                 switch (next.value) {
@@ -602,7 +626,7 @@ export class Parser {
         return { number: number, body: body };
     }
 
-    match_procedure(): Procedure | SyntaxError {
+    match_procedure(attributes: Map<string, string>): Procedure | SyntaxError {
         const start = this.next_location();
         const def = this.match_token(this.make_check_token(TokenType.Keyword, "define"));
         if (def instanceof SyntaxError) {
@@ -622,7 +646,7 @@ export class Parser {
         }
         return {
             kind: "procedure",
-            meta: this.new_meta(start),
+            meta: this.new_meta(start, attributes),
             name: name,
             params: params,
             body: body
@@ -630,10 +654,14 @@ export class Parser {
     }
 
     match_top_level_statement(): TopLevelStatement | SyntaxError | null {
+        let attributes = this.match_attributes();
+        if (attributes instanceof SyntaxError) {
+            return attributes;
+        }
         if (this.peek_token(this.make_check_token(TokenType.Keyword, "define"))) {
-            return this.match_procedure();
+            return this.match_procedure(attributes);
         } else {
-            const stmt = this.match_statement();
+            const stmt = this.match_statement(attributes);
             if (stmt instanceof SyntaxError) {
                 if (stmt.code === SyntaxErrorCode.InvalidStatement) {
                     // overwrite the statement message with a better one for top-level statements
