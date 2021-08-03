@@ -146,13 +146,12 @@ class App extends React.Component<{}, GameState> {
         <h1>Loading...</h1>
       )
     }
-    else if (this.state.view === ViewType.PuzzlePause) {
-      console.log("hhhhh");
-      return <div className="App">
-        <p>Good job! Click continue to go to the next puzzle!</p>
-        <button onClick={() => { this.continue() }}>Continue</button>
-      </div>
-    }
+    // else if (this.state.view === ViewType.PuzzlePause) {
+    //   return <div className="App">
+    //     <p>Good job! Click continue to go to the next puzzle!</p>
+    //     <button onClick={() => { this.continue() }}>Continue</button>
+    //   </div>
+    // }
     else {
       return (
         <div className="App">
@@ -167,6 +166,13 @@ class App extends React.Component<{}, GameState> {
           <div id="main-view-code">
             <BlocklyComp {...this.state} />
           </div>
+
+          {(this.state.view === ViewType.PuzzlePause) &&
+           <div style={{ width: '200px', height: '100px', left: '500px', backgroundColor: '#964B00', color: 'yellow', position: 'absolute'}}>
+            <p>Good job! Click continue to go to the next puzzle!</p>
+            <button onClick={() => { this.continue() }}>Continue</button>
+          </div>}
+
           <div id="main-view-game">
             <Display {...this.state} />
             <div id="instructions-display" className="goal-section instructions">
