@@ -1,0 +1,5 @@
+Forward(1)
+repeat 4 times
+    repeat 9 times
+        pass
+    Right()
