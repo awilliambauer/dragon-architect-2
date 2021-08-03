@@ -35,12 +35,6 @@ class App extends React.Component<{}, GameState> {
     super(props);
     load_stdlib();
     this.puzzle_manager = new PuzzleManager();
-    this.puzzle_manager.initialize()
-      .then(() => {
-        this.setState({
-          view: ViewType.Normal
-        }, () => this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle()}.json`));
-      })
 
     this.state = {
       program: EMPTY_PROGRAM,
@@ -96,6 +90,12 @@ class App extends React.Component<{}, GameState> {
   }
 
   componentDidMount() {
+    this.puzzle_manager.initialize()
+      .then(() => {
+        this.setState({
+          view: ViewType.Normal
+        }, () => this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle()}.json`));
+      })
   }
 
   // run the user's current block program
@@ -141,6 +141,12 @@ class App extends React.Component<{}, GameState> {
     }
   }
 
+  // called when a new pack is selected via the drop-down
+  on_change_pack(event: React.ChangeEvent<HTMLSelectElement>) {
+    this.puzzle_manager.set_pack(parseInt(event.target.value));
+    this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle()}.json`);
+  }
+
   render() {
 
     if (this.state.view === ViewType.Loading) {
@@ -148,12 +154,6 @@ class App extends React.Component<{}, GameState> {
         <h1>Loading...</h1>
       )
     }
-    // else if (this.state.view === ViewType.PuzzlePause) {
-    //   return <div className="App">
-    //     <p>Good job! Click continue to go to the next puzzle!</p>
-    //     <button onClick={() => { this.continue() }}>Continue</button>
-    //   </div>
-    // }
     else {
       return (
         <div className="App">
@@ -164,16 +164,31 @@ class App extends React.Component<{}, GameState> {
           {/* Code area}
             Blockly
             Control buttons  */}
+          <header id="header" className="navbar">
+            <div id="header-items">
+              <h1>Dragon Architect</h1>
+              <div id="dev-controls">
+                <label htmlFor="pack-select">Select a pack:</label>
+                <select name="pack-select" id="pack-select" onChange={event => this.on_change_pack(event)}>
+                  {this.puzzle_manager.packs.map((pack, index) => <option key={index} value={index}>{pack.name}</option>)}
+                </select>
+                <label htmlFor="puzzle-select">Select a puzzle:</label>
+                <select name="puzzle-select" id="puzzle-select" onChange={event => this.load_puzzle(`puzzles/${event.target.value}.json`)}>
+                  {this.puzzle_manager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
+                </select>
+              </div>
+            </div>
+          </header>
           <Run reset={this.state.reset} onClick={() => { this.run_program() }} />
           <div id="main-view-code">
             <BlocklyComp {...this.state} />
           </div>
 
           {(this.state.view === ViewType.PuzzlePause) &&
-           <div style={{ width: '200px', height: '100px', left: '300px', backgroundColor: '#964B00', color: 'yellow', position: 'absolute'}}>
-            <p>Good job! Click continue to go to the next puzzle!</p>
-            <button onClick={() => { this.continue() }}>Continue</button>
-          </div>}
+            <div style={{ width: '200px', height: '100px', left: '500px', backgroundColor: '#964B00', color: 'yellow', position: 'absolute' }}>
+              <p>Good job! Click continue to go to the next puzzle!</p>
+              <button onClick={() => { this.continue() }}>Continue</button>
+            </div>}
 
           <div id="main-view-game">
             <Display {...this.state} />

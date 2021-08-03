@@ -161,6 +161,9 @@ export function exportCode(code: string) {
     if (!(program instanceof SyntaxError)) {
         xml += xmlHelper(program.body, "");
     }
+    // if (program.attributes.get("frozen") === "true") {
+    //     freeze_all_blocks()
+    // }
     
     xml += '</xml>';
     return xml;
@@ -207,6 +210,8 @@ export function block_to_text(str: string, indent: string, block: Blockly.Block)
     let children = block.getNested();
     if (convert_fn) {
         str += indent + convert_fn(block) + "\n";
+    } else if (!KoboldConvert.has(block.type)) {
+        console.error(`No KoboldConvert function found for ${block.type}`);
     }
     if (children.length > 0) {
         for (let child of children) {
@@ -223,18 +228,24 @@ export function blocks_to_text(): string {
     let text = "";
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
     _.forEach(top, (block) => {
-        //block.setMovable(false);
         text += (block_to_text("", "", block) + "\n");
     });
-    //console.log(text);
-    //exportCode(text);
     return text;
+}
+
+// return a new hex color string that lightens (positive) or darkens (negative) the 
+// original color by `percent` (`percent` should be between 0 and 1)
+function shadeHexColor(color: string, percent: number) {
+    var f = parseInt(color.slice(1), 16), t = percent < 0 ? 0 : 255, p = percent < 0 ? percent * -1 : percent, R = f >> 16, G = f >> 8 & 0x00FF, B = f & 0x0000FF;
+    return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
 }
 
 export function freeze_all_blocks() {
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
     _.forEach(top, (block) => {
         block.setMovable(false);
+        block.setDeletable(false);
+        block.setColour(shadeHexColor(block.getColour(), -0.5));
     });
 }
 
@@ -413,6 +424,10 @@ function customBlocklyInit() {
     KoboldConvert.set("procedures_defnoreturn", (block: Blockly.Block) => {
         let [name, args, _hasReturn] = (block as Blockly.ProcedureBlock).getProcedureDef();
         return `define ${name}(${args})`;
+    });
+
+    KoboldConvert.set("procedures_callnoreturn", (block: Blockly.Block) => {
+        return `${block.getFieldValue("NAME")}()`;
     });
 }
 

@@ -1,0 +1,19 @@
+{
+    "name": "test",
+    "seqs": [
+        {
+            "name": "Test Pack",
+            "tag": "test",
+            "puzzles": [
+                "tutorial4",
+                "up-whatIsUp"
+            ],
+            "connections": [
+                {
+                    "start": "tutorial4",
+                    "dest": "up-whatIsUp"
+                }
+            ]
+        }
+    ]
+}

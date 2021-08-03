@@ -1,3 +1,4 @@
+import _ from "lodash"
 
 type PuzzleConnection = {
     source: string
@@ -17,7 +18,7 @@ type PuzzlePack = {
     seqs: PuzzleSequence[] // a pack consists of some number of puzzle sequences
 }
 
-type CurrentPuzzle = {
+type PuzzleIndex = {
     pack_index: number
     seq_index: number
     puz_index: number
@@ -33,7 +34,7 @@ type CurrentPuzzle = {
 
 export default class PuzzleManager {
     packs: PuzzlePack[]
-    current_puzzle: CurrentPuzzle
+    current_puzzle: PuzzleIndex
     completed_puzzle: Map<string, string[]> //the map of completed puzzles
 
     constructor() {
@@ -68,6 +69,25 @@ export default class PuzzleManager {
             let puzzles = this.completed_puzzle.get(pack);
             console.log(puzzles);
         }
+    }
+
+    set_pack(index: number) {
+        if (index !== this.current_puzzle.pack_index) {
+            this.current_puzzle = {
+                pack_index: index,
+                seq_index: 0,
+                puz_index: 0
+            }
+        }
+    }
+
+    // returns a list of the tags for all the puzzles in the current pack
+    get_all_puzzles(): string[] {
+        let puzzles: string[] = [];
+        for (let seq of this.get_current_pack().seqs) {
+            puzzles.push(...seq.puzzles);
+        }
+        return puzzles;
     }
 
     get_current_puzzle(): string {
