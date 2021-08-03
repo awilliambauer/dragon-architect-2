@@ -1,0 +1,18 @@
+{
+    "name": "Up By Any Other Name",
+    "format_version": 1,
+    "library": {
+        "restricted": ["up", "place", "defproc", "defproc_noargs"],
+        "required": ["set"],
+        "granted": []
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [0, -1, 0]
+    },
+    "program": "puzzles/code/procedures-call.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/procedures-call-solution.kobold",
+    "instructions": "Use {upcube} to help fill in the blue spaces.",
+    "logging_id": "5b4e957f-9d07-4537-8d62-abd3f42cd65c"
+}

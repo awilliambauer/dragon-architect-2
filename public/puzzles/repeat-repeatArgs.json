@@ -1,0 +1,18 @@
+{
+    "name": "Line Time",
+    "format_version": 1,
+    "library": {
+        "restricted": ["blocks"],
+        "required": [],
+        "granted": []
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [0, -1, 0]
+    },
+    "program": "puzzles/code/repeat-repeatArgs.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/repeat-repeatArgs-solution.kobold",
+    "instructions": "Repeat 5 times to have me fill in the whole line.",
+    "logging_id": "340d5fc0-6c16-45ea-8681-b3d27324f92f"
+}

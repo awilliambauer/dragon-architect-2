@@ -1,0 +1,7 @@
+Forward(3)
+PlaceCube(0)
+Forward(3)
+PlaceCube(0)
+Right()
+Forward(2)
+PlaceCube(0)

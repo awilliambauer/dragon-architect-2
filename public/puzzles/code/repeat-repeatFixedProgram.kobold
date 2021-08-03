@@ -1,0 +1,6 @@
+repeat 10 times
+    Forward(2)
+    Right()
+    Forward(2)
+    PlaceCube(1)
+    Left()

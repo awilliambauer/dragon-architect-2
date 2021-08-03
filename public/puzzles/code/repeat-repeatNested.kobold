@@ -1,0 +1,4 @@
+repeat 5 times
+    Forward(1)
+    PlaceCube(0)
+Right()
