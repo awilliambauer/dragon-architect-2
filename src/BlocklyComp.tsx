@@ -171,7 +171,9 @@ export function exportCode(code: string) {
 export function text_to_blocks(code: string) {
     let xml = exportCode(code);
     let dom = Blockly.Xml.textToDom(xml);
+    Blockly.getMainWorkspace().clear();
     let workspace = Blockly.Xml.domToWorkspace(dom, mainWorkspace);
+    
     return workspace;
 }
 
