@@ -7,7 +7,9 @@
             "puzzles": [
                 "tutorial1",
                 "tutorial2",
-                "tutorial3"
+                "tutorial3",
+                "tutorial-placingCubes",
+                "tutorial-removingCubes"
             ],
             "connections": [
                 {
@@ -17,6 +19,14 @@
                 {
                     "start": "tutorial2",
                     "dest": "tutorial3"
+                },
+                {
+                    "start": "tutorial3",
+                    "dest": "tutorial-placingCubes"
+                },
+                {
+                    "start": "tutorial-placingCubes",
+                    "dest": "tutorial-removingCubes"
                 }
             ]
         }

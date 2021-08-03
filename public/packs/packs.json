@@ -1,5 +1,6 @@
 {
     "packs": [
+        "repeat.json",
         "procedures.json"
     ]
 }

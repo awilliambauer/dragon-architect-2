@@ -5,18 +5,23 @@
             "name": "Up Puzzles",
             "tag": "up",
             "puzzles": [
-                "up-bridge",
+                "up-whatIsUp",
                 "up-whatIsDown",
-                "up-whatIsUp"
+                "up-bridge",
+                "up-rotateCamera"
             ],
             "connections": [
                 {
-                    "start": "up-bridge",
+                    "start": "up-whatIsUp",
                     "dest": "up-whatIsDown"
                 },
                 {
                     "start": "up-whatIsDown",
-                    "dest": "up-whatIsUp"
+                    "dest": "up-bridge"
+                },
+                {
+                    "start": "up-bridge",
+                    "dest": "up-rotateCamera"
                 }
             ]
         }
