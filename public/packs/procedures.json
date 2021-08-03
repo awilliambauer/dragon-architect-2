@@ -1,0 +1,24 @@
+{
+    "name": "procedures",
+    "seqs": [
+        {
+            "name": "Procedure Puzzles",
+            "tag": "procedure",
+            "puzzles": [
+                "procedures-square",
+                "procedures-call",
+                "procedures-def"
+            ],
+            "connections": [
+                {
+                    "start": "procedures-square",
+                    "dest": "procedures-call"
+                },
+                {
+                    "start": "procedures-call",
+                    "dest": "procedures-def"
+                }
+            ]
+        }
+    ]
+}
