@@ -1,10 +1,11 @@
 {
     "name": "Placing Cubes",
     "format_version": 1,
+    "tag": "tutorial-placeCubes",
     "library": {
         "restricted": ["blocks"],
         "required": ["move2"],
-        "granted": ["place"]
+        "granted": ["place", "time_slider", "speed_slider", "gallery"]
     },
     "world": {
         "pos": [0, 0, 0],
@@ -13,5 +14,6 @@
     "program": "puzzles/code/tutorial-placingCubes.kobold",
     "goal": "min_cube",
     "goalValue": "4",
-    "instructions": "Help me place 4 {cube}! You'll need some more {placecube} blocks"
+    "instructions": "Help me place 4 {cube}! You'll need some more {placecube} blocks",
+    "logging_id": "aad39525-99a7-4833-a3d2-87ad9d5cbec3"
 }

@@ -88,6 +88,8 @@ class App extends React.Component<{}, GameState> {
 
   // when the user completes a puzzle
   win_puzzle() {
+    this.puzzle_manager.complete_puzzle();
+    this.puzzle_manager.print_completed_puzzle();
     this.setState({
       view: ViewType.PuzzlePause
     })
@@ -168,7 +170,7 @@ class App extends React.Component<{}, GameState> {
           </div>
 
           {(this.state.view === ViewType.PuzzlePause) &&
-           <div style={{ width: '200px', height: '100px', left: '500px', backgroundColor: '#964B00', color: 'yellow', position: 'absolute'}}>
+           <div style={{ width: '200px', height: '100px', left: '300px', backgroundColor: '#964B00', color: 'yellow', position: 'absolute'}}>
             <p>Good job! Click continue to go to the next puzzle!</p>
             <button onClick={() => { this.continue() }}>Continue</button>
           </div>}

@@ -34,6 +34,7 @@ type CurrentPuzzle = {
 export default class PuzzleManager {
     packs: PuzzlePack[]
     current_puzzle: CurrentPuzzle
+    completed_puzzle: Map<string, string[]> //the map of completed puzzles
 
     constructor() {
         this.packs = []
@@ -41,6 +42,31 @@ export default class PuzzleManager {
             pack_index: 0,
             seq_index: 0,
             puz_index: 0
+        }
+        this.completed_puzzle = new Map<string, string[]>();//key = name of PuzzlePack, value = puzzles
+    }
+
+    //adds current puzzle to completed_puzzle
+    complete_puzzle() {
+        let puzzlePackName = this.get_current_pack().name;
+        
+        let puzzles = this.completed_puzzle.get(puzzlePackName);
+
+        if (puzzles === undefined) {
+            this.completed_puzzle.set(puzzlePackName, [this.get_current_puzzle()]);
+        } else {
+            let puzzleToAdd = this.get_current_puzzle();
+            puzzles.push(puzzleToAdd);
+            this.completed_puzzle.set(puzzlePackName, puzzles);
+        }
+    }
+    
+    //used to test complete_puzzle and check player progress
+    print_completed_puzzle() {
+        console.log("completed puzzles: ")
+        for (let pack of this.completed_puzzle.keys()){
+            let puzzles = this.completed_puzzle.get(pack);
+            console.log(puzzles);
         }
     }
 

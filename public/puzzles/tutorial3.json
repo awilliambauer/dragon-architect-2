@@ -3,7 +3,7 @@
     "format_version": 1,
     "tag": "tutorial3",
     "library": {
-        "restricted": ["down"],
+        "restricted": ["blocks"],
         "required": ["move2"],
         "granted": []
     },
@@ -14,5 +14,6 @@
     "program": "puzzles/code/tutorial3.kobold",
     "goal": "solution",
     "solution": "puzzles/code/tutorial3-solution.kobold",
+    "logging_id": "cac44413-3a0d-4a3c-8647-d12ccd698020",
     "instructions": "Help me get to {pinkboxGround}! A {right} tells me to turn right."
 }

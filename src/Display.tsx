@@ -427,7 +427,9 @@ export default class Display extends React.Component<GameState> {
                 }
                 if (goal.kind === GoalInfoType.DragonPos) {
                     if (goal.position) {
+                        console.log(JSON.stringify(goal.position));
                         this.addDragonCube(this.goalOptMaps, goal.position, this.storageMaps.goalCubes, this.geometries.dragonGoalMat);
+                        console.log(JSON.stringify(this.storageMaps.goalCubes));
                     }
                 }
             });

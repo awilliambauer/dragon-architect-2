@@ -2,7 +2,7 @@
     "name": "Up By Any Other Name",
     "format_version": 1,
     "library": {
-        "restricted": ["up", "place", "defproc", "defproc_noargs"],
+        "restricted": ["up", "defproc", "defproc_noargs"],
         "required": ["set"],
         "granted": []
     },
