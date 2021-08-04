@@ -109,8 +109,9 @@ enum GoalType {
     MinCube = "min_cube"
 }
 
-type PuzzleSpec = {
+export type PuzzleSpec = {
     name: string
+    tag: string
     library: LibrarySpec
     world: WorldSpec
     program?: string      // file containing starting program; undefined indicates no starting code
@@ -181,6 +182,7 @@ export default class PuzzleState {
         granted: []
     }
     name: string = ""
+    tag: string = ""
     win_callback: () => void = () => { }
 
     check_completed(gamestate: GameState) {
@@ -315,6 +317,7 @@ export default class PuzzleState {
                     state.start_world = make_world_from_spec(data.world);
                     state.library = data.library;
                     state.name = data.name;
+                    state.tag = data.tag;
                     state.instructions = process_instruction_string(data.instructions)
                     return data;
                 })
