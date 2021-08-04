@@ -45,7 +45,7 @@ export default class PuzzleManager {
             seq_index: 0,
             puz_index: 0
         }
-        this.completed_puzzle = new Map<string, PuzzleSpec[]>();//key = name of PuzzlePack, value = puzzles
+        this.completed_puzzle = new Map<string, PuzzleSpec[]>();//key = name of PuzzlePack, value = a puzzle
     }
 
     //adds current puzzle to completed_puzzle
@@ -53,14 +53,16 @@ export default class PuzzleManager {
         let puzzlePackName = this.get_current_pack().name;
 
         let puzzles = this.completed_puzzle.get(puzzlePackName);
-
-        if (puzzles === undefined) {
+        
+        if (puzzles === undefined) { 
+            //if current puzzle is the first one in its own pack that has been completed
             this.completed_puzzle.set(puzzlePackName, [this.get_current_puzzle()]);
         } else {
             let puzzleToAdd = this.get_current_puzzle();
             puzzles.push(puzzleToAdd);
             this.completed_puzzle.set(puzzlePackName, puzzles);
         }
+
     }
 
     //used to test complete_puzzle and check player progress
@@ -68,7 +70,11 @@ export default class PuzzleManager {
         console.log("completed puzzles: ")
         for (let pack of this.completed_puzzle.keys()) {
             let puzzles = this.completed_puzzle.get(pack);
-            console.log(puzzles);
+            if(puzzles) {
+                for (let puzzle of puzzles) {
+                    console.log(puzzle.name);
+                }
+            }
         }
     }
 

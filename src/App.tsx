@@ -82,11 +82,33 @@ class App extends React.Component<{}, GameState> {
 
   // when the user completes a puzzle
   win_puzzle() {
+    console.log("win_puzzle called"); //currently not called
     this.puzzle_manager.complete_puzzle();
-    this.puzzle_manager.print_completed_puzzle();
+    //this.puzzle_manager.print_completed_puzzle();
     this.setState({
       view: ViewType.PuzzlePause
     })
+  }
+
+  get_granted_blocks() {
+    //a set is used to avoid repetitive addition of a granted block
+    let granted_blocks = new Set();
+    console.log(this.puzzle_manager.completed_puzzle.keys()); //this line prints [], an empty array
+    for (let pack of this.puzzle_manager.completed_puzzle.keys()) {
+        let puzzles = this.puzzle_manager.completed_puzzle.get(pack);
+        
+        if (puzzles){
+            for (let puzzle of puzzles) {
+                let blocks = puzzle.library.granted;
+                for (let block of blocks) {
+                  granted_blocks.add(block);
+                }
+            }
+        }  
+    }
+    let granted = Array.from(granted_blocks);
+    console.log(granted as Array<string>); //return in the form of an array
+    return granted as Array<string>; //return in the form of an array
   }
 
   componentDidMount() {
@@ -113,6 +135,7 @@ class App extends React.Component<{}, GameState> {
           simulator: new IncrementalSimulator(this.state.world, ast)
         }, () => this.state.simulator.set_running())
       }
+      this.get_granted_blocks();
     }
     else { // reset 
       this.setState({
@@ -130,6 +153,7 @@ class App extends React.Component<{}, GameState> {
 
   // when user clicks the "continue" button after completing a puzzle
   continue() {
+    console.log("continue called"); //currently not called
     this.setState({
       view: ViewType.Normal
     });

@@ -384,6 +384,7 @@ export default class Display extends React.Component<GameState> {
                 this.props.simulator.execute_to_command(); // The command is executed
                 this.clockStuff.time = 0; // Reset time to 0
                 if (this.props.simulator.is_finished()) {
+                    console.log("puzzleState defined: " + this.props.puzzle !== undefined);
                     this.props.puzzle?.check_completed(this.props);
                 }
             }

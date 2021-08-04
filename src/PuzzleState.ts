@@ -186,6 +186,7 @@ export default class PuzzleState {
     win_callback: () => void = () => { }
 
     check_completed(gamestate: GameState) {
+        console.log("check_completed called");
         if (this.is_complete(gamestate)) {
             this.win_callback();
         }
@@ -203,12 +204,12 @@ export default class PuzzleState {
                     RemoveCube: check that this cube does not exist
                     DragonPos: check dragon's position
         */
+        console.log("is_complete called");
         if (!gamestate.simulator.is_finished()) {
             return false;
         }
         let posRequired;
         for (let goal of this.goals) {
-            //console.log("goal.kind: " + goal.kind);
             switch (goal.kind) {
                 case GoalInfoType.RunOnly:
                     return true;
@@ -264,6 +265,7 @@ export default class PuzzleState {
                 }
             });
         }
+
 
         /// set up the puzzle's solution, potentially reading it from a file
         let fetchSolution = (data: PuzzleSpec) => {
