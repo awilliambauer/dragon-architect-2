@@ -94,6 +94,7 @@ export default class PuzzleManager {
         for (let seq of this.get_current_pack().seqs) {
             puzzles.push(...seq.puzzles.map(ps => ps.tag));
         }
+        console.log("puzzles: " + puzzles);
         return puzzles;
     }
 

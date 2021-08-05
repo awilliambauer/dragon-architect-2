@@ -28,6 +28,7 @@ const COLOR_TEASER = '#707070';
 
 const KoboldConvert = new Map<string, (block: Blockly.Block) => string>();
 
+const allGranted = ['move2', 'place', 'remove', 'up', 'down', 'repeat', 'defproc'];
 
 // little helper functions for the recursive xmlHelper() function
 export function breakStmt(stmt: Statement) {
@@ -451,21 +452,27 @@ export default class BlocklyComp extends React.Component<GameState> {
     componentDidMount() {
         this.workspace = Blockly.inject('blocklyDiv',
             { toolbox: document.getElementById('toolbox')! });
-        this.updateToolbox(this.workspace);
+        this.updateToolbox(this.workspace, ['move2']);
     }
     componentDidUpdate(){
         if (this.workspace) {
-            this.updateToolbox(this.workspace);
+            if(this.props.puzzle) {
+                this.updateToolbox(this.workspace, this.props.puzzle?.library.granted);
+            }
+            else {
+                this.updateToolbox(this.workspace, allGranted);
+            }
         }
     }
 
-    updateToolbox(workspace: Blockly.WorkspaceSvg) {
+    updateToolbox(workspace: Blockly.WorkspaceSvg, granted_blocks: string[]) {
         let toolXML = '<xml id="toolbox" style="display: none">';
         
         _.forEach(COMMANDS, (data, name) => {
             //console.log(restricted_list);
             //console.log(restricted_list.includes("repeat"));
-            if ( !_.includes(this.props.puzzle?.library.restricted, name)) {
+            if ( !_.includes(this.props.puzzle?.library.restricted, name) && _.includes(granted_blocks,name)) {
+                console.log(name);
                 toolXML += data.block;
             }
         });

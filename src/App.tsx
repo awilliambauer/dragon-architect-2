@@ -93,7 +93,7 @@ class App extends React.Component<{}, GameState> {
   get_granted_blocks() {
     //a set is used to avoid repetitive addition of a granted block
     let granted_blocks = new Set();
-    console.log(this.puzzle_manager.completed_puzzle.keys()); //this line prints [], an empty array
+    // console.log(this.puzzle_manager.completed_puzzle.keys());
     for (let pack of this.puzzle_manager.completed_puzzle.keys()) {
         let puzzles = this.puzzle_manager.completed_puzzle.get(pack);
         
@@ -108,7 +108,11 @@ class App extends React.Component<{}, GameState> {
     }
     let granted = Array.from(granted_blocks);
     console.log(granted as Array<string>); //return in the form of an array
-    return granted as Array<string>; //return in the form of an array
+    // return granted as Array<string>; //return in the form of an array
+    
+    if (this.state.puzzle !== undefined) {
+      this.state.puzzle.library.granted = granted as Array<string>;
+    }
   }
 
   componentDidMount() {
@@ -159,6 +163,7 @@ class App extends React.Component<{}, GameState> {
     });
     let puzzle = this.puzzle_manager.next_puzzle();
     if (puzzle) {
+      console.log(`puzzles/${puzzle.tag}.json`);
       this.load_puzzle(`puzzles/${puzzle.tag}.json`);
     } else {
       this.load_sandbox();
