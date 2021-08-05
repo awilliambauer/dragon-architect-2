@@ -116,7 +116,7 @@ class App extends React.Component<{}, GameState> {
       .then(() => {
         this.setState({
           view: ViewType.Normal
-        }, () => this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle()}.json`));
+        }, () => this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle().tag}.json`));
       })
   }
 
@@ -159,7 +159,7 @@ class App extends React.Component<{}, GameState> {
     });
     let puzzle = this.puzzle_manager.next_puzzle();
     if (puzzle) {
-      this.load_puzzle(`puzzles/${puzzle}.json`);
+      this.load_puzzle(`puzzles/${puzzle.tag}.json`);
     } else {
       this.load_sandbox();
     }
@@ -168,7 +168,7 @@ class App extends React.Component<{}, GameState> {
   // called when a new pack is selected via the drop-down
   on_change_pack(event: React.ChangeEvent<HTMLSelectElement>) {
     this.puzzle_manager.set_pack(parseInt(event.target.value));
-    this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle()}.json`);
+    this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle().tag}.json`);
   }
 
   render() {
