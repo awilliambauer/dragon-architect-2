@@ -12,6 +12,9 @@ import PuzzleManager from './PuzzleManager';
 import { timeStamp } from 'console';
 import "./css/index.css"
 
+
+const allGranted = ['move2', 'place', 'remove', 'up', 'down', 'repeat', 'defproc'];
+
 export type GameState = {
   program: Program
   world: WorldState
@@ -90,6 +93,12 @@ class App extends React.Component<{}, GameState> {
     //this.puzzle_manager.print_completed_puzzle();
     this.setState({
       view: ViewType.PuzzlePause
+    })
+  }
+
+  activate_dev_mode() {
+    this.setState({
+      grantedBlocks: allGranted
     })
   }
 
@@ -204,6 +213,9 @@ class App extends React.Component<{}, GameState> {
                   {this.puzzle_manager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
                 </select>
               </div>
+            </div>
+            <div id="header-buttons">
+              <button name="dev-mode" onClick={() => this.activate_dev_mode()}>Dev Mode</button>
             </div>
           </header>
           <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
