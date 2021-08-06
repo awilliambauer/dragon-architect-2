@@ -1,6 +1,7 @@
 {
     "name": "Up By Any Other Name",
     "format_version": 1,
+    "tag": "procedures-call",
     "library": {
         "restricted": ["up", "defproc", "defproc_noargs"],
         "required": ["set"],

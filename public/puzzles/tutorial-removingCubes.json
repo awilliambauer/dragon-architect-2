@@ -1,6 +1,7 @@
 {
     "name": "Removing Cubes",
     "format_version": 1,
+    "tag": "tutorial-removingCubes",
     "library": {
         "required": ["move2", "place"],
         "granted": ["remove"]

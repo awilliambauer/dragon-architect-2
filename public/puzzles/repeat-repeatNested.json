@@ -1,6 +1,7 @@
 {
     "name": "Square Dancing",
     "format_version": 1,
+    "tag": "repeat-repeatNested",
     "library": {
         "restricted":["move2", "place", "up", "down", "remove", "set"],
         "required":["repeat"],

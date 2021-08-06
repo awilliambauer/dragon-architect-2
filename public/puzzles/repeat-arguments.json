@@ -1,6 +1,7 @@
 {
     "name": "Winning Arguments",
     "format_version": 1,
+    "tag": "repeat-arguments",
     "library": {
         "restricted": ["blocks"],
         "required": [],

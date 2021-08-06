@@ -1,6 +1,7 @@
 {
     "name": "What is Up?",
     "format_version": 1,
+    "tag": "up-whatIsUp",
     "library": {
         "required": ["move2"],
         "granted": ["up"]
