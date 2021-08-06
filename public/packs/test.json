@@ -5,12 +5,12 @@
             "name": "Test Pack",
             "tag": "test",
             "puzzles": [
-                "tutorial4",
+                "tutorial-placingCubes",
                 "up-whatIsUp"
             ],
             "connections": [
                 {
-                    "start": "tutorial4",
+                    "start": "tutorial-placingCubes",
                     "dest": "up-whatIsUp"
                 }
             ]

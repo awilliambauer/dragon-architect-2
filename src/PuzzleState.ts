@@ -109,8 +109,9 @@ enum GoalType {
     MinCube = "min_cube"
 }
 
-type PuzzleSpec = {
+export type PuzzleSpec = {
     name: string
+    tag: string
     library: LibrarySpec
     world: WorldSpec
     program?: string      // file containing starting program; undefined indicates no starting code
@@ -181,7 +182,16 @@ export default class PuzzleState {
         granted: []
     }
     name: string = ""
+    tag: string = ""
     win_callback: () => void = () => { }
+
+    
+    print_puzzleState() {
+        let str = "";
+        str += " instructions: " + this.instructions;
+        str += " granted: " + this.library.granted;
+        console.log("print_puzzleState: " + str);
+    }
 
     check_completed(gamestate: GameState) {
         if (this.is_complete(gamestate)) {
@@ -206,7 +216,6 @@ export default class PuzzleState {
         }
         let posRequired;
         for (let goal of this.goals) {
-            //console.log("goal.kind: " + goal.kind);
             switch (goal.kind) {
                 case GoalInfoType.RunOnly:
                     return true;
@@ -263,6 +272,7 @@ export default class PuzzleState {
             });
         }
 
+
         /// set up the puzzle's solution, potentially reading it from a file
         let fetchSolution = (data: PuzzleSpec) => {
             return new Promise<PuzzleSpec>((resolve, reject) => {
@@ -315,6 +325,7 @@ export default class PuzzleState {
                     state.start_world = make_world_from_spec(data.world);
                     state.library = data.library;
                     state.name = data.name;
+                    state.tag = data.tag;
                     state.instructions = process_instruction_string(data.instructions)
                     return data;
                 })

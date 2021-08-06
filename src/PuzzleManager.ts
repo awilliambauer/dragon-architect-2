@@ -1,4 +1,5 @@
-import _ from "lodash"
+import _, { eq } from "lodash"
+import { PuzzleSpec } from "./PuzzleState"
 
 type PuzzleConnection = {
     source: string
@@ -9,7 +10,7 @@ type PuzzleConnection = {
 type PuzzleSequence = {
     name: string // display name
     tag: string // internal name
-    puzzles: string[] // list of tags for the puzzles in the sequence
+    puzzles: PuzzleSpec[] // list of parsed PuzzleSpecs for the puzzles in the sequence
     connections: PuzzleConnection[] // connections between puzzles (i.e., edges in a graph)
 }
 
@@ -35,7 +36,8 @@ type PuzzleIndex = {
 export default class PuzzleManager {
     packs: PuzzlePack[]
     current_puzzle: PuzzleIndex
-    completed_puzzle: Map<string, string[]> //the map of completed puzzles
+    completed_puzzle: Map<string, PuzzleSpec[]> //the map of completed puzzles
+    granted_blocks: Array<string>
 
     constructor() {
         this.packs = []
@@ -44,30 +46,37 @@ export default class PuzzleManager {
             seq_index: 0,
             puz_index: 0
         }
-        this.completed_puzzle = new Map<string, string[]>();//key = name of PuzzlePack, value = puzzles
+        this.completed_puzzle = new Map<string, PuzzleSpec[]>();//key = name of PuzzlePack, value = a puzzle
+        this.granted_blocks = new Array<string>();
     }
 
     //adds current puzzle to completed_puzzle
     complete_puzzle() {
         let puzzlePackName = this.get_current_pack().name;
-        
-        let puzzles = this.completed_puzzle.get(puzzlePackName);
 
-        if (puzzles === undefined) {
+        let puzzles = this.completed_puzzle.get(puzzlePackName);
+        
+        if (puzzles === undefined) { 
+            //if current puzzle is the first one in its own pack that has been completed
             this.completed_puzzle.set(puzzlePackName, [this.get_current_puzzle()]);
         } else {
             let puzzleToAdd = this.get_current_puzzle();
             puzzles.push(puzzleToAdd);
             this.completed_puzzle.set(puzzlePackName, puzzles);
         }
+
     }
-    
+
     //used to test complete_puzzle and check player progress
     print_completed_puzzle() {
         console.log("completed puzzles: ")
-        for (let pack of this.completed_puzzle.keys()){
+        for (let pack of this.completed_puzzle.keys()) {
             let puzzles = this.completed_puzzle.get(pack);
-            console.log(puzzles);
+            if(puzzles) {
+                for (let puzzle of puzzles) {
+                    console.log(puzzle.name);
+                }
+            }
         }
     }
 
@@ -85,12 +94,13 @@ export default class PuzzleManager {
     get_all_puzzles(): string[] {
         let puzzles: string[] = [];
         for (let seq of this.get_current_pack().seqs) {
-            puzzles.push(...seq.puzzles);
+            puzzles.push(...seq.puzzles.map(ps => ps.tag));
         }
+        // console.log("puzzles: " + puzzles);
         return puzzles;
     }
 
-    get_current_puzzle(): string {
+    get_current_puzzle(): PuzzleSpec {
         return this.get_current_seq().puzzles[this.current_puzzle.puz_index];
     }
 
@@ -102,7 +112,7 @@ export default class PuzzleManager {
         return this.packs[this.current_puzzle.pack_index];
     }
 
-    next_puzzle(): string | undefined {
+    next_puzzle(): PuzzleSpec | undefined {
         this.current_puzzle.puz_index++;
         // check if we've reached the end of the current sequence
         if (this.current_puzzle.puz_index == this.get_current_seq().puzzles.length) {
@@ -130,6 +140,23 @@ export default class PuzzleManager {
         });
     }
 
+    load_all_puzzles() {
+        let promises: Promise<PuzzleSpec>[] = [];
+        for (let pack of this.packs) {
+            for (let seq of pack.seqs) {
+                // HACK: seqs is a list of strings when initially parsed from JSON,
+                // we are replacing those with PuzzleStates here
+                ((seq.puzzles as unknown) as string[]).forEach((tag, index) => {
+                    promises.push(fetch(`puzzles/${tag}.json`)
+                        .then(response => response.json())
+                        .then(json => seq.puzzles[index] = json)
+                        .catch(error => console.error(`Could not load spec from puzzles/${tag}.json: ${error}`)));
+                });        
+            }
+        }
+        return Promise.all(promises);
+    }
+
     // the nested promise structure is a little wonky, and doesn't handle errors as gracefully as I'd like
     // but it does work
     initialize() {
@@ -138,6 +165,7 @@ export default class PuzzleManager {
             .then(this.load_packs)
             .then(pack_promises => Promise.all(pack_promises))
             .then(packs => this.packs = packs)
+            .then(() => this.load_all_puzzles())
             .catch(error => console.error(`Problem encountered loading packs/packs.json: ${error}`));
     }
 }

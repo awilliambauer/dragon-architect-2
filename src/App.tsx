@@ -9,6 +9,7 @@ import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
 import { Run } from './RunButton';
 import _ from 'lodash';
 import PuzzleManager from './PuzzleManager';
+import { timeStamp } from 'console';
 
 export type GameState = {
   program: Program
@@ -17,6 +18,7 @@ export type GameState = {
   simulator: IncrementalSimulator
   reset: boolean
   lastSavedWorld: WorldState | undefined
+  grantedBlocks: Array<string>
   view: ViewType
 }
 
@@ -42,6 +44,7 @@ class App extends React.Component<{}, GameState> {
       world: new WorldState(),
       simulator: new IncrementalSimulator(new WorldState(), EMPTY_PROGRAM),
       lastSavedWorld: undefined,
+      grantedBlocks: new Array<string>(),
       view: ViewType.Loading
     }
   }
@@ -83,9 +86,28 @@ class App extends React.Component<{}, GameState> {
   // when the user completes a puzzle
   win_puzzle() {
     this.puzzle_manager.complete_puzzle();
-    this.puzzle_manager.print_completed_puzzle();
+    //this.puzzle_manager.print_completed_puzzle();
     this.setState({
       view: ViewType.PuzzlePause
+    })
+  }
+
+  get_granted_blocks() {
+    for (let pack of this.puzzle_manager.completed_puzzle.keys()) {
+        let puzzles = this.puzzle_manager.completed_puzzle.get(pack);
+        
+        if (puzzles){
+            for (let puzzle of puzzles) {
+                let blocks = puzzle.library.granted;
+                for (let block of blocks) {
+                  if (!this.puzzle_manager.granted_blocks.includes(block))
+                  this.puzzle_manager.granted_blocks.push(block);
+                }
+            }
+        }  
+    }
+    this.setState({
+      grantedBlocks: this.puzzle_manager.granted_blocks
     })
   }
 
@@ -94,9 +116,10 @@ class App extends React.Component<{}, GameState> {
       .then(() => {
         this.setState({
           view: ViewType.Normal
-        }, () => this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle()}.json`));
+        }, () => this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle().tag}.json`));
       })
   }
+
 
   // run the user's current block program
   run_program() {
@@ -113,6 +136,7 @@ class App extends React.Component<{}, GameState> {
           simulator: new IncrementalSimulator(this.state.world, ast)
         }, () => this.state.simulator.set_running())
       }
+      this.get_granted_blocks();
     }
     else { // reset 
       this.setState({
@@ -125,6 +149,7 @@ class App extends React.Component<{}, GameState> {
     this.setState({
       reset: !this.state.reset
     });
+    this.get_granted_blocks();
 
   }
 
@@ -135,7 +160,8 @@ class App extends React.Component<{}, GameState> {
     });
     let puzzle = this.puzzle_manager.next_puzzle();
     if (puzzle) {
-      this.load_puzzle(`puzzles/${puzzle}.json`);
+      // console.log(`puzzles/${puzzle.tag}.json`);
+      this.load_puzzle(`puzzles/${puzzle.tag}.json`);
     } else {
       this.load_sandbox();
     }
@@ -144,7 +170,7 @@ class App extends React.Component<{}, GameState> {
   // called when a new pack is selected via the drop-down
   on_change_pack(event: React.ChangeEvent<HTMLSelectElement>) {
     this.puzzle_manager.set_pack(parseInt(event.target.value));
-    this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle()}.json`);
+    this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle().tag}.json`);
   }
 
   render() {
@@ -179,7 +205,7 @@ class App extends React.Component<{}, GameState> {
               </div>
             </div>
           </header>
-          <Run reset={this.state.reset} onClick={() => { this.run_program() }} />
+          <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
           <div id="main-view-code">
             <BlocklyComp {...this.state} />
           </div>
@@ -187,7 +213,7 @@ class App extends React.Component<{}, GameState> {
           {(this.state.view === ViewType.PuzzlePause) &&
             <div style={{ width: '200px', height: '100px', left: '500px', backgroundColor: '#964B00', color: 'yellow', position: 'absolute' }}>
               <p>Good job! Click continue to go to the next puzzle!</p>
-              <button onClick={() => { this.continue() }}>Continue</button>
+              <button onClick={() => { this.continue(); this.get_granted_blocks() }}>Continue</button>
             </div>}
 
           <div id="main-view-game">
