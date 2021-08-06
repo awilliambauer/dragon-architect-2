@@ -185,8 +185,15 @@ export default class PuzzleState {
     tag: string = ""
     win_callback: () => void = () => { }
 
+    
+    print_puzzleState() {
+        let str = "";
+        str += " instructions: " + this.instructions;
+        str += " granted: " + this.library.granted;
+        console.log("print_puzzleState: " + str);
+    }
+
     check_completed(gamestate: GameState) {
-        console.log("check_completed called");
         if (this.is_complete(gamestate)) {
             this.win_callback();
         }
@@ -204,7 +211,6 @@ export default class PuzzleState {
                     RemoveCube: check that this cube does not exist
                     DragonPos: check dragon's position
         */
-        console.log("is_complete called");
         if (!gamestate.simulator.is_finished()) {
             return false;
         }

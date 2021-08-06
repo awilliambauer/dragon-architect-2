@@ -37,6 +37,7 @@ export default class PuzzleManager {
     packs: PuzzlePack[]
     current_puzzle: PuzzleIndex
     completed_puzzle: Map<string, PuzzleSpec[]> //the map of completed puzzles
+    granted_blocks: Array<string>
 
     constructor() {
         this.packs = []
@@ -46,6 +47,7 @@ export default class PuzzleManager {
             puz_index: 0
         }
         this.completed_puzzle = new Map<string, PuzzleSpec[]>();//key = name of PuzzlePack, value = a puzzle
+        this.granted_blocks = new Array<string>();
     }
 
     //adds current puzzle to completed_puzzle
@@ -94,7 +96,7 @@ export default class PuzzleManager {
         for (let seq of this.get_current_pack().seqs) {
             puzzles.push(...seq.puzzles.map(ps => ps.tag));
         }
-        console.log("puzzles: " + puzzles);
+        // console.log("puzzles: " + puzzles);
         return puzzles;
     }
 

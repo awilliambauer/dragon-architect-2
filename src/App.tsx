@@ -9,6 +9,7 @@ import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
 import { Run } from './RunButton';
 import _ from 'lodash';
 import PuzzleManager from './PuzzleManager';
+import { timeStamp } from 'console';
 
 export type GameState = {
   program: Program
@@ -17,6 +18,7 @@ export type GameState = {
   simulator: IncrementalSimulator
   reset: boolean
   lastSavedWorld: WorldState | undefined
+  grantedBlocks: Array<string>
   view: ViewType
 }
 
@@ -42,6 +44,7 @@ class App extends React.Component<{}, GameState> {
       world: new WorldState(),
       simulator: new IncrementalSimulator(new WorldState(), EMPTY_PROGRAM),
       lastSavedWorld: undefined,
+      grantedBlocks: new Array<string>(),
       view: ViewType.Loading
     }
   }
@@ -82,7 +85,6 @@ class App extends React.Component<{}, GameState> {
 
   // when the user completes a puzzle
   win_puzzle() {
-    console.log("win_puzzle called"); //currently not called
     this.puzzle_manager.complete_puzzle();
     //this.puzzle_manager.print_completed_puzzle();
     this.setState({
@@ -91,9 +93,6 @@ class App extends React.Component<{}, GameState> {
   }
 
   get_granted_blocks() {
-    //a set is used to avoid repetitive addition of a granted block
-    let granted_blocks = new Set();
-    // console.log(this.puzzle_manager.completed_puzzle.keys());
     for (let pack of this.puzzle_manager.completed_puzzle.keys()) {
         let puzzles = this.puzzle_manager.completed_puzzle.get(pack);
         
@@ -101,18 +100,15 @@ class App extends React.Component<{}, GameState> {
             for (let puzzle of puzzles) {
                 let blocks = puzzle.library.granted;
                 for (let block of blocks) {
-                  granted_blocks.add(block);
+                  if (!this.puzzle_manager.granted_blocks.includes(block))
+                  this.puzzle_manager.granted_blocks.push(block);
                 }
             }
         }  
     }
-    let granted = Array.from(granted_blocks);
-    console.log(granted as Array<string>); //return in the form of an array
-    // return granted as Array<string>; //return in the form of an array
-    
-    if (this.state.puzzle !== undefined) {
-      this.state.puzzle.library.granted = granted as Array<string>;
-    }
+    this.setState({
+      grantedBlocks: this.puzzle_manager.granted_blocks
+    })
   }
 
   componentDidMount() {
@@ -123,6 +119,7 @@ class App extends React.Component<{}, GameState> {
         }, () => this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle().tag}.json`));
       })
   }
+
 
   // run the user's current block program
   run_program() {
@@ -152,18 +149,18 @@ class App extends React.Component<{}, GameState> {
     this.setState({
       reset: !this.state.reset
     });
+    this.get_granted_blocks();
 
   }
 
   // when user clicks the "continue" button after completing a puzzle
   continue() {
-    console.log("continue called"); //currently not called
     this.setState({
       view: ViewType.Normal
     });
     let puzzle = this.puzzle_manager.next_puzzle();
     if (puzzle) {
-      console.log(`puzzles/${puzzle.tag}.json`);
+      // console.log(`puzzles/${puzzle.tag}.json`);
       this.load_puzzle(`puzzles/${puzzle.tag}.json`);
     } else {
       this.load_sandbox();
@@ -208,7 +205,7 @@ class App extends React.Component<{}, GameState> {
               </div>
             </div>
           </header>
-          <Run reset={this.state.reset} onClick={() => { this.run_program() }} />
+          <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
           <div id="main-view-code">
             <BlocklyComp {...this.state} />
           </div>
@@ -216,7 +213,7 @@ class App extends React.Component<{}, GameState> {
           {(this.state.view === ViewType.PuzzlePause) &&
             <div style={{ width: '200px', height: '100px', left: '500px', backgroundColor: '#964B00', color: 'yellow', position: 'absolute' }}>
               <p>Good job! Click continue to go to the next puzzle!</p>
-              <button onClick={() => { this.continue() }}>Continue</button>
+              <button onClick={() => { this.continue(); this.get_granted_blocks() }}>Continue</button>
             </div>}
 
           <div id="main-view-game">

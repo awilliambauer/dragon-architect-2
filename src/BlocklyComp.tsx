@@ -452,12 +452,12 @@ export default class BlocklyComp extends React.Component<GameState> {
     componentDidMount() {
         this.workspace = Blockly.inject('blocklyDiv',
             { toolbox: document.getElementById('toolbox')! });
-        this.updateToolbox(this.workspace, ['move2']);
+        this.updateToolbox(this.workspace, []); // the initial toolbox, empty but we can add any block here
     }
     componentDidUpdate(){
         if (this.workspace) {
             if(this.props.puzzle) {
-                this.updateToolbox(this.workspace, this.props.puzzle?.library.granted);
+                this.updateToolbox(this.workspace, this.props.grantedBlocks);
             }
             else {
                 this.updateToolbox(this.workspace, allGranted);
@@ -467,18 +467,15 @@ export default class BlocklyComp extends React.Component<GameState> {
 
     updateToolbox(workspace: Blockly.WorkspaceSvg, granted_blocks: string[]) {
         let toolXML = '<xml id="toolbox" style="display: none">';
-        
+        // console.log("updating toolbox: this.props.grantedBlocks = " + granted_blocks);
         _.forEach(COMMANDS, (data, name) => {
-            //console.log(restricted_list);
-            //console.log(restricted_list.includes("repeat"));
-            if ( !_.includes(this.props.puzzle?.library.restricted, name) && _.includes(granted_blocks,name)) {
-                console.log(name);
+            
+            if ( !_.includes(this.props.puzzle?.library.restricted, name) && _.includes(granted_blocks,name) ) {
                 toolXML += data.block;
             }
         });
         
         toolXML += '</xml>';
-        //console.log(toolXML);
         
         workspace.updateToolbox(toolXML);
 
