@@ -8,6 +8,7 @@ import { mapHasVector3 } from './Util';
 import Blockly from 'blockly';
 import Slider from './Slider';
 import { CameraZoomIn, CameraZoomOut, CameraRotateRight, CameraRotateLeft, CameraTiltDown, CameraTiltUp } from './CameraPositioning';
+import "./css/index.css"
 
 // All constant variables
 type Constants = {
@@ -284,8 +285,6 @@ export default class Display extends React.Component<GameState> {
         this.storageMaps.cubeColors.forEach((color: string) => {
             this.cubeOptMaps.available.set(color, []); // Set each color in available map to an empty array
         });
-        this.goalOptMaps.available.set(`#${this.geometries.cubeGoalMat.color.getHexString()}`, []);
-        this.goalOptMaps.available.set(`#${this.geometries.dragonGoalMat.color.getHexString()}`, []);
 
         // Craete divRed
         this.divRef = React.createRef();
@@ -317,61 +316,68 @@ export default class Display extends React.Component<GameState> {
     };
 
     // Remove cube
-    removeCube(optMaps: OptimizationMaps, cube: THREE.Mesh<THREE.BufferGeometry>, color: string) {
+    removeCube(cube: THREE.Mesh<THREE.BufferGeometry>, color: string) {
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
             this.mainStuff.scene.remove(cube); // Remove from scene
             if (cube !== undefined) {
-                optMaps.available.get(color)!.push(cube);
+                this.cubeOptMaps.available.get(color)!.push(cube);
             }
         } else { // If the cube has a position property
-            optMaps.filled.set(cube.position, cube); // Set the filled object at that cube object to true
-        }
-    }
-
-    // Removes puzzle cube
-    removePuzzleCube(optMaps: OptimizationMaps, cube: THREE.Mesh<THREE.BufferGeometry>, color: string) {
-        if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
-            this.mainStuff.scene.remove(cube); // Remove from scene
-            if (cube !== undefined) {
-                optMaps.available.get(color)!.push(cube);
-            }
-        } else { // If the cube has a position property
-            optMaps.filled.set(cube.position, cube); // Set the filled object at that cube object to true
+            this.cubeOptMaps.filled.set(cube.position, cube); // Set the filled object at that cube object to true
         }
     }
 
     // Add cube
-    addCube(optMaps: OptimizationMaps, cubePosition: THREE.Vector3, typeOfCube: Map<string, THREE.Mesh[]>, material: THREE.MeshLambertMaterial) {
-        if (!mapHasVector3(optMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
-            let existingCube = optMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
+    addCube(cubePosition: THREE.Vector3, typeOfCube: Map<string, THREE.Mesh[]>, material: THREE.MeshLambertMaterial) {
+        if (!mapHasVector3(this.cubeOptMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
+            let existingCube = this.cubeOptMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
+            console.log(existingCube);
             if (existingCube) { // If there is a cube available....
+                console.log("Entered existing cube");
                 existingCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
                 this.mainStuff.scene.add(existingCube);
+                this.cubeOptMaps.filled.set(existingCube.position, existingCube);
             } else { // If there isn't a cube mesh available....
+                console.log("Entered new cube");
                 let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, material) // ...Create a new cube mesh
                 newCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
                 typeOfCube.get(`#${material.color.getHexString()}`)!.push(newCube);
-                optMaps.filled.set(newCube.position, newCube);
+                this.cubeOptMaps.filled.set(newCube.position, newCube);
                 this.mainStuff.scene.add(newCube);
             }
         }
     }
 
-    // This adds a dragon position cube (only difference is the offSet - it's 1 z-value higher for the dragon)
-    addDragonCube(optMaps: OptimizationMaps, cubePosition: THREE.Vector3, typeOfCube: Map<string, THREE.Mesh[]>, material: THREE.MeshLambertMaterial) {
-        if (!mapHasVector3(optMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
-            let existingCube = optMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
-            if (existingCube) { // If there is a cube available....
-                existingCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
-                this.mainStuff.scene.add(existingCube);
-            } else { // If there isn't a cube mesh available....
-                let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, material) // ...Create a new cube mesh
-                newCube.position.copy(cubePosition).add(this.cameraPos.dragonOffset);
-                typeOfCube.get(`#${material.color.getHexString()}`)!.push(newCube);
-                optMaps.filled.set(newCube.position, newCube);
-                this.mainStuff.scene.add(newCube);
-            }
+    // Removes puzzle cube
+    removePuzzleCube(cube: THREE.Mesh<THREE.BufferGeometry>) {
+        if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
+            this.mainStuff.scene.remove(cube); // Remove from scene
+            this.storageMaps.goalCubes.get(`#${this.geometries.cubeGoalMat.color.getHexString()}`)?.pop();
+            this.props.world.cube_map.delete(cube.position);
         }
+    }
+
+    // Removes puzzle cube
+    removeDragonCube(cube: THREE.Mesh<THREE.BufferGeometry>) {
+        if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
+            this.mainStuff.scene.remove(cube); // Remove from scene
+            this.storageMaps.goalCubes.get(`#${this.geometries.dragonGoalMat.color.getHexString()}`)?.pop();
+        }
+    }
+
+    addPuzzleCube(cubePosition: THREE.Vector3) {
+        let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, this.geometries.cubeGoalMat) // ...Create a new cube mesh
+        newCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
+        this.storageMaps.goalCubes.get(`#${this.geometries.cubeGoalMat.color.getHexString()}`)?.push(newCube);
+        this.mainStuff.scene.add(newCube);
+    }
+
+    // This adds a dragon position cube (only difference is the offSet - it's 1 z-value higher for the dragon)
+    addDragonCube(cubePosition: THREE.Vector3) {
+        let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, this.geometries.dragonGoalMat) // ...Create a new cube mesh
+        newCube.position.copy(cubePosition).add(this.cameraPos.dragonOffset);
+        this.storageMaps.goalCubes.get(`#${this.geometries.dragonGoalMat.color.getHexString()}`)?.push(newCube);
+        this.mainStuff.scene.add(newCube);
     }
 
     // Simulate function
@@ -413,23 +419,31 @@ export default class Display extends React.Component<GameState> {
         if (this.props.puzzle && this.puzzleInit !== this.props.puzzle.name) { // If the state has a puzzle and it hasn't been initielized yet
 
             // First remove goal cubes already placed...
-            this.goalOptMaps.filled.forEach((cube: THREE.Mesh, position: THREE.Vector3) => { // For each cube.position in the targetFilled map
-                this.removePuzzleCube(this.goalOptMaps, cube, `#${this.geometries.cubeGoalMat.color.getHexString()}`); // Remove the puzzle cube from the map
-                this.removePuzzleCube(this.goalOptMaps, cube, `#${this.geometries.dragonGoalMat.color.getHexString()}`); // Remove dragon puzzle cubes
-            });
+            if (this.storageMaps.goalCubes.get(`#${this.geometries.dragonGoalMat.color.getHexString()}`)) {
+                this.storageMaps.goalCubes.get(`#${this.geometries.dragonGoalMat.color.getHexString()}`)!.forEach((cube: THREE.Mesh) => { // For each cube.position in the targetFilled map
+                    this.removeDragonCube(cube); // Remove the puzzle cube from the map
+                    this.removeDragonCube(cube); // Remove dragon puzzle cubes
+                });
+            }
+
+            // First remove goal cubes already placed...
+            if (this.storageMaps.goalCubes.get(`#${this.geometries.cubeGoalMat.color.getHexString()}`)) {
+                this.storageMaps.goalCubes.get(`#${this.geometries.cubeGoalMat.color.getHexString()}`)!.forEach((cube: THREE.Mesh) => { // For each cube.position in the targetFilled map
+                    this.removePuzzleCube(cube); // Remove the puzzle cube from the map
+                    this.removePuzzleCube(cube); // Remove dragon puzzle cubes
+                });
+            }
 
             // ...then start adding in the goal cubes depending on goal type
             this.props.puzzle.goals.forEach((goal: GoalInfo) => { // Iterate through each cube that should be placed for the puzzle
                 if (goal.kind === GoalInfoType.AddCube) { // If goal.kind is AddCube...
                     if (goal.position) { //  And if there is a goal.position...
-                        this.addCube(this.goalOptMaps, goal.position, this.storageMaps.goalCubes, this.geometries.cubeGoalMat); // Use addCube()
+                        this.addPuzzleCube(goal.position); // Use addCube()
                     }
                 }
                 if (goal.kind === GoalInfoType.DragonPos) {
                     if (goal.position) {
-                        console.log(JSON.stringify(goal.position));
-                        this.addDragonCube(this.goalOptMaps, goal.position, this.storageMaps.goalCubes, this.geometries.dragonGoalMat);
-                        console.log(JSON.stringify(this.storageMaps.goalCubes));
+                        this.addDragonCube(goal.position);
                     }
                 }
             });
@@ -440,7 +454,7 @@ export default class Display extends React.Component<GameState> {
         // This for loop checks for cubes that are no longer in the cube_map and should be removed
         this.storageMaps.cubeColors.forEach((color: string) => { // Iterate over each color
             this.storageMaps.cubes.get(color)!.forEach((cube) => { // For each cube (mesh with material and position) in the specified color
-                this.removeCube(this.cubeOptMaps, cube, color);
+                this.removeCube(cube, color);
             });
         });
 
@@ -448,7 +462,9 @@ export default class Display extends React.Component<GameState> {
         // This loop will add a cube to the display if the cube doesn't have a position
         for (let [cubePosition, colorInd] of this.props.world.cube_map) {
             let color: string = this.storageMaps.cubeColors[colorInd];
-            this.addCube(this.cubeOptMaps, cubePosition, this.storageMaps.cubes, this.storageMaps.cubeMats.get(color)!);
+            console.log("THIS IS THE COLOR OF THE CUBE BEING ADDED: " + color);
+            console.log("CUBE POSITION: " + JSON.stringify(cubePosition));
+            this.addCube(cubePosition, this.storageMaps.cubes, this.storageMaps.cubeMats.get(color)!);
         }
         // After display is updated, the world state is no longer dirty
         this.props.world.mark_clean();
@@ -574,7 +590,7 @@ export default class Display extends React.Component<GameState> {
     render() {
         return (
             <div id="three-js" ref={this.divRef}>
-                <div id="game-controls-bar-top" className="game-controls-bar puzzleModeUI sandboxModeUI" style={{ display: "flex" }}>
+                <div id="game-controls-bar-top" className="game-controls-bar" style={{ display: "flex" }}>
                     <CameraTiltDown onClickFunction={this.tiltCameraDown} />
                     <CameraTiltUp onClickFunction={this.tiltCameraUp} />
                     <CameraRotateLeft onClickFunction={this.rotateCameraLeft} />

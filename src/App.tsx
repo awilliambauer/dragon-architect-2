@@ -10,6 +10,7 @@ import { Run } from './RunButton';
 import _ from 'lodash';
 import PuzzleManager from './PuzzleManager';
 import { timeStamp } from 'console';
+import "./css/index.css"
 
 export type GameState = {
   program: Program
