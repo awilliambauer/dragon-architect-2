@@ -1,3 +1,4 @@
+@frozen=all
 Forward(3)
 PlaceCube(0)
 Forward(1)

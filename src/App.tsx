@@ -9,7 +9,6 @@ import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
 import { Run } from './RunButton';
 import _ from 'lodash';
 import PuzzleManager from './PuzzleManager';
-import PuzzleSelect from './PuzzleSelect';
 import "./css/index.css"
 import "./FontAwesomeIcons";
 
@@ -194,12 +193,6 @@ class App extends React.Component<{}, GameState> {
     else {
       return (
         <div className="App">
-          {/* <PackSelect manager={this.puzzle_manager}/> */}
-          <PuzzleSelect manager={this.puzzle_manager} seq_index={1} on_select_callback={() => {}}/>
-          {/* Navigation bar*/}
-          {/* Code area}
-            Blockly
-            Control buttons  */}
           <header id="header" className="navbar">
             <div id="header-items">
               <h1>Dragon Architect</h1>
@@ -247,11 +240,6 @@ class App extends React.Component<{}, GameState> {
               </div>
             </div>
           </div>
-          {/* Game area
-              Camera controls
-              3D view
-              Other controls
-              Instructions   */}
         </div>
       );
     }

@@ -62,7 +62,7 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
         return "";
     }
     //for (let s of program){
-            
+
     switch (program[0].kind) {
         case "procedure": //block is a procedure
             let xmlPro = "";
@@ -70,19 +70,19 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
 
             xmlPro = xmlHelper(pro, xmlPro);
 
-            xmlPro = '<block type = "procedures_defnoreturn"><field name="NAME">' +program[0].name +
+            xmlPro = '<block type = "procedures_defnoreturn"><field name="NAME">' + program[0].name +
                 '</field><statement name="STACK">' + xmlPro;
             xmlPro += '</statement></block>';
             xml = xml + xmlPro;
 
             break;
-                
+
         default: // block is a statement (repeat, execute or command)
             let block = breakStmt(program[0] as Statement);
             if (block) {
                 if (block.name === "Left" || block.name === "Right" || block.name === 'RemoveCube') {
                     if (program.length === 1) {
-                        return '<block type="'+block.name + '"></block>';
+                        return '<block type="' + block.name + '"></block>';
                     }
                     xml = '<block type="' + block.name + '"><next>' + xmlHelper(program.slice(1), "") + '</next></block>';
                 }
@@ -90,39 +90,39 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
                 else if (block.name === 'PlaceCube') {
                     let expr = block.args;
                     let color = 0;
-                    if (expr[0].kind === ExpressionType.Number) { 
+                    if (expr[0].kind === ExpressionType.Number) {
                         color = expr[0].expression as number;
                     }
-                    
+
                     if (program.length === 1) {
-                        return '<block type="' + block.name +'"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field></block>';
+                        return '<block type="' + block.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field></block>';
                     }
-                    xml = '<block type="' + block.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field><next>'+
+                    xml = '<block type="' + block.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field><next>' +
                         xmlHelper(program.slice(1), "") + '</next></block>';
-                    
+
                 }
-                        
+
                 else {
                     let expr = block.args;
-                    if (expr[0].kind === ExpressionType.Number) { 
-                        
+                    if (expr[0].kind === ExpressionType.Number) {
+
                         if (program.length === 1) {
-                            return '<block type="' + block.name + '"><value name="VALUE">' + makeShadowNum(expr[0].expression as number) + 
+                            return '<block type="' + block.name + '"><value name="VALUE">' + makeShadowNum(expr[0].expression as number) +
                                 '</value></block>';
                         }
-                        
-                        xml = '<block type="' + block.name + '"><value name="VALUE">' +  makeShadowNum(expr[0].expression as number) +
-                            '</value><next>'+ xmlHelper(program.slice(1), "") + '</next></block>';
-                        
+
+                        xml = '<block type="' + block.name + '"><value name="VALUE">' + makeShadowNum(expr[0].expression as number) +
+                            '</value><next>' + xmlHelper(program.slice(1), "") + '</next></block>';
+
                     }
                 }
             }
             else { //block is a repeat
                 let xmlRep = "";
                 let rep = breakStmtRep(program[0] as Statement);
-                
+
                 // xmlRep = xmlHelper([rep[rep.length-1]],"", true);//false
-                
+
                 // for(let r = rep.length-2;r>=0;r--){
                 //     xmlRep = xmlHelper([rep[r]],xmlRep, true);
                 //     //console.log(xml);
@@ -130,14 +130,14 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
 
                 xmlRep = xmlHelper(rep, xmlRep);
 
-            
+
                 xmlRep = '<block type="controls_repeat_ext"><value name="TIMES"><shadow type="math_number"><field name="NUM">'
                     + breakStmtRepNum(program[0] as Statement) + '</field></shadow></value><statement name="DO">' + xmlRep;
 
-                
+
                 xmlRep += '</statement>';
                 if (program.length > 1) {
-                    xml = xml + xmlRep + '<next>' + xmlHelper(program.slice(1),"") + '</next></block>';
+                    xml = xml + xmlRep + '<next>' + xmlHelper(program.slice(1), "") + '</next></block>';
                 }
                 else {
                     xml = xml + xmlRep + '</block>';
@@ -147,38 +147,28 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
             }
 
     }
-            
-        
-    
+
+
+
     return xml;
 }
-
-//code string to xml string
-export function exportCode(code: string) {
-    //currently not able to 
-    //determine number of block groups
-    let xml = '<xml>';
-    let program = parse(code);
-    if (!(program instanceof SyntaxError)) {
-        xml += xmlHelper(program.body, "");
-    }
-    // if (program.attributes.get("frozen") === "true") {
-    //     freeze_all_blocks()
-    // }
-    
-    xml += '</xml>';
-    return xml;
-
-}
-
 
 export function text_to_blocks(code: string) {
-    let xml = exportCode(code);
-    let dom = Blockly.Xml.textToDom(xml);
-    Blockly.getMainWorkspace().clear();
-    let workspace = Blockly.Xml.domToWorkspace(dom, mainWorkspace);
-    
-    return workspace;
+    let xml = '<xml>';
+    let program = parse(code);
+    if (program instanceof SyntaxError) {
+        console.error(`Syntax Error: ${program}`);
+    } else {
+        xml += xmlHelper(program.body, "");
+        xml += '</xml>';
+        let dom = Blockly.Xml.textToDom(xml);
+        Blockly.getMainWorkspace().clear();
+        Blockly.Xml.domToWorkspace(dom, mainWorkspace);
+
+        if (program.body[0].meta.attributes.get("frozen") === "all") {
+            freeze_all_blocks(program.body[0].meta.attributes.has("freezeArgs"));
+        }
+    }
 }
 
 function print_block(indent: string, block: Blockly.Block) {
@@ -216,7 +206,7 @@ export function block_to_text(str: string, indent: string, block: Blockly.Block)
     }
     if (children.length > 0) {
         for (let child of children) {
-            str = block_to_text(str, (indent + "\t"), child);   
+            str = block_to_text(str, (indent + "\t"), child);
         }
     }
     if (block.getNextBlock() && convert_fn) {
@@ -236,18 +226,26 @@ export function blocks_to_text(): string {
 
 // return a new hex color string that lightens (positive) or darkens (negative) the 
 // original color by `percent` (`percent` should be between 0 and 1)
-function shadeHexColor(color: string, percent: number) {
+function shade_hex_color(color: string, percent: number) {
     var f = parseInt(color.slice(1), 16), t = percent < 0 ? 0 : 255, p = percent < 0 ? percent * -1 : percent, R = f >> 16, G = f >> 8 & 0x00FF, B = f & 0x0000FF;
     return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
 }
 
-export function freeze_all_blocks() {
+function freeze_stack(block: Blockly.Block, freeze_args: boolean) {
+    block.setMovable(false);
+    block.setDeletable(false);
+    block.setColour(shade_hex_color(block.getColour(), -0.5));
+    if (freeze_args) {
+        block.setEditable(false);
+    }
+    if (block.getNextBlock()) {
+        freeze_stack(block.getNextBlock(), freeze_args);
+    }
+}
+
+function freeze_all_blocks(freeze_args: boolean) {
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
-    _.forEach(top, (block) => {
-        block.setMovable(false);
-        block.setDeletable(false);
-        block.setColour(shadeHexColor(block.getColour(), -0.5));
-    });
+    _.forEach(top, block => freeze_stack(block, freeze_args));
 }
 
 
@@ -321,7 +319,7 @@ function customBlocklyInit() {
                         type: "input_value",
                         name: "VALUE",
                         check: "Number"
-                        
+
                     }
                 ],
                 previousStatement: true,
@@ -438,12 +436,12 @@ export default class BlocklyComp extends React.Component<GameState> {
     constructor(props: GameState) {
         super(props);
         customBlocklyInit();
-        
+
     }
 
 
     render() {
-        
+
         return (
             <div id="blocklyDiv" style={{ width: '100%' }}></div>
         )
@@ -454,9 +452,9 @@ export default class BlocklyComp extends React.Component<GameState> {
             { toolbox: document.getElementById('toolbox')! });
         this.updateToolbox(this.workspace, []); // the initial toolbox, empty but we can add any block here
     }
-    componentDidUpdate(){
+    componentDidUpdate() {
         if (this.workspace) {
-            if(this.props.puzzle) {
+            if (this.props.puzzle) {
                 this.updateToolbox(this.workspace, this.props.grantedBlocks);
             }
             else {
@@ -469,14 +467,14 @@ export default class BlocklyComp extends React.Component<GameState> {
         let toolXML = '<xml id="toolbox" style="display: none">';
         // console.log("updating toolbox: this.props.grantedBlocks = " + granted_blocks);
         _.forEach(COMMANDS, (data, name) => {
-            
-            if ( !_.includes(this.props.puzzle?.library.restricted, name) && _.includes(granted_blocks,name) ) {
+
+            if (!_.includes(this.props.puzzle?.library.restricted, name) && _.includes(granted_blocks, name)) {
                 toolXML += data.block;
             }
         });
-        
+
         toolXML += '</xml>';
-        
+
         workspace.updateToolbox(toolXML);
 
     }
