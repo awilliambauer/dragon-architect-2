@@ -328,7 +328,7 @@ export default class Display extends React.Component<GameState> {
     }
 
     // Add cube
-    addCube(cubePosition: THREE.Vector3, typeOfCube: Map<string, THREE.Mesh[]>, material: THREE.MeshLambertMaterial) {
+    addCube(cubePosition: THREE.Vector3, material: THREE.MeshLambertMaterial) {
         if (!mapHasVector3(this.cubeOptMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
             let existingCube = this.cubeOptMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
             if (existingCube) { // If there is a cube available....
@@ -340,7 +340,7 @@ export default class Display extends React.Component<GameState> {
                 console.log("Entered new cube");
                 let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, material) // ...Create a new cube mesh
                 newCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
-                typeOfCube.get(`#${material.color.getHexString()}`)!.push(newCube);
+                this.storageMaps.cubes.get(`#${material.color.getHexString()}`)!.push(newCube);
                 this.cubeOptMaps.filled.set(newCube.position, newCube);
                 this.mainStuff.scene.add(newCube);
             }
@@ -351,8 +351,10 @@ export default class Display extends React.Component<GameState> {
     removePuzzleCube(cube: THREE.Mesh<THREE.BufferGeometry>) {
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
             this.mainStuff.scene.remove(cube); // Remove from scene
-            this.storageMaps.goalCubes.get(`#${this.geometries.cubeGoalMat.color.getHexString()}`)?.pop();
-            this.props.world.cube_map.delete(cube.position);
+            const index = this.storageMaps.goalCubes.get(this.geometries.cubeGoalMat.color.getHexString())?.indexOf(cube);
+            if (index) {
+                this.storageMaps.goalCubes.get(this.geometries.cubeGoalMat.color.getHexString())!.splice(index, 1);
+            }
         }
     }
 
@@ -360,7 +362,10 @@ export default class Display extends React.Component<GameState> {
     removeDragonCube(cube: THREE.Mesh<THREE.BufferGeometry>) {
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
             this.mainStuff.scene.remove(cube); // Remove from scene
-            this.storageMaps.goalCubes.get(`#${this.geometries.dragonGoalMat.color.getHexString()}`)?.pop();
+            const index = this.storageMaps.goalCubes.get(this.geometries.dragonGoalMat.color.getHexString())?.indexOf(cube);
+            if (index) {
+                this.storageMaps.goalCubes.get(this.geometries.dragonGoalMat.color.getHexString())!.splice(index, 1);
+            }
         }
     }
 
@@ -417,21 +422,31 @@ export default class Display extends React.Component<GameState> {
         // Placing puzzle cubes!
         if (this.props.puzzle && this.puzzleInit !== this.props.puzzle.name) { // If the state has a puzzle and it hasn't been initielized yet
 
-            // First remove goal cubes already placed...
+            // First remove dragon cubes already placed...
             if (this.storageMaps.goalCubes.get(`#${this.geometries.dragonGoalMat.color.getHexString()}`)) {
+                console.log("IT WENT INTO THE DRAGON goalCubes")
                 this.storageMaps.goalCubes.get(`#${this.geometries.dragonGoalMat.color.getHexString()}`)!.forEach((cube: THREE.Mesh) => { // For each cube.position in the targetFilled map
-                    this.removeDragonCube(cube); // Remove the puzzle cube from the map
                     this.removeDragonCube(cube); // Remove dragon puzzle cubes
                 });
             }
 
-            // First remove goal cubes already placed...
+            // Remove goal cubes already placed...
             if (this.storageMaps.goalCubes.get(`#${this.geometries.cubeGoalMat.color.getHexString()}`)) {
+                console.log("IT WENT INTO THE puzzle goalCubes")
                 this.storageMaps.goalCubes.get(`#${this.geometries.cubeGoalMat.color.getHexString()}`)!.forEach((cube: THREE.Mesh) => { // For each cube.position in the targetFilled map
                     this.removePuzzleCube(cube); // Remove the puzzle cube from the map
-                    this.removePuzzleCube(cube); // Remove dragon puzzle cubes
                 });
             }
+
+            // Remove user cubes already placed...
+            this.storageMaps.cubeColors.forEach((color: string) => {
+                if (this.storageMaps.cubes.get(color)) {
+                    console.log("IT WENT INTO THE cubes")
+                    this.storageMaps.cubes.get(color)!.forEach((cube: THREE.Mesh) => { // For each cube.position in the targetFilled map
+                        this.removeCube(cube, color); // Remove the puzzle cube from the map
+                    });
+                }
+            });
 
             // ...then start adding in the goal cubes depending on goal type
             this.props.puzzle.goals.forEach((goal: GoalInfo) => { // Iterate through each cube that should be placed for the puzzle
@@ -461,7 +476,7 @@ export default class Display extends React.Component<GameState> {
         // This loop will add a cube to the display if the cube doesn't have a position
         for (let [cubePosition, colorInd] of this.props.world.cube_map) {
             let color: string = this.storageMaps.cubeColors[colorInd];
-            this.addCube(cubePosition, this.storageMaps.cubes, this.storageMaps.cubeMats.get(color)!);
+            this.addCube(cubePosition, this.storageMaps.cubeMats.get(color)!);
         }
         // After display is updated, the world state is no longer dirty
         this.props.world.mark_clean();
@@ -484,6 +499,7 @@ export default class Display extends React.Component<GameState> {
 
             // Update display
             if (this.props.world.dirty) {
+                console.log("PENISPENISPENIS");
                 this.updateDisplay();
             };
 
