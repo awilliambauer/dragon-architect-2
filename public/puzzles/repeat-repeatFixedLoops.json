@@ -1,6 +1,7 @@
 {
     "name": "Nested Repeats",
     "component": "PuzRepeatFixedLoops",
+    "tag": "repeat-repeatFixedLoops",
     "format_version": 1,
     "library": {
         "restricted": ["blocks"],

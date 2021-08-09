@@ -1,6 +1,7 @@
 {
     "name": "Standard Operating Procedure",
     "format_version": 1,
+    "tag": "procedures-def",
     "library": {
         "restricted": [],
         "required": ["set"],

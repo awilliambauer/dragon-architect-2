@@ -1,6 +1,7 @@
 {
     "name": "Building a Bridge",
     "format_version": 1,
+    "tag": "up-bridge",
     "library": {
         "required": ["move2", "place", "up", "down"],
         "granted": ["camera_controls"]

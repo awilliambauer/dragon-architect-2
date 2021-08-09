@@ -1,7 +1,7 @@
 {
     "name": "Placing Cubes",
     "format_version": 1,
-    "tag": "tutorial-placeCubes",
+    "tag": "tutorial-placingCubes",
     "library": {
         "restricted": ["blocks"],
         "required": ["move2"],

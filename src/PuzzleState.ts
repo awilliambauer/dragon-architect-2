@@ -234,7 +234,7 @@ export default class PuzzleState {
                     break;
                 case GoalInfoType.RemoveCube:
                     posRequired = goal.position as THREE.Vector3;
-                    if (!mapHasVector3(gamestate.world.cube_map, posRequired)) {
+                    if (mapHasVector3(gamestate.world.cube_map, posRequired)) {
                         return false;
                     }
                     break;

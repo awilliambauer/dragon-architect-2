@@ -1,6 +1,7 @@
 {
     "name": "A Square Deal",
     "format_version": 1,
+    "tag": "procedures-square",
     "library": {
         "restricted": ["defproc_noargs", "defproc"],
         "required": ["set"],

@@ -1,6 +1,7 @@
 {
     "name": "A Towering Achievement",
     "format_version": 1,
+    "tag": "repeat-repeatTower",
     "library": {
         "required": ["move2", "place", "up"],
         "granted": ["repeat"]
