@@ -105,17 +105,17 @@ class App extends React.Component<{}, GameState> {
 
   get_granted_blocks() {
     for (let pack of this.puzzle_manager.completed_puzzle.keys()) {
-        let puzzles = this.puzzle_manager.completed_puzzle.get(pack);
-        
-        if (puzzles){
-            for (let puzzle of puzzles) {
-                let blocks = puzzle.library.granted;
-                for (let block of blocks) {
-                  if (!this.puzzle_manager.granted_blocks.includes(block))
-                  this.puzzle_manager.granted_blocks.push(block);
-                }
-            }
-        }  
+      let puzzles = this.puzzle_manager.completed_puzzle.get(pack);
+
+      if (puzzles) {
+        for (let puzzle of puzzles) {
+          let blocks = puzzle.library.granted;
+          for (let block of blocks) {
+            if (!this.puzzle_manager.granted_blocks.includes(block))
+              this.puzzle_manager.granted_blocks.push(block);
+          }
+        }
+      }
     }
     this.setState({
       grantedBlocks: this.puzzle_manager.granted_blocks
@@ -202,29 +202,31 @@ class App extends React.Component<{}, GameState> {
             Blockly
             Control buttons  */}
           <header id="header" className="navbar">
-            <div id="header-items">
-              <h1>Dragon Architect</h1>
-              <div id="dev-controls">
-                <label htmlFor="pack-select">Select a pack:</label>
-                <select name="pack-select" id="pack-select" onChange={event => this.on_change_pack(event)}>
+            {/* <div id="header-items"> */}
+              <div className="run-button">
+                <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
+              </div>
+              <div className='header-name'><h1>Dragon Architect</h1></div>
+              <div className="current-puzzle-name">
+                <p style={{color: 'black'}}>Current Puzzle: {JSON.stringify(this.state.puzzle?.name)}</p>
+              </div>
+            {/* </div> */}
+          </header>
+          <div className='dev-controls-header'>
+              <div className='pack-container'>
+                <label htmlFor="pack-select" className='pack-label' style={{color: 'white'}}>Select a pack:</label>
+                <select name="pack-select" id="pack-select" className='pack-select' onChange={event => this.on_change_pack(event)}>
                   {this.puzzle_manager.packs.map((pack, index) => <option key={index} value={index}>{pack.name}</option>)}
                 </select>
-                <label htmlFor="puzzle-select">Select a puzzle:</label>
-                <select name="puzzle-select" id="puzzle-select" onChange={event => this.load_puzzle(`puzzles/${event.target.value}.json`)}>
+              </div>
+              <div className='puzzle-container'>
+                <label htmlFor="puzzle-select" className='puzzle-label' style={{color: 'white'}}>Select a puzzle:</label>
+                <select name="puzzle-select" id="puzzle-select" className='puzzle-select' onChange={event => this.load_puzzle(`puzzles/${event.target.value}.json`)}>
                   {this.puzzle_manager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
                 </select>
               </div>
-            </div>
-            <div id="header-buttons">
-              <button name="dev-mode" onClick={() => this.activate_dev_mode()}>Dev Mode</button>
-            </div>
-          </header>
-          <div className="secondary-header">
-            <div className="run-button">
-              <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
-            </div>
-            <div className="current-puzzle-name">
-              <h2>You are currently on: {JSON.stringify(this.state.puzzle?.name)}</h2>
+            <div id="dev-mode-button" className='dev-mode-button'>
+              <button name="dev-mode" className='dev-mode'onClick={() => this.activate_dev_mode()}>Dev Mode</button>
             </div>
           </div>
           <div id="main-view-code">
@@ -232,9 +234,9 @@ class App extends React.Component<{}, GameState> {
           </div>
 
           {(this.state.view === ViewType.PuzzlePause) &&
-            <div style={{ width: '400px', height: '200px', left: '300px', top: '300px', backgroundColor: '#1F6F8B', color: 'black', position: 'absolute' , borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
-              <p style={{ color: 'white' }}>Good job! Click NEXT to go to the next puzzle!</p>
-              <button style={{ borderRadius: '50%', backgroundColor: 'lightgreen' }} onClick={() => { this.continue(); this.get_granted_blocks() }}>NEXT</button>
+            <div style={{ width: '300px', height: '75px', left: '300px', top: '300px', backgroundColor: '#1F6F8B', color: 'black', position: 'absolute', borderRadius: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <h4 style={{ color: 'white' }}>Good job!</h4>
+              <button style={{ borderRadius: '15%', backgroundColor: 'lightgreen' }} onClick={() => { this.continue(); this.get_granted_blocks() }}><h1>Next Puzzle</h1></button>
             </div>}
 
           <div id="main-view-game">

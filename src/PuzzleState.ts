@@ -247,6 +247,8 @@ export default class PuzzleState {
             }
         }
         return true;
+        // return number of cubes placed === number AddCube.goals (length)
+        // Use lodash to take list, give it a function to filter list
     }
 
     static make_from_file(filename: string, win_callback: () => void) {

@@ -6,7 +6,7 @@ type RunProps = {
 export function Run(props: RunProps) {
     let msg = props.reset ? "Reset" : "Run Program"
     return (
-        <button id="btn-run" className="game-control-btn-playback" onClick={props.onClick}>
+        <button id="run-button" className="game-control-btn-playback" onClick={props.onClick}>
             {msg}
         </button>
     )
