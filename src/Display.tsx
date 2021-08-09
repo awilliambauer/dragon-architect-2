@@ -331,14 +331,11 @@ export default class Display extends React.Component<GameState> {
     addCube(cubePosition: THREE.Vector3, typeOfCube: Map<string, THREE.Mesh[]>, material: THREE.MeshLambertMaterial) {
         if (!mapHasVector3(this.cubeOptMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
             let existingCube = this.cubeOptMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
-            console.log(existingCube);
             if (existingCube) { // If there is a cube available....
-                console.log("Entered existing cube");
                 existingCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
                 this.mainStuff.scene.add(existingCube);
                 this.cubeOptMaps.filled.set(existingCube.position, existingCube);
             } else { // If there isn't a cube mesh available....
-                console.log("Entered new cube");
                 let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, material) // ...Create a new cube mesh
                 newCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
                 typeOfCube.get(`#${material.color.getHexString()}`)!.push(newCube);
@@ -462,8 +459,6 @@ export default class Display extends React.Component<GameState> {
         // This loop will add a cube to the display if the cube doesn't have a position
         for (let [cubePosition, colorInd] of this.props.world.cube_map) {
             let color: string = this.storageMaps.cubeColors[colorInd];
-            console.log("THIS IS THE COLOR OF THE CUBE BEING ADDED: " + color);
-            console.log("CUBE POSITION: " + JSON.stringify(cubePosition));
             this.addCube(cubePosition, this.storageMaps.cubes, this.storageMaps.cubeMats.get(color)!);
         }
         // After display is updated, the world state is no longer dirty
@@ -590,14 +585,34 @@ export default class Display extends React.Component<GameState> {
     render() {
         return (
             <div id="three-js" ref={this.divRef}>
-                <div id="game-controls-bar-top" className="game-controls-bar" style={{ display: "flex" }}>
-                    <CameraTiltDown onClickFunction={this.tiltCameraDown} />
-                    <CameraTiltUp onClickFunction={this.tiltCameraUp} />
-                    <CameraRotateLeft onClickFunction={this.rotateCameraLeft} />
-                    <CameraRotateRight onClickFunction={this.rotateCameraRight} />
-                    <CameraZoomIn onClickFunction={this.zoomInCamera} />
-                    <CameraZoomOut onClickFunction={this.zoomOutCamera} />
-                    <Slider onChange={this.handleSlideChange} />
+                <div className="game-controls-bar-container">
+                    <div className="camera-control-category">
+                        <div className="game-control_title"><h4>Tilt</h4></div>
+                        <div className="game-control_buttons">
+                            <CameraTiltDown onClickFunction={this.tiltCameraDown} />
+                            <CameraTiltUp onClickFunction={this.tiltCameraUp} />
+                        </div>
+                    </div>
+                    <div className="camera-control-category">
+                        <div className="game-control_title"><h4>Rotate</h4></div>
+                        <div className="game-control_buttons">
+                            <CameraRotateLeft onClickFunction={this.rotateCameraLeft} />
+                            <CameraRotateRight onClickFunction={this.rotateCameraRight} />
+                        </div>
+                    </div>
+                    <div className="camera-control-category">
+                        <div className="game-control_title"><h4>Zoom</h4></div>
+                        <div className="game-control_buttons">
+                            <CameraZoomIn onClickFunction={this.zoomInCamera} />
+                            <CameraZoomOut onClickFunction={this.zoomOutCamera} />
+                        </div>
+                    </div>
+                    <div className="camera-control-category">
+                        <div className="game-control_title"><h4>Change Speed</h4></div>
+                        <div className="btn-time-slider">
+                            <Slider onChange={this.handleSlideChange} />
+                        </div>
+                    </div>
                 </div>
             </div>
         );

@@ -1,4 +1,5 @@
 import React from 'react';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Type that holds all methods that are passed in. Each one has a question mark in case it's not called
 type CameraVals = {
@@ -13,8 +14,8 @@ class CameraZoomIn extends React.Component<CameraVals> {
     
     render() {
         return (
-            <div style={{color: "red"}}>
-                <button className="ZoomIn" onClick={this.props.onClickFunction}> Zoom In </button>
+            <div>
+                <button className="ZoomIn" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="search-plus"/></h1></button>
             </div>
         );
     };
@@ -29,7 +30,7 @@ class CameraZoomOut extends React.Component<CameraVals> {
     render() {
         return (
             <div style={{color: "red"}}>
-                <button className="Tilt" onClick={this.props.onClickFunction}> Zoom Out </button>
+                <button className="ZoomOut" onClick={this.props.onClickFunction}> <h1><FontAwesomeIcon icon="search-minus"/></h1></button>
             </div>
         );
     };
@@ -44,7 +45,7 @@ class CameraTiltUp extends React.Component<CameraVals> {
     render() {
         return (
             <div style={{color: "red"}}>
-                <button className="Tilt" onClick={this.props.onClickFunction}> Tilt Camera Up </button>
+                <button className="TiltUp" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-up"/></h1></button>
             </div>
         );
     };
@@ -59,7 +60,7 @@ class CameraTiltDown extends React.Component<CameraVals> {
     render() {
         return (
             <div style={{color: "red"}}>
-                <button className="Tilt" onClick={this.props.onClickFunction}> Tilt Camera Down </button>
+                <button className="TiltDown" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-down"/></h1></button>
             </div>
         );
     };
@@ -75,7 +76,7 @@ class CameraRotateRight extends React.Component<CameraVals> {
     render() {
         return (
             <div style={{color: "red"}}>
-                <button className="RotateRight" onClick={this.props.onClickFunction}> Rotate Right </button>
+                <button className="RotateRight" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="redo"/></h1></button>
             </div>
         );
     };
@@ -90,7 +91,7 @@ class CameraRotateLeft extends React.Component<CameraVals> {
     render() {
         return (
             <div style={{color: "red"}}>
-                <button className="RotateLeft" onClick={this.props.onClickFunction}> Rotate Left </button>
+                <button className="RotateLeft" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="undo"/></h1></button>
             </div>
         );
     };

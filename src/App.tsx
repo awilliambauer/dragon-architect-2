@@ -11,6 +11,7 @@ import _ from 'lodash';
 import PuzzleManager from './PuzzleManager';
 import { timeStamp } from 'console';
 import "./css/index.css"
+import "./FontAwesomeIcons";
 
 
 const allGranted = ['move2', 'place', 'remove', 'up', 'down', 'repeat', 'defproc'];
@@ -218,15 +219,22 @@ class App extends React.Component<{}, GameState> {
               <button name="dev-mode" onClick={() => this.activate_dev_mode()}>Dev Mode</button>
             </div>
           </header>
-          <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
+          <div className="secondary-header">
+            <div className="run-button">
+              <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
+            </div>
+            <div className="current-puzzle-name">
+              <h2>You are currently on: {JSON.stringify(this.state.puzzle?.name)}</h2>
+            </div>
+          </div>
           <div id="main-view-code">
             <BlocklyComp {...this.state} />
           </div>
 
           {(this.state.view === ViewType.PuzzlePause) &&
-            <div style={{ width: '200px', height: '100px', left: '500px', backgroundColor: '#964B00', color: 'yellow', position: 'absolute' }}>
-              <p>Good job! Click continue to go to the next puzzle!</p>
-              <button onClick={() => { this.continue(); this.get_granted_blocks() }}>Continue</button>
+            <div style={{ width: '400px', height: '200px', left: '300px', top: '300px', backgroundColor: '#1F6F8B', color: 'black', position: 'absolute' , borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
+              <p style={{ color: 'white' }}>Good job! Click NEXT to go to the next puzzle!</p>
+              <button style={{ borderRadius: '50%', backgroundColor: 'lightgreen' }} onClick={() => { this.continue(); this.get_granted_blocks() }}>NEXT</button>
             </div>}
 
           <div id="main-view-game">

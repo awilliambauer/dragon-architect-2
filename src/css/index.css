@@ -32,6 +32,13 @@ code {
 p {
     margin: 0;
     padding: 0;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6{
+    margin-top:0px;
+    margin-bottom:0px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 html {
@@ -324,7 +331,7 @@ header > h1 {
 }
 
 #main-view-game {
-    width: 55%;
+    width: 40%;
     background: #1c2b2d;
     padding: 0;
     position: absolute;
@@ -336,14 +343,18 @@ header > h1 {
 #main-view-code {
     position: absolute;
     left: 0;
-    width: 45%;
+    width: 60%;
     display: flex;
     background: #1c2b2d;
     height: -webkit-fill-available;
     overflow: hidden;
+    border-style: hidden !important;
 }
 
-
+.blocklySvg {
+    background-color: #1c2b2d !important;
+    border-style: hidden !important;
+}
 
 #blocklyLabels .blocklyLabels_block{
     width: 159px !important;
@@ -375,26 +386,25 @@ header > h1 {
     -webkit-flex-grow: 1;
     height: 100%; /* required for minimized FF, don't know why */
     background: #1c2b2d;
+    border-style: hidden !important;
 }
 
 #blockly {
-    border: none;
     flex-grow: 1;
     -webkit-flex-grow: 1;
+    border-style: hidden !important;
 }
 
 /* Game controls, buttons and sliders */
 /************************************************************/
 
-.game-controls-bar {
+.game-controls-bar-container {
     display: flex;
-    justify-content: space-between;
-    -webkit-justify-content: space-between;
     /*padding: 5px 0;*/
     background-color: #1F6F8B;
     position: absolute;
-    z-index: 10;
     width: 100%;
+    justify-content: space-evenly;
 }
 
 .game-control {
@@ -442,7 +452,42 @@ div #camera-controls .game-control_category {
 
 .game-control_buttons {
     display: flex;
-    position: relative;
+    outline: none;
+}
+
+.camera-control-category {
+    justify-content: flex-start;
+    flex-flow: column;
+}
+
+.ZoomIn {
+    background-color: Transparent;
+    border: none;
+}
+
+.ZoomOut {
+    background-color: Transparent;
+    border: none;
+}
+
+.RotateLeft {
+    background-color: Transparent;
+    border: none;
+}
+
+.RotateRight {
+    background-color: Transparent;
+    border: none;
+}
+
+.TiltUp {
+    background-color: Transparent;
+    border: none;
+}
+
+.TiltDown {
+    background-color: Transparent;
+    border: none;
 }
 
 .camera-controls_text{
@@ -460,6 +505,20 @@ div #camera-controls .game-control_category {
     margin: 0 2px 0 0;
 }
 
+.secondary-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.run-button {
+    flex: 1;
+}
+
+.current-puzzle-name {
+    flex: 1;
+    color: white;
+}
 
 header button, .control-btn, .control-icon-btn {
     display: block;
@@ -506,7 +565,7 @@ header button, .control-btn, .control-icon-btn {
     max-height: 22vh;
     padding: 20px;
     width: 100vh;
-    /*right: 600px;*/
+    left: 0px;
     /*position: absolute;*/
 }
 
@@ -562,13 +621,64 @@ header button, .control-btn, .control-icon-btn {
 }
 
 .btn-time-slider {
-    margin: 10px;
+    margin-left: 10px;
     height: auto;
 }
 
 .btn-time-slider.disabled {
     background-color: #CDCDCD;
     border-color: rgb(100,100,100);
+}
+
+.btn-time-slider-title {
+    text-align: center;
+    flex-grow: 1;
+}
+
+.slider-buttons-container {
+    display: flex;
+    flex-direction: row;
+    padding-top: 0;
+    justify-content: space-evenly;
+    flex-grow: 3;
+}
+
+.slider-left-header {
+    flex-grow: 1;
+    color: white;
+}
+
+input[type=range] {
+    flex-grow: 6;
+    -webkit-appearance: none;
+    background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: 1px solid #000000;
+    height: 20px;
+    width: 16px;
+    border-radius: 3px;
+    background: #1F6F8B;
+    cursor: pointer;
+    margin-top: -8px; /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+    box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; /* Add cool effects to your sliders! */
+  }
+
+input[type=range]::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8.4px;
+    cursor: pointer;
+    background: white;
+    border-radius: 1.3px;
+    border: 0.2px solid #010101;
+}
+
+.slider-right-header {
+    flex-grow: 1;
+    color: white;
 }
 
 /* run/pause/step/undo buttons */
@@ -671,12 +781,13 @@ header button, .control-btn, .control-icon-btn {
 /************************************************************/
 
 #three-js {
+    display: flex;
     position: relative;
-    width: 100%;
     padding: 0;
     margin: 0;
-    max-height: 600px;
-    height: 60vh;
+    max-width: 1300px;
+    max-height: 800px;
+    justify-content: center;
 }
 
 /*#three-js:after {*/
@@ -686,13 +797,11 @@ header button, .control-btn, .control-icon-btn {
 /*}*/
 
 #three-js canvas {
-    display: block;
-    /*width: 96% !important;*/
-    height: 100%;
-    padding: 0;
-    margin: 0;
+    display: flex;
+    width: 1100px !important;
+    height: 500px !important;
     /*position: absolute;*/
-    /*right: 0;*/
+    right: 0px;
 }
 
 /* */
@@ -759,11 +868,13 @@ header button, .control-btn, .control-icon-btn {
 }
 
 .slider-container {
-    height: 43px;
-
-    padding: 0 30px;
     background-color: transparent;
     display: flex;
+    flex-flow: column;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: center;
 }
 
 #slider .ui-slider-handle {
