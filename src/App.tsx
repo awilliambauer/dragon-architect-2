@@ -9,7 +9,7 @@ import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
 import { Run } from './RunButton';
 import _ from 'lodash';
 import PuzzleManager from './PuzzleManager';
-import { timeStamp } from 'console';
+import PuzzleSelect from './PuzzleSelect';
 
 export type GameState = {
   program: Program
@@ -183,9 +183,8 @@ class App extends React.Component<{}, GameState> {
     else {
       return (
         <div className="App">
-
-          {/* <PackSelect manager={this.puzzle_manager}/>
-          <PuzzleSelect manager={this.puzzle_manager}/> */}
+          {/* <PackSelect manager={this.puzzle_manager}/> */}
+          <PuzzleSelect manager={this.puzzle_manager} seq_index={1} on_select_callback={() => {}}/>
           {/* Navigation bar*/}
           {/* Code area}
             Blockly
@@ -202,6 +201,7 @@ class App extends React.Component<{}, GameState> {
                 <select name="puzzle-select" id="puzzle-select" onChange={event => this.load_puzzle(`puzzles/${event.target.value}.json`)}>
                   {this.puzzle_manager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
                 </select>
+                <button onClick={() => this.load_sandbox()}>Load Sandbox</button>
               </div>
             </div>
           </header>
