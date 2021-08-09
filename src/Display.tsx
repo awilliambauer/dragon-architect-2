@@ -316,12 +316,19 @@ export default class Display extends React.Component<GameState> {
     };
 
     // Remove cube
-    removeCube(cube: THREE.Mesh<THREE.BufferGeometry>, color: string) {
+    removeCube(cube: THREE.Mesh, color: string) {
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
             this.mainStuff.scene.remove(cube); // Remove from scene
             if (cube !== undefined) {
-                this.cubeOptMaps.available.get(color)!.push(cube);
+                if (!this.cubeOptMaps.available.get(color)!.includes(cube)) {
+                    this.cubeOptMaps.available.get(color)!.push(cube);
+                }
             }
+            this.cubeOptMaps.filled.delete(cube.position);
+            // const index = this.storageMaps.cubes.get(color)?.indexOf(cube);
+            // if (index) {
+            //     this.storageMaps.cubes.get(color)!.splice(index, 1);
+            // }
         } else { // If the cube has a position property
             this.cubeOptMaps.filled.set(cube.position, cube); // Set the filled object at that cube object to true
         }
@@ -332,12 +339,12 @@ export default class Display extends React.Component<GameState> {
         if (!mapHasVector3(this.cubeOptMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
             let existingCube = this.cubeOptMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
             if (existingCube) { // If there is a cube available....
-                console.log("Entered existing cube");
                 existingCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
                 this.mainStuff.scene.add(existingCube);
                 this.cubeOptMaps.filled.set(existingCube.position, existingCube);
+                // const ind = this.storageMaps.cubeColors.indexOf(material.color.getHexString());
+                // this.props.world.cube_map.set(cubePosition.add(this.cameraPos.cubeOffset), ind);
             } else { // If there isn't a cube mesh available....
-                console.log("Entered new cube");
                 let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, material) // ...Create a new cube mesh
                 newCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
                 this.storageMaps.cubes.get(`#${material.color.getHexString()}`)!.push(newCube);
@@ -424,7 +431,6 @@ export default class Display extends React.Component<GameState> {
 
             // First remove dragon cubes already placed...
             if (this.storageMaps.goalCubes.get(`#${this.geometries.dragonGoalMat.color.getHexString()}`)) {
-                console.log("IT WENT INTO THE DRAGON goalCubes")
                 this.storageMaps.goalCubes.get(`#${this.geometries.dragonGoalMat.color.getHexString()}`)!.forEach((cube: THREE.Mesh) => { // For each cube.position in the targetFilled map
                     this.removeDragonCube(cube); // Remove dragon puzzle cubes
                 });
@@ -432,7 +438,6 @@ export default class Display extends React.Component<GameState> {
 
             // Remove goal cubes already placed...
             if (this.storageMaps.goalCubes.get(`#${this.geometries.cubeGoalMat.color.getHexString()}`)) {
-                console.log("IT WENT INTO THE puzzle goalCubes")
                 this.storageMaps.goalCubes.get(`#${this.geometries.cubeGoalMat.color.getHexString()}`)!.forEach((cube: THREE.Mesh) => { // For each cube.position in the targetFilled map
                     this.removePuzzleCube(cube); // Remove the puzzle cube from the map
                 });
@@ -441,7 +446,6 @@ export default class Display extends React.Component<GameState> {
             // Remove user cubes already placed...
             this.storageMaps.cubeColors.forEach((color: string) => {
                 if (this.storageMaps.cubes.get(color)) {
-                    console.log("IT WENT INTO THE cubes")
                     this.storageMaps.cubes.get(color)!.forEach((cube: THREE.Mesh) => { // For each cube.position in the targetFilled map
                         this.removeCube(cube, color); // Remove the puzzle cube from the map
                     });
@@ -467,7 +471,7 @@ export default class Display extends React.Component<GameState> {
 
         // This for loop checks for cubes that are no longer in the cube_map and should be removed
         this.storageMaps.cubeColors.forEach((color: string) => { // Iterate over each color
-            this.storageMaps.cubes.get(color)!.forEach((cube) => { // For each cube (mesh with material and position) in the specified color
+            this.storageMaps.cubes.get(color)!.forEach((cube: THREE.Mesh) => { // For each cube (mesh with material and position) in the specified color
                 this.removeCube(cube, color);
             });
         });
@@ -499,7 +503,6 @@ export default class Display extends React.Component<GameState> {
 
             // Update display
             if (this.props.world.dirty) {
-                console.log("PENISPENISPENIS");
                 this.updateDisplay();
             };
 
