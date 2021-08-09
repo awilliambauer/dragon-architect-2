@@ -868,6 +868,8 @@ input[type=range]::-webkit-slider-runnable-track {
     max-width: 1300px;
     max-height: 800px;
     justify-content: center;
+    max-height: 600px;
+    height: 60vh;
 }
 
 /*#three-js:after {*/

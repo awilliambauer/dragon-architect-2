@@ -332,10 +332,12 @@ export default class Display extends React.Component<GameState> {
         if (!mapHasVector3(this.cubeOptMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
             let existingCube = this.cubeOptMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
             if (existingCube) { // If there is a cube available....
+                console.log("Entered existing cube");
                 existingCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset); // ...Give it the position of the current cube
                 this.mainStuff.scene.add(existingCube);
                 this.cubeOptMaps.filled.set(existingCube.position, existingCube);
             } else { // If there isn't a cube mesh available....
+                console.log("Entered new cube");
                 let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, material) // ...Create a new cube mesh
                 newCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
                 typeOfCube.get(`#${material.color.getHexString()}`)!.push(newCube);
