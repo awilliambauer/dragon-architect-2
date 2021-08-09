@@ -9,7 +9,6 @@ import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
 import { Run } from './RunButton';
 import _ from 'lodash';
 import PuzzleManager from './PuzzleManager';
-import { timeStamp } from 'console';
 import "./css/index.css"
 import "./FontAwesomeIcons";
 
@@ -194,13 +193,6 @@ class App extends React.Component<{}, GameState> {
     else {
       return (
         <div className="App">
-
-          {/* <PackSelect manager={this.puzzle_manager}/>
-          <PuzzleSelect manager={this.puzzle_manager}/> */}
-          {/* Navigation bar*/}
-          {/* Code area}
-            Blockly
-            Control buttons  */}
           <header id="header" className="navbar">
             {/* <div id="header-items"> */}
               <div className="run-button">
@@ -224,6 +216,7 @@ class App extends React.Component<{}, GameState> {
                 <select name="puzzle-select" id="puzzle-select" className='puzzle-select' onChange={event => this.load_puzzle(`puzzles/${event.target.value}.json`)}>
                   {this.puzzle_manager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
                 </select>
+                <button onClick={() => this.load_sandbox()}>Load Sandbox</button>
               </div>
             <div id="dev-mode-button" className='dev-mode-button'>
               <button name="dev-mode" className='dev-mode'onClick={() => this.activate_dev_mode()}>Dev Mode</button>
@@ -249,11 +242,6 @@ class App extends React.Component<{}, GameState> {
               </div>
             </div>
           </div>
-          {/* Game area
-              Camera controls
-              3D view
-              Other controls
-              Instructions   */}
         </div>
       );
     }
