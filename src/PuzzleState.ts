@@ -222,7 +222,7 @@ export default class PuzzleState {
                 case GoalInfoType.MinCube:
                     let minRequired = goal.value as number;
                     let cubeNum = gamestate.world.cube_map.size;
-                    return cubeNum > minRequired;
+                    return cubeNum >= minRequired;
                 case GoalInfoType.AddCube:
                     posRequired = goal.position as THREE.Vector3;
                     if (!mapHasVector3(gamestate.world.cube_map, posRequired)) {
@@ -240,10 +240,17 @@ export default class PuzzleState {
                     if (!gamestate.world.dragon_pos.equals(dragonPosRequired)) {
                         return false;
                     }
-                    break;
+                    else {
+                        return true;
+                    }
             }
         }
-        return (this.goals.length === gamestate.world.cube_map.size);
+        if (gamestate.world.cube_map.size > this.goals.length) {
+            return false;
+        } else {
+            return true;
+        }
+        
     }
 
     static make_from_file(filename: string, win_callback: () => void) {
