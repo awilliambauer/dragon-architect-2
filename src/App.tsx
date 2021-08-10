@@ -228,9 +228,9 @@ class App extends React.Component<{}, GameState> {
           </div>
 
           {(this.state.view === ViewType.PuzzlePause) &&
-            <div style={{ width: '300px', height: '100px', left: '300px', top: '300px', backgroundColor: '#1F6F8B', color: 'black', position: 'absolute', borderRadius: '10px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <h4 style={{ color: 'white', padding: '8px' }}>Good job!</h4>
-              <button style={{ borderRadius: '15%', backgroundColor: 'lightgreen', padding: '8px' }} onClick={() => { this.continue(); this.get_granted_blocks() }}><h1>Next Puzzle</h1></button>
+            <div className='congrats-box'>
+              <h4 style={{color: 'white' }}>Good job!</h4>
+              <button className='congrats-button' onClick={() => { this.continue(); this.get_granted_blocks() }}><h2>Next Puzzle</h2></button>
             </div>}
 
           <div id="main-view-game">
