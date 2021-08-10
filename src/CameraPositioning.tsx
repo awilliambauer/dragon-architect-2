@@ -11,11 +11,11 @@ class CameraZoomIn extends React.Component<CameraVals> {
     constructor(props: CameraVals) {
         super(props);
     }
-    
+
     render() {
         return (
             <div>
-                <button className="ZoomIn" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="search-plus" style={{color: 'white'}}/></h1></button>
+                <button className="ZoomIn" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="search-plus" style={{ color: 'white' }} /></h1></button>
             </div>
         );
     };
@@ -29,8 +29,8 @@ class CameraZoomOut extends React.Component<CameraVals> {
 
     render() {
         return (
-            <div style={{color: "red"}}>
-                <button className="ZoomOut" onClick={this.props.onClickFunction}> <h1><FontAwesomeIcon icon="search-minus" style={{color: 'white'}}/></h1></button>
+            <div style={{ color: "red" }}>
+                <button className="ZoomOut" onClick={this.props.onClickFunction}> <h1><FontAwesomeIcon icon="search-minus" style={{ color: 'white' }} /></h1></button>
             </div>
         );
     };
@@ -41,11 +41,11 @@ class CameraTiltUp extends React.Component<CameraVals> {
     constructor(props: CameraVals) {
         super(props);
     }
-    
+
     render() {
         return (
-            <div style={{color: "red"}}>
-                <button className="TiltUp" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-up" style={{color: 'white'}}/></h1></button>
+            <div style={{ color: "red" }}>
+                <button className="TiltUp" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-up" style={{ color: 'white' }} /></h1></button>
             </div>
         );
     };
@@ -59,8 +59,8 @@ class CameraTiltDown extends React.Component<CameraVals> {
 
     render() {
         return (
-            <div style={{color: "red"}}>
-                <button className="TiltDown" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-down" style={{color: 'white'}}/></h1></button>
+            <div style={{ color: "red" }}>
+                <button className="TiltDown" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-down" style={{ color: 'white' }} /></h1></button>
             </div>
         );
     };
@@ -75,8 +75,8 @@ class CameraRotateRight extends React.Component<CameraVals> {
 
     render() {
         return (
-            <div style={{color: "red"}}>
-                <button className="RotateRight" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="redo" style={{color: 'white'}}/></h1></button>
+            <div style={{ color: "red" }}>
+                <button className="RotateRight" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="redo" style={{ color: 'white' }} /></h1></button>
             </div>
         );
     };
@@ -90,8 +90,8 @@ class CameraRotateLeft extends React.Component<CameraVals> {
 
     render() {
         return (
-            <div style={{color: "red"}}>
-                <button className="RotateLeft" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="undo" style={{color: 'white'}}/></h1></button>
+            <div style={{ color: "red" }}>
+                <button className="RotateLeft" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="undo" style={{ color: 'white' }} /></h1></button>
             </div>
         );
     };

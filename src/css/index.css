@@ -336,10 +336,10 @@ header > h1 {
 }
 
 #main-view-game {
+    position: absolute;
     width: 40%;
     background: #1c2b2d;
     padding: 0;
-    position: absolute;
     right: 0;
     height: -webkit-fill-available;
     overflow: hidden;
@@ -354,6 +354,11 @@ header > h1 {
     height: -webkit-fill-available;
     overflow: hidden;
     border-style: hidden !important;
+}
+
+.blocklyFlyoutBackground {
+    fill: #1F6F8B;
+    fill-opacity: 1;
 }
 
 .blocklySvg {
@@ -516,6 +521,11 @@ div #camera-controls .game-control_category {
     padding-bottom: 19px;
     line-height: 1;
     padding: 8px;
+    position: relative;
+    align-content: center;
+    display: flex;
+    justify-content: center;
+    left: 4%;
 }
 
 .run-button.active {
@@ -523,9 +533,6 @@ div #camera-controls .game-control_category {
     color: #E6E6E6;
     border: 3px solid #E6E6E6;
     line-height: 1.0;
-}
-
-.current-puzzle-name {
 }
 
 header button, .control-btn, .control-icon-btn {
@@ -565,15 +572,12 @@ header button, .control-btn, .control-icon-btn {
 
 .goal-section{
     color: #ffffff;
-    font-family: "Roboto Slab";
     font-size: 16px;
     text-align: left;
     display: block;
     min-height: 23vh;
     max-height: 22vh;
-    padding: 20px;
-    width: 100vh;
-    left: 0px;
+    width: calc(100%-5px);
     /*position: absolute;*/
 }
 
@@ -712,7 +716,8 @@ input[type=range]::-webkit-slider-runnable-track {
     -webkit-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    font-size: 12px;
+    font-size: 20px;
+    background-color: rgb(92, 218, 92);
 }
 
 #btn-revert.disabled {

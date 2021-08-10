@@ -185,7 +185,7 @@ export default class PuzzleState {
     tag: string = ""
     win_callback: () => void = () => { }
 
-    
+
     print_puzzleState() {
         let str = "";
         str += " instructions: " + this.instructions;

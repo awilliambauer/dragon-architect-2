@@ -444,6 +444,7 @@ export default class BlocklyComp extends React.Component<GameState> {
 
         return (
             <div id="blocklyDiv" style={{ width: '100%' }}></div>
+            
         )
     }
 
