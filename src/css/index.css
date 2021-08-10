@@ -361,8 +361,12 @@ header > h1 {
     fill-opacity: 1;
 }
 
+.blocklyMainBackground {
+    stroke-width: 0;
+}
+
 .blocklySvg {
-    background-color: #1c2b2d !important;
+    background-color: #111819 !important;
     border-style: hidden !important;
 }
 
