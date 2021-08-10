@@ -525,7 +525,8 @@ div #camera-controls .game-control_category {
     align-content: center;
     display: flex;
     justify-content: center;
-    left: 4%;
+    left: 50%;
+    width: 40px;
 }
 
 .run-button.active {

@@ -225,19 +225,22 @@ export default class PuzzleState {
                     if (minRequired > cubeNum) {
                         return false;
                     }
+                    else if (minRequired < cubeNum) {
+                        return false;
+                    }
                     break;
                 case GoalInfoType.AddCube:
                     posRequired = goal.position as THREE.Vector3;
                     if (!mapHasVector3(gamestate.world.cube_map, posRequired)) {
                         return false;
                     }
-                    break;
+                    return (this.goals.length === gamestate.world.cube_map.size);
                 case GoalInfoType.RemoveCube:
                     posRequired = goal.position as THREE.Vector3;
                     if (mapHasVector3(gamestate.world.cube_map, posRequired)) {
                         return false;
                     }
-                    break;
+                    return true;
                 case GoalInfoType.DragonPos:
                     let dragonPosRequired = goal.position as THREE.Vector3;
                     if (!gamestate.world.dragon_pos.equals(dragonPosRequired)) {
@@ -247,8 +250,6 @@ export default class PuzzleState {
             }
         }
         return true;
-        // return number of cubes placed === number AddCube.goals (length)
-        // Use lodash to take list, give it a function to filter list
     }
 
     static make_from_file(filename: string, win_callback: () => void) {
