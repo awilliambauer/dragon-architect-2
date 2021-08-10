@@ -247,7 +247,7 @@ class App extends React.Component<{}, GameState> {
           <div className="run-button">
               <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
           </div>
-          
+
         </div>
       );
     }
