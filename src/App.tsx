@@ -238,7 +238,7 @@ class App extends React.Component<{}, GameState> {
 
           {(this.state.view === ViewType.PuzzlePause) &&
             <div className='congrats-box'>
-              <h4 style={{ color: 'white'}}>Good job!</h4>
+              <h4 style={{color: 'white' }}>Good job!</h4>
               <button className='congrats-button' onClick={() => { this.continue(); this.get_granted_blocks() }}><h2>Next Puzzle</h2></button>
             </div>}
 
@@ -256,7 +256,7 @@ class App extends React.Component<{}, GameState> {
           <div className="run-button">
               <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
           </div>
-          
+
         </div>
       );
     }
