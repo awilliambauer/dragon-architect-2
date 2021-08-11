@@ -214,12 +214,14 @@ class App extends React.Component<{}, GameState> {
             <div className='header-name'><h1>Dragon Architect</h1></div>
             <div className="current-puzzle-name">
               <p style={{ color: 'black' }}>Current Puzzle: {JSON.stringify(this.state.puzzle?.name)}</p>
+              <div className='puzzle-select-toggle'>
+                <button onClick={() => this.setState({view: ViewType.PuzzleSelect})}>Go to puzzle select</button>
+              </div>
             </div>
             {/* </div> */}
           </header>
           <div className='dev-controls-header'>
             <div className='pack-container'>
-              <button onClick={() => this.setState({view: ViewType.PuzzleSelect})}>Go to puzzle select</button>
               <label htmlFor="pack-select" className='pack-label' style={{ color: 'white' }}>Select a pack:</label>
               <select name="pack-select" id="pack-select" className='pack-select' onChange={event => this.on_change_pack(event)}>
                 {this.state.puzzle_manager.packs.map((pack, index) => <option key={index} value={index}>{pack.name}</option>)}

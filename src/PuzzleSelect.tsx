@@ -13,10 +13,6 @@ import "./css/index.css"
 import PuzzleManager from './PuzzleManager';
 import { load_stdlib } from './Simulator';
 
-// type PuzzleSelectProps = {
-//     onClickFunction: (e: string) => void;
-// }
-
 interface PuzzleSelectProps {
     gameState: GameState;
     onClickFunction: (e: string) => void;
