@@ -449,14 +449,16 @@ export default class BlocklyComp extends React.Component<GameState> {
     }
 
     componentDidMount() {
+        console.log("mounting");
         this.workspace = Blockly.inject('blocklyDiv',
             { toolbox: document.getElementById('toolbox')! });
         this.updateToolbox(this.workspace, []); // the initial toolbox, empty but we can add any block here
     }
     componentDidUpdate() {
+        console.log("updating");
         if (this.workspace) {
             if (this.props.puzzle) {
-                this.updateToolbox(this.workspace, this.props.grantedBlocks);
+                this.updateToolbox(this.workspace, this.props.puzzleManager.granted_blocks);
             }
             else {
                 this.updateToolbox(this.workspace, allGranted);
