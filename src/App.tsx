@@ -194,7 +194,12 @@ class App extends React.Component<{}, GameState> {
 
     else if (this.state.view === ViewType.PuzzleSelect) {
       return (
-        <PuzzleSelect {...this.state} />
+        <PuzzleSelect gameState={this.state} onClickFunction={(puzzle_tag) => {
+          this.load_puzzle(puzzle_tag)
+          this.setState({
+            view: ViewType.Normal
+          });
+        }} />
       )
     }
 
@@ -214,6 +219,7 @@ class App extends React.Component<{}, GameState> {
           </header>
           <div className='dev-controls-header'>
             <div className='pack-container'>
+              <button onClick={() => this.setState({view: ViewType.PuzzleSelect})}>Go to puzzle select</button>
               <label htmlFor="pack-select" className='pack-label' style={{ color: 'white' }}>Select a pack:</label>
               <select name="pack-select" id="pack-select" className='pack-select' onChange={event => this.on_change_pack(event)}>
                 {this.state.puzzle_manager.packs.map((pack, index) => <option key={index} value={index}>{pack.name}</option>)}

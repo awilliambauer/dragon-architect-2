@@ -1,6 +1,7 @@
 import React, { ButtonHTMLAttributes, ChangeEvent, DetailedHTMLProps } from 'react';
 import * as THREE from 'three';
 import { GameState } from './App';
+import on_change_pack from './App';
 import load_puzzle from './App';
 import { Material } from 'three';
 import { GoalInfo, GoalInfoType } from './PuzzleState';
@@ -12,22 +13,31 @@ import "./css/index.css"
 import PuzzleManager from './PuzzleManager';
 import { load_stdlib } from './Simulator';
 
+// type PuzzleSelectProps = {
+//     onClickFunction: (e: string) => void;
+// }
 
-export default class PuzzleSelect extends React.Component<GameState> {
+interface PuzzleSelectProps {
+    gameState: GameState;
+    onClickFunction: (e: string) => void;
+}
+
+export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
     
-    constructor(props: GameState) {
+    constructor(props: PuzzleSelectProps) {
         super(props);
         load_stdlib();
     }
 
-
+    openPuzzle(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        //this.props.gameState.puzzle_manager.set_pack(parseInt(event.currentTarget.value));
+        this.props.onClickFunction(`puzzles/${event.currentTarget.value}.json`);
+    }
 
     render() {
         return (
-            <div>
-                <select name="puzzle-select" id="puzzle-select" className='puzzle-select'>
-                {this.props.puzzle_manager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
-              </select>
+            <div className="select-puzzle-buttons">
+                {this.props.gameState.puzzle_manager.get_all_puzzles().map(puzzle => {return <button value={puzzle} onClick = {event => this.openPuzzle(event)}>{puzzle}</button>})}
             </div>
         )
     }
