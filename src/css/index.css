@@ -540,7 +540,7 @@ div #camera-controls .game-control_category {
     line-height: 1.0;
 }
 
-header button, .control-btn, .control-icon-btn {
+.control-btn, .control-icon-btn {
     display: block;
     height: 40px;
     border: 1px solid transparent;
@@ -788,6 +788,29 @@ input[type=range]::-webkit-slider-runnable-track {
     background-color: #E6E6E6;
     height: 40px;
     right: 10px;
+}
+
+.puzzle-select-toggle {
+    padding-bottom: 19px;
+    line-height: 1.3;
+    background-color: #59b6d8;
+    border: 1px solid #aaa;
+    border-radius: .5em;
+    background-repeat: no-repeat, repeat;
+    background-position: right .7em top 50%, 0 0;
+    background-size: .65em auto, 100%;
+    box-sizing: border-box;
+    box-shadow: 0 1px 0 1px rgba(0,0,0,.04);
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.puzzle-select-toggle button {
+    background-color: #1F6F8B; 
+    color: white;
+    font-weight: bold;
 }
 
 .dev-controls-header {

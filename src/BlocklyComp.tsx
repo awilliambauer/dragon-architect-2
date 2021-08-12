@@ -458,7 +458,7 @@ export default class BlocklyComp extends React.Component<GameState> {
         console.log("updating");
         if (this.workspace) {
             if (this.props.puzzle) {
-                this.updateToolbox(this.workspace, this.props.puzzleManager.granted_blocks);
+                this.updateToolbox(this.workspace, this.props.puzzle_manager.granted_blocks);
             }
             else {
                 this.updateToolbox(this.workspace, allGranted);

@@ -11,6 +11,7 @@ import _ from 'lodash';
 import PuzzleManager from './PuzzleManager';
 import "./css/index.css"
 import "./FontAwesomeIcons";
+import PuzzleSelect from './PuzzleSelect';
 
 
 const allGranted = ['move2', 'place', 'remove', 'up', 'down', 'repeat', 'defproc'];
@@ -24,7 +25,7 @@ export type GameState = {
   lastSavedWorld: WorldState | undefined
   // grantedBlocks: Array<string>
   view: ViewType
-  puzzleManager: PuzzleManager
+  puzzle_manager: PuzzleManager
 }
 
 export enum ViewType {
@@ -40,7 +41,6 @@ class App extends React.Component<{}, GameState> {
   constructor(props: {}) {
     super(props);
     load_stdlib();
-    // this.puzzle_manager = new PuzzleManager();
 
     this.state = {
       program: EMPTY_PROGRAM,
@@ -48,9 +48,8 @@ class App extends React.Component<{}, GameState> {
       world: new WorldState(),
       simulator: new IncrementalSimulator(new WorldState(), EMPTY_PROGRAM),
       lastSavedWorld: undefined,
-      // grantedBlocks: new Array<string>(),
       view: ViewType.Loading,
-      puzzleManager: new PuzzleManager()
+      puzzle_manager: new PuzzleManager()
     }
   }
 
@@ -90,8 +89,7 @@ class App extends React.Component<{}, GameState> {
 
   // when the user completes a puzzle
   win_puzzle() {
-    // this.puzzle_manager.complete_puzzle();
-    this.state.puzzleManager.complete_puzzle();
+    this.state.puzzle_manager.complete_puzzle();
     //this.puzzle_manager.print_completed_puzzle();
     this.setState({
       view: ViewType.PuzzlePause
@@ -103,39 +101,39 @@ class App extends React.Component<{}, GameState> {
     //   grantedBlocks: allGranted
     // })
     
-    console.log(this.state.puzzleManager.granted_blocks);
-    this.state.puzzleManager.granted_blocks = allGranted;
+    console.log(this.state.puzzle_manager.granted_blocks);
+    this.state.puzzle_manager.granted_blocks = allGranted;
     this.setState({
-      puzzleManager: this.state.puzzleManager //this line is necessary
+      puzzle_manager: this.state.puzzle_manager //this line is necessary
     })
-    console.log(this.state.puzzleManager.granted_blocks);
+    console.log(this.state.puzzle_manager.granted_blocks);
   }
 
   get_granted_blocks() {
-    for (let pack of this.state.puzzleManager.completed_puzzle.keys()) {
-      let puzzles = this.state.puzzleManager.completed_puzzle.get(pack);
+    for (let pack of this.state.puzzle_manager.completed_puzzle.keys()) {
+      let puzzles = this.state.puzzle_manager.completed_puzzle.get(pack);
 
       if (puzzles) {
         for (let puzzle of puzzles) {
           let blocks = puzzle.library.granted;
           for (let block of blocks) {
-            if (!this.state.puzzleManager.granted_blocks.includes(block))
-              this.state.puzzleManager.granted_blocks.push(block);
+            if (!this.state.puzzle_manager.granted_blocks.includes(block))
+              this.state.puzzle_manager.granted_blocks.push(block);
           }
         }
       }
     }
-    // this.setState({
-    //   grantedBlocks: this.puzzle_manager.granted_blocks
-    // })
+    this.setState({
+      puzzle_manager: this.state.puzzle_manager
+    })
   }
 
   componentDidMount() {
-    this.state.puzzleManager.initialize()
+    this.state.puzzle_manager.initialize()
       .then(() => {
         this.setState({
           view: ViewType.Normal
-        }, () => this.load_puzzle(`puzzles/${this.state.puzzleManager.get_current_puzzle().tag}.json`));
+        }, () => this.load_puzzle(`puzzles/${this.state.puzzle_manager.get_current_puzzle().tag}.json`));
       })
   }
 
@@ -177,7 +175,7 @@ class App extends React.Component<{}, GameState> {
     this.setState({
       view: ViewType.Normal
     });
-    let puzzle = this.state.puzzleManager.next_puzzle();
+    let puzzle = this.state.puzzle_manager.next_puzzle();
     if (puzzle) {
       console.log(`puzzles/${puzzle.tag}.json`);
       this.load_puzzle(`puzzles/${puzzle.tag}.json`);
@@ -188,8 +186,8 @@ class App extends React.Component<{}, GameState> {
 
   // called when a new pack is selected via the drop-down
   on_change_pack(event: React.ChangeEvent<HTMLSelectElement>) {
-    this.state.puzzleManager.set_pack(parseInt(event.target.value));
-    this.load_puzzle(`puzzles/${this.state.puzzleManager.get_current_puzzle().tag}.json`);
+    this.state.puzzle_manager.set_pack(parseInt(event.target.value));
+    this.load_puzzle(`puzzles/${this.state.puzzle_manager.get_current_puzzle().tag}.json`);
   }
 
   render() {
@@ -199,6 +197,18 @@ class App extends React.Component<{}, GameState> {
         <h1>Loading...</h1>
       )
     }
+
+    else if (this.state.view === ViewType.PuzzleSelect) {
+      return (
+        <PuzzleSelect gameState={this.state} onClickFunction={(puzzle_tag) => {
+          this.load_puzzle(puzzle_tag)
+          this.setState({
+            view: ViewType.Normal
+          });
+        }} />
+      )
+    }
+
     else {
       return (
         <div className="App">
@@ -210,6 +220,9 @@ class App extends React.Component<{}, GameState> {
             <div className='header-name'><h1>Dragon Architect</h1></div>
             <div className="current-puzzle-name">
               <p style={{ color: 'black' }}>Current Puzzle: {JSON.stringify(this.state.puzzle?.name)}</p>
+              <div className='puzzle-select-toggle'>
+                <button onClick={() => this.setState({view: ViewType.PuzzleSelect})}>Go to puzzle select</button>
+              </div>
             </div>
             {/* </div> */}
           </header>
@@ -217,13 +230,13 @@ class App extends React.Component<{}, GameState> {
             <div className='pack-container'>
               <label htmlFor="pack-select" className='pack-label' style={{ color: 'white' }}>Select a pack:</label>
               <select name="pack-select" id="pack-select" className='pack-select' onChange={event => this.on_change_pack(event)}>
-                {this.state.puzzleManager.packs.map((pack, index) => <option key={index} value={index}>{pack.name}</option>)}
+                {this.state.puzzle_manager.packs.map((pack, index) => <option key={index} value={index}>{pack.name}</option>)}
               </select>
             </div>
             <div className='puzzle-container'>
               <label htmlFor="puzzle-select" className='puzzle-label' style={{ color: 'white' }}>Select a puzzle:</label>
               <select name="puzzle-select" id="puzzle-select" className='puzzle-select' onChange={event => this.load_puzzle(`puzzles/${event.target.value}.json`)}>
-                {this.state.puzzleManager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
+                {this.state.puzzle_manager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
               </select>
               <button onClick={() => this.load_sandbox()}>Load Sandbox</button>
             </div>

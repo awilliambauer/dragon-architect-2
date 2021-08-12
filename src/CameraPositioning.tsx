@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Type that holds all methods that are passed in. Each one has a question mark in case it's not called
 type CameraVals = {
-    onClickFunction: (e: React.MouseEvent<HTMLElement>) => void
+    onClickFunction: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
 // Creates button for zooming in
