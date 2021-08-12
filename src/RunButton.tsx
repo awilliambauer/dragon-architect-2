@@ -4,10 +4,13 @@ type RunProps = {
 }
 
 export function Run(props: RunProps) {
-    let msg = props.reset ? "Reset" : "Run Program"
+    let msg = props.reset ? "Reset" : "Run"
+    let col = props.reset ? "reset" : "run"
     return (
-        <button id="run-button" className="game-control-btn-playback" onClick={props.onClick}>
-            {msg}
+        <button id="game-control-btn-playback" className="run-button-back" onClick={props.onClick} value={col}>
+            <span className="run-button-front" title={col}>
+                {msg}
+            </span>
         </button>
     )
 }

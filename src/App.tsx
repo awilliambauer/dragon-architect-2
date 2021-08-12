@@ -243,10 +243,16 @@ class App extends React.Component<{}, GameState> {
               <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
             </div> */}
             <div className='header-name'><h1>Dragon Architect</h1></div>
-            <div className="current-puzzle-name">
-              <p style={{ color: 'black' }}>Current Puzzle: {JSON.stringify(this.state.puzzle?.name)}</p>
+            <div className="puzzle-selection-name-and-button">
+              <div className="current-puzzle-name">
+                <p>Current Puzzle: {JSON.stringify(this.state.puzzle?.name)}</p>
+              </div>
               <div className='puzzle-select-toggle'>
-                <button onClick={() => this.setState({view: ViewType.PuzzleSelect})}>Go to puzzle select</button>
+                  <button className='puzzle-select-toggle-button-back' onClick={() => this.setState({view: ViewType.PuzzleSelect})}>
+                    <span className='puzzle-select-toggle-button-front'>
+                      Go to puzzle select
+                    </span>
+                  </button>
               </div>
             </div>
             {/* </div> */}
@@ -263,22 +269,37 @@ class App extends React.Component<{}, GameState> {
               <select name="puzzle-select" id="puzzle-select" className='puzzle-select' onChange={event => this.load_puzzle(`puzzles/${event.target.value}.json`)}>
                 {this.state.puzzle_manager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
               </select>
-              <button onClick={() => this.load_sandbox()}>Load Sandbox</button>
             </div>
             <div className="buttons-header-container">
-              <div id="dev-mode-button" className='dev-mode-button'>
-                <button name="dev-mode" className='dev-mode' onClick={() => this.activate_dev_mode()}>Dev Mode</button>
+              <div id="dev-mode-button" className='dev-mode'>
+                <button name="dev-mode" className='dev-mode-button-back' onClick={() => this.activate_dev_mode()}>
+                  <span className='dev-mode-button-front'>
+                    Dev Mode
+                  </span>
+                  </button>
               </div>
               <div id="save-progress" className='save-progress-container'>
-                <button name="save-progress" className='save-progress' onClick={() => this.save_progress()}>Save Progress</button>
+                <button name="save-progress" className='save-progress-button-back' onClick={() => this.save_progress()}>
+                  <span className='save-progress-button-front'>
+                    Save Progress
+                  </span>
+                </button>
               </div>
               
               <div id="save-sandbox" className='save-sandbox-container'>
-                <button name="save-sandbox" className='save-sandbox' onClick={() => this.save_sandbox()}>Save Sandbox</button>
+                <button name="save-sandbox" className='save-sandbox-button-back' onClick={() => this.save_sandbox()}>
+                  <span className='save-sandbox-button-front'>
+                    Save Sandbox
+                  </span>
+                </button>
               </div>
 
               <div id="load-sandbox" className='load-sandbox-container'>
-                <button name="load-sandbox" className='load-sandbox' onClick={() => console.log(this.load_last_sandbox())}>Load Sandbox</button>
+                <button name="load-sandbox" className='load-sandbox-button-back' onClick={() => console.log(this.load_last_sandbox())}>
+                  <span className='load-sandbox-button-front'>
+                    Load Sandbox
+                  </span>
+                </button>
               </div>
             </div>
           </div>
@@ -290,7 +311,11 @@ class App extends React.Component<{}, GameState> {
           {(this.state.view === ViewType.PuzzlePause) &&
             <div className='congrats-box'>
               <h4 style={{color: 'white' }}>Good job!</h4>
-              <button className='congrats-button' onClick={() => { this.continue(); this.get_granted_blocks() }}><h2>Next Puzzle</h2></button>
+              <button className='congrats-button-back' onClick={() => { this.continue(); this.get_granted_blocks() }}>
+                <span className='congrats-button-front'>
+                  <h2>Next Puzzle</h2>
+                </span>
+              </button>
             </div>}
 
           <div id="main-view-game">
@@ -304,7 +329,7 @@ class App extends React.Component<{}, GameState> {
             </div>
           </div>
 
-          <div className="run-button">
+          <div className="run-button-container">
               <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
           </div>
 
