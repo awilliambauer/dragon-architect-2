@@ -94,6 +94,7 @@ class App extends React.Component<{}, GameState> {
           lastSavedWorld: undefined
         });
         text_to_blocks(p.start_code);
+        this.state.puzzle_manager.set_puzzle(p.tag);
       }
     });
   }

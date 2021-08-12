@@ -322,7 +322,6 @@ export default class PuzzleState {
         }
 
         return new Promise<PuzzleState>(resolve => {
-            // TODO: puzzle names/ids will matter once puzzle packs/unlocks are a thing                   
             fetch(filename)
                 .then(response => { return response.json() })
                 .then((data: PuzzleSpec) => {

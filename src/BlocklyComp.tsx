@@ -10,8 +10,8 @@ import { GameState } from './App';
 import './BlocklyExtensions';
 
 const COLOR_MOVE_1 = '#0075A6';
-// const COLOR_MOVE_2 = '#B84B26';
-// const COLOR_BLOCK = '#978B63';
+const COLOR_MOVE_2 = '#B84B26';
+const COLOR_BLOCK = '#978B63';
 // const COLOR_LOOPS = '#00711C';
 const COLOR_PROCS = '#7C478B';
 // const COLOR_UNUSED_1 = '#B63551';
@@ -301,7 +301,7 @@ function customBlocklyInit() {
                 previousStatement: true,
                 nextStatement: true,
                 inputsInline: true,
-                colour: COLOR_MOVE_1
+                colour: COLOR_MOVE_2
             });
         }
     };
@@ -325,7 +325,7 @@ function customBlocklyInit() {
                 previousStatement: true,
                 nextStatement: true,
                 inputsInline: true,
-                colour: COLOR_MOVE_1
+                colour: COLOR_MOVE_2
             });
         }
     };
@@ -387,7 +387,7 @@ function customBlocklyInit() {
     //placecube
     Blockly.Blocks['PlaceCube'] = {
         init: function (this: Blockly.Block) {
-            this.setColour(COLOR_MOVE_1);
+            this.setColour(COLOR_BLOCK);
             this.appendDummyInput()
                 .appendField("place cube")
                 .appendField(new Blockly.FieldColour(Blockly.FieldColour.COLOURS[0]), 'VALUE');
@@ -403,7 +403,7 @@ function customBlocklyInit() {
     //removecube
     Blockly.Blocks['RemoveCube'] = {
         init: function (this: Blockly.Block) {
-            this.setColour(COLOR_MOVE_1);
+            this.setColour(COLOR_BLOCK);
             this.appendDummyInput()
                 .appendField("remove cube");
             this.setPreviousStatement(true);

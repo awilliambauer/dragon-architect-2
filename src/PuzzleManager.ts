@@ -55,8 +55,8 @@ export default class PuzzleManager {
         let puzzlePackName = this.get_current_pack().name;
 
         let puzzles = this.completed_puzzle.get(puzzlePackName);
-        
-        if (puzzles === undefined) { 
+
+        if (puzzles === undefined) {
             //if current puzzle is the first one in its own pack that has been completed
             this.completed_puzzle.set(puzzlePackName, [this.get_current_puzzle()]);
         } else {
@@ -73,7 +73,7 @@ export default class PuzzleManager {
         //console.log("completed puzzles: ")
         for (let pack of this.completed_puzzle.keys()) {
             let puzzles = this.completed_puzzle.get(pack);
-            if(puzzles) {
+            if (puzzles) {
                 for (let puzzle of puzzles) {
                     completed_puzzle_array.push(puzzle.name);
                 }
@@ -89,6 +89,27 @@ export default class PuzzleManager {
                 seq_index: 0,
                 puz_index: 0
             }
+        }
+    }
+
+    // assumes `tag` identifies a unique puzzle within the current pack
+    set_puzzle(tag: string) {
+        let found = false;
+        this.get_current_pack().seqs.forEach((seq, i) => {
+            seq.puzzles.forEach((spec, j) => {
+                if (spec.tag === tag) {
+                    this.current_puzzle = {
+                        pack_index: this.current_puzzle.pack_index,
+                        seq_index: i,
+                        puz_index: j
+                    }
+                    found = true;
+                }
+            });
+        });
+
+        if (!found) {
+            throw new Error(`No puzzle with tag=${tag} exists within the current pack ${this.get_current_pack().name}`);
         }
     }
 
@@ -153,7 +174,7 @@ export default class PuzzleManager {
                         .then(response => response.json())
                         .then(json => seq.puzzles[index] = json)
                         .catch(error => console.error(`Could not load spec from puzzles/${tag}.json: ${error}`)));
-                });        
+                });
             }
         }
         return Promise.all(promises);

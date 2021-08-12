@@ -856,7 +856,7 @@ button[value="true"] {
 }
 
 button[value="false"] {
-    background-color: red;
+    background-color: #e5e5e5;
 }
 
 .dev-controls-header {
