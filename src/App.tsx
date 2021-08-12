@@ -264,21 +264,22 @@ class App extends React.Component<{}, GameState> {
               </select>
               <button onClick={() => this.load_sandbox()}>Load Sandbox</button>
             </div>
-            <div id="dev-mode-button" className='dev-mode-button'>
-              <button name="dev-mode" className='dev-mode' onClick={() => this.activate_dev_mode()}>Dev Mode</button>
-            </div>
-            <div id="save-progress" className='save-progress'>
-              <button name="save-progress" className='save-progress' onClick={() => this.save_progress()}>Save Progress</button>
-            </div>
-            
-            <div id="save-sandbox" className='save-sandbox'>
-              <button name="save-sandbox" className='save-sandbox' onClick={() => this.save_sandbox()}>Save Sandbox</button>
-            </div>
+            <div className="buttons-header-container">
+              <div id="dev-mode-button" className='dev-mode-button'>
+                <button name="dev-mode" className='dev-mode' onClick={() => this.activate_dev_mode()}>Dev Mode</button>
+              </div>
+              <div id="save-progress" className='save-progress-container'>
+                <button name="save-progress" className='save-progress' onClick={() => this.save_progress()}>Save Progress</button>
+              </div>
+              
+              <div id="save-sandbox" className='save-sandbox-container'>
+                <button name="save-sandbox" className='save-sandbox' onClick={() => this.save_sandbox()}>Save Sandbox</button>
+              </div>
 
-            <div id="load-sandbox" className='load-sandbox'>
-              <button name="load-sandbox" className='load-sandbox' onClick={() => console.log(this.load_last_sandbox())}>Load Sandbox</button>
+              <div id="load-sandbox" className='load-sandbox-container'>
+                <button name="load-sandbox" className='load-sandbox' onClick={() => console.log(this.load_last_sandbox())}>Load Sandbox</button>
+              </div>
             </div>
-            
           </div>
 
           <div id="main-view-code">
