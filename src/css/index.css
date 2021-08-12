@@ -813,6 +813,32 @@ input[type=range]::-webkit-slider-runnable-track {
     font-weight: bold;
 }
 
+.select-puzzle-screen {
+    display: flex;
+    flex-direction: column;
+    color: white;
+}
+
+.select-puzzle-buttons-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    background-color: #1f6f8b;
+}
+
+.puzzle-select-seq-container {
+    display: flex;
+    flex-direction: column;
+    margin: 15px;
+    align-items: center;
+}
+
+.puzzle-select-buttons {
+    display: flex;
+    flex-direction: column;
+    margin: 25px;
+}
+
 .dev-controls-header {
     padding: 20px;
     display: inline-flex;

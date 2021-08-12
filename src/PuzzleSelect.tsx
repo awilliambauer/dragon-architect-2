@@ -1,16 +1,6 @@
-import React, { ButtonHTMLAttributes, ChangeEvent, DetailedHTMLProps } from 'react';
-import * as THREE from 'three';
+import React from 'react';
 import { GameState } from './App';
-import on_change_pack from './App';
-import load_puzzle from './App';
-import { Material } from 'three';
-import { GoalInfo, GoalInfoType } from './PuzzleState';
-import { mapHasVector3 } from './Util';
-import Blockly from 'blockly';
-import Slider from './Slider';
-import { CameraZoomIn, CameraZoomOut, CameraRotateRight, CameraRotateLeft, CameraTiltDown, CameraTiltUp } from './CameraPositioning';
 import "./css/index.css"
-import PuzzleManager from './PuzzleManager';
 import { load_stdlib } from './Simulator';
 
 interface PuzzleSelectProps {
@@ -19,7 +9,7 @@ interface PuzzleSelectProps {
 }
 
 export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
-    
+
     constructor(props: PuzzleSelectProps) {
         super(props);
         load_stdlib();
@@ -32,8 +22,22 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
 
     render() {
         return (
-            <div className="select-puzzle-buttons">
-                {this.props.gameState.puzzle_manager.get_all_puzzles().map(puzzle => {return <button value={puzzle} onClick = {event => this.openPuzzle(event)}>{puzzle}</button>})}
+            <div className="select-puzzle-screen">
+                <h1>Puzzle Select</h1>
+                <h3>Select Which Puzzle You Would Like to Go To!</h3>
+                <div className="select-puzzle-buttons-container">
+                    {this.props.gameState.puzzle_manager.get_current_pack().seqs.map(seq => {
+                        return (
+                            <div className="puzzle-select-seq-container">
+                                <h2>{seq.name}</h2>
+                                <div className="puzzle-select-buttons">
+                                    {seq.puzzles.map(puzzle => {
+                                        return <button value={puzzle.tag} onClick={event => this.openPuzzle(event)}>{puzzle.tag}</button>
+                                    })}
+                                </div>
+                            </div>);
+                    })}
+                </div>
             </div>
         )
     }
