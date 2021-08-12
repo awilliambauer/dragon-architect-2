@@ -17,7 +17,7 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
 
     openPuzzle(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         //this.props.gameState.puzzle_manager.set_pack(parseInt(event.currentTarget.value));
-        this.props.onClickFunction(`puzzles/${event.currentTarget.value}.json`);
+        this.props.onClickFunction(`puzzles/${event.currentTarget.id}.json`);
     }
 
     render() {
@@ -32,7 +32,7 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
                                 <h2>{seq.name}</h2>
                                 <div className="puzzle-select-buttons">
                                     {seq.puzzles.map(puzzle => {
-                                        return <button value={puzzle.tag} onClick={event => this.openPuzzle(event)}>{puzzle.tag}</button>
+                                        return <button className="puzzle-select-button" id={puzzle.tag} value={String(this.props.gameState.puzzle_manager.find_completed_puzzle()?.includes(puzzle.name))} onClick={event => this.openPuzzle(event)}>{puzzle.tag}</button>
                                     })}
                                 </div>
                             </div>);
