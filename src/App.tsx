@@ -36,6 +36,8 @@ export enum ViewType {
   PuzzlePause = "puzzlePause"
 }
 
+
+
 class App extends React.Component<{}, GameState> {
 
   constructor(props: {}) {
@@ -51,6 +53,28 @@ class App extends React.Component<{}, GameState> {
       view: ViewType.Loading,
       puzzle_manager: new PuzzleManager()
     }
+  }
+
+  check_local() {
+    window.localStorage.setItem("player_progress", "empty");
+    console.log(window.localStorage.getItem("player_progress"));
+  }
+
+  save_progress() {
+    window.localStorage.setItem("progress", this.state.puzzle_manager.find_completed_puzzle()[-1]); //temporary
+  }
+
+  load_last_progress() {
+    return window.localStorage.getItem("progress");
+  }
+
+  save_sandbox() {
+    window.localStorage.setItem("sandbox", blocks_to_text());
+  }
+
+  load_last_sandbox() {
+    console.log("calling load-last-sandbox");
+    return window.localStorage.getItem("sandbox");
   }
 
   load_puzzle(puzzle_file: string) {
@@ -243,6 +267,18 @@ class App extends React.Component<{}, GameState> {
             <div id="dev-mode-button" className='dev-mode-button'>
               <button name="dev-mode" className='dev-mode' onClick={() => this.activate_dev_mode()}>Dev Mode</button>
             </div>
+            <div id="save-progress" className='save-progress'>
+              <button name="save-progress" className='save-progress' onClick={() => this.save_progress()}>Save Progress</button>
+            </div>
+            
+            <div id="save-sandbox" className='save-sandbox'>
+              <button name="save-sandbox" className='save-sandbox' onClick={() => this.save_sandbox()}>Save Sandbox</button>
+            </div>
+
+            <div id="load-sandbox" className='load-sandbox'>
+              <button name="load-sandbox" className='load-sandbox' onClick={() => console.log(this.load_last_sandbox())}>Load Sandbox</button>
+            </div>
+            
           </div>
 
           <div id="main-view-code">

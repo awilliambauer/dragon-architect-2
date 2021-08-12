@@ -68,16 +68,18 @@ export default class PuzzleManager {
     }
 
     //used to test complete_puzzle and check player progress
-    print_completed_puzzle() {
-        console.log("completed puzzles: ")
+    find_completed_puzzle() {
+        let completed_puzzle_array = new Array<string>();
+        //console.log("completed puzzles: ")
         for (let pack of this.completed_puzzle.keys()) {
             let puzzles = this.completed_puzzle.get(pack);
             if(puzzles) {
                 for (let puzzle of puzzles) {
-                    console.log(puzzle.name);
+                    completed_puzzle_array.push(puzzle.name);
                 }
             }
         }
+        return completed_puzzle_array;
     }
 
     set_pack(index: number) {
