@@ -958,10 +958,10 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 .current-puzzle-name {
-    background-color: rgb(43, 189, 226);
-    border-radius: 12px;
+    background-color: rgb(235, 233, 225);
     padding: 8px;
     height: 60%;
+    border: 2px solid grey;
 }
 
 .puzzle-selection-name-and-button {
@@ -1108,6 +1108,52 @@ button[value="true"] {
 
 button[value="false"] {
     background-color: #e5e5e5;
+}
+
+.home-button-back {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+    margin: 10px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    font-size: 20px;
+    cursor: pointer;
+    outline-offset: 1px;
+    padding: 0px 0px;
+    background-color: rgb(43, 226, 156);
+}
+
+.home-button-front {
+    display: block;
+    border-radius: 12px;
+    font-size: 1.25rem;
+    color: black;
+    transform: translateY(-6px);
+    padding: 3px 14px;
+    transform: translateY();
+    transition:
+      transform
+      600ms
+      cubic-bezier(.3, .7, .4, 1);
+    background-color: rgb(151, 231, 201);
+}
+
+.home-button-back:active .home-button-front {
+    transform: translateY(-2px);
+    transition: transform 34ms;
+}
+
+.home-button-back:hover .home-button-front {
+    transform: translateY(-10px);
+    transition:
+      transform
+      250ms
+      cubic-bezier(.3, .7, .4, 1.5);
+}
+
+.home-button-back:active .home-button-front {
+    transform: translateY(-2px);
 }
 
 .dev-controls-header {
@@ -1539,7 +1585,6 @@ button[value="false"] {
     padding: 15px;
     margin-bottom: 20px;
     border: 1px solid transparent;
-    border-radius: 4px;
     font-size: 16pt;
     color: white;
     text-shadow: 0 1px 0 rgba(255, 255, 255, .2);

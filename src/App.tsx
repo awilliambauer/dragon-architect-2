@@ -185,6 +185,10 @@ class App extends React.Component<{}, GameState> {
     this.load_puzzle(`puzzles/${this.state.puzzle_manager.get_current_puzzle().tag}.json`);
   }
 
+  changeState = () => {
+    this.setState({view: ViewType.Normal});
+}
+
   render() {
 
     if (this.state.view === ViewType.Loading) {
@@ -195,7 +199,7 @@ class App extends React.Component<{}, GameState> {
 
     else if (this.state.view === ViewType.PuzzleSelect) {
       return (
-        <PuzzleSelect gameState={this.state} onClickFunction={(puzzle_tag) => {
+        <PuzzleSelect gameState={this.state} onClickHome={this.changeState} onClickToPuzzle={(puzzle_tag) => {
           this.load_puzzle(puzzle_tag)
           this.setState({
             view: ViewType.Normal

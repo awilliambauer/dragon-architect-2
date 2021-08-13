@@ -1,10 +1,11 @@
 import React from 'react';
-import { GameState } from './App';
+import { GameState, ViewType } from './App';
 import "./css/index.css"
 
 interface PuzzleSelectProps {
     gameState: GameState;
-    onClickFunction: (e: string) => void;
+    onClickToPuzzle: (e: string) => void;
+    onClickHome: () => void;
 }
 
 export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
@@ -14,14 +15,24 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
     }
 
     openPuzzle(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        this.props.onClickFunction(`puzzles/${event.currentTarget.id}.json`);
+        this.props.onClickToPuzzle(`puzzles/${event.currentTarget.id}.json`);
     }
 
     render() {
         return (
             <div className="select-puzzle-screen">
+                <div className='puzzle-select-title'>
                 <h1>Puzzle Select</h1>
                 <h3>Select Which Puzzle You Would Like to Go To!</h3>
+                </div>
+                <div className='home-button-container'>
+                    <button className='home-button-back' onClick={this.props.onClickHome}>
+                        <span className='home-button-front'>
+                            Home
+                        </span>
+                    </button>
+                </div>
+                
                 <div className="select-puzzle-buttons-container">
                     {this.props.gameState.puzzle_manager.get_current_pack().seqs.map(seq => {
                         return (
