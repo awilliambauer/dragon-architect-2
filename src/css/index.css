@@ -480,10 +480,26 @@ div #camera-controls .game-control_category {
     cursor: pointer;
 }
 
+.ZoomIn:hover {
+    transform: scale(1.5);
+}
+
+.ZoomIn:active {
+    transform: scale(1.25);
+}
+
 .ZoomOut {
     background-color: Transparent;
     border: none;
     cursor: pointer;
+}
+
+.ZoomOut:hover {
+    transform: scale(1.5);
+}
+
+.ZoomOut:active {
+    transform: scale(1.25);
 }
 
 .RotateLeft {
@@ -492,10 +508,26 @@ div #camera-controls .game-control_category {
     cursor: pointer;
 }
 
+.RotateLeft:hover {
+    transform: scale(1.5);
+}
+
+.RotateLeft:active {
+    transform: scale(1.25);
+}
+
 .RotateRight {
     background-color: Transparent;
     border: none;
     cursor: pointer;
+}
+
+.RotateRight:hover {
+    transform: scale(1.5);
+}
+
+.RotateRight:active {
+    transform: scale(1.25);
 }
 
 .TiltUp {
@@ -504,10 +536,26 @@ div #camera-controls .game-control_category {
     cursor: pointer;
 }
 
+.TiltUp:hover {
+    transform: scale(1.5);
+}
+
+.TiltUp:active {
+    transform: scale(1.25);
+}
+
 .TiltDown {
     background-color: Transparent;
     border: none;
     cursor: pointer;
+}
+
+.TiltDown:hover {
+    transform: scale(1.5);
+}
+
+.TiltDown:active {
+    transform: scale(1.25);
 }
 
 .camera-controls_text{
@@ -722,6 +770,7 @@ div #camera-controls .game-control_category {
 .slider-left-header {
     flex-grow: 1;
     color: white;
+    margin-top: 10px;
 }
 
 input[type=range] {
@@ -742,19 +791,29 @@ input[type=range]::-webkit-slider-thumb {
     box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
   }
 
+input[type=range]::-webkit-slider-thumb:active:hover {
+    transform: scale(1.05);
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
 input[type=range]::-webkit-slider-runnable-track {
     -webkit-appearance: none;
-    width: 100%;
+    width: 220%;
     height: 8.4px;
     cursor: pointer;
     background: white;
     border-radius: 1.3px;
     border: 0.2px solid #010101;
+    margin-top: 10px;
 }
 
 .slider-right-header {
     flex-grow: 1;
     color: white;
+    margin-top: 10px;
 }
 
 /* run/pause/step/undo buttons */
