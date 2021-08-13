@@ -60,11 +60,16 @@ class App extends React.Component<{}, GameState> {
   }
 
   save_progress() {
-    window.localStorage.setItem("progress", this.state.puzzle_manager.find_completed_puzzle()[-1]); //temporary
+    let progress = JSON.stringify([...this.state.puzzle_manager.completed_puzzle]);
+    window.localStorage.setItem("progress", progress);
   }
 
   load_last_progress() {
-    return window.localStorage.getItem("progress");
+    // return window.localStorage.getItem("progress");
+    let progress_string = window.localStorage.getItem("progress");
+    if (progress_string) {
+      this.state.puzzle_manager.completed_puzzle  = new Map(JSON.parse(progress_string))
+    }
   }
 
   save_sandbox() {
@@ -73,6 +78,11 @@ class App extends React.Component<{}, GameState> {
 
   load_last_sandbox() {
     console.log("calling load-last-sandbox");
+    let program = window.localStorage.getItem("sandbox");
+    if (program) {
+      text_to_blocks(program);
+    }
+    
     return window.localStorage.getItem("sandbox");
   }
 
@@ -252,6 +262,14 @@ class App extends React.Component<{}, GameState> {
                 <button name="save-progress" className='save-progress-button-back' onClick={() => this.save_progress()}>
                   <span className='save-progress-button-front'>
                     Save Progress
+                  </span>
+                </button>
+              </div>
+
+              <div id="load-progress" className='load-progress-container'>
+                <button name="load-progress" className='load-progress-button-back' onClick={() => this.load_last_progress()}>
+                  <span className='load-progress-button-front'>
+                    Load Progress
                   </span>
                 </button>
               </div>
