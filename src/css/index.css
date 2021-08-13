@@ -478,6 +478,11 @@ div #camera-controls .game-control_category {
     background-color: Transparent;
     border: none;
     cursor: pointer;
+    transform: scale();
+    transition:
+      transform
+      300ms
+      cubic-bezier(.3, .7, .4, 1);
 }
 
 .ZoomIn:hover {
@@ -492,6 +497,11 @@ div #camera-controls .game-control_category {
     background-color: Transparent;
     border: none;
     cursor: pointer;
+    transform: scale();
+    transition:
+      transform
+      300ms
+      cubic-bezier(.3, .7, .4, 1);
 }
 
 .ZoomOut:hover {
@@ -506,6 +516,11 @@ div #camera-controls .game-control_category {
     background-color: Transparent;
     border: none;
     cursor: pointer;
+    transform: scale();
+    transition:
+      transform
+      300ms
+      cubic-bezier(.3, .7, .4, 1);
 }
 
 .RotateLeft:hover {
@@ -520,6 +535,11 @@ div #camera-controls .game-control_category {
     background-color: Transparent;
     border: none;
     cursor: pointer;
+    transform: scale();
+    transition:
+      transform
+      300ms
+      cubic-bezier(.3, .7, .4, 1);
 }
 
 .RotateRight:hover {
@@ -534,6 +554,11 @@ div #camera-controls .game-control_category {
     background-color: Transparent;
     border: none;
     cursor: pointer;
+    transform: scale();
+    transition:
+      transform
+      300ms
+      cubic-bezier(.3, .7, .4, 1);
 }
 
 .TiltUp:hover {
@@ -548,6 +573,11 @@ div #camera-controls .game-control_category {
     background-color: Transparent;
     border: none;
     cursor: pointer;
+    transform: scale();
+    transition:
+      transform
+      300ms
+      cubic-bezier(.3, .7, .4, 1);
 }
 
 .TiltDown:hover {
@@ -789,6 +819,11 @@ input[type=range]::-webkit-slider-thumb {
     cursor: pointer;
     margin-top: -8px;
     box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+    transform: scale();
+    transition:
+      transform
+      300ms
+      cubic-bezier(.3, .7, .4, 1);
   }
 
 input[type=range]::-webkit-slider-thumb:active:hover {

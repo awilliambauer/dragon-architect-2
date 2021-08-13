@@ -1,3 +1,4 @@
+@frozen=all
 repeat 2 times
     Forward(1)
     PlaceCube(0)
