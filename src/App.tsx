@@ -245,7 +245,7 @@ class App extends React.Component<{}, GameState> {
             <div className='header-name'><h1>Dragon Architect</h1></div>
             <div className="puzzle-selection-name-and-button">
               <div className="current-puzzle-name">
-                <h5>Current Puzzle: <h2>{JSON.stringify(this.state.puzzle?.name)}</h2></h5>
+                <h5>Current Puzzle: <h4>{JSON.stringify(this.state.puzzle?.name)}</h4></h5>
               </div>
               <div className='puzzle-select-toggle'>
                   <button className='puzzle-select-toggle-button-back' onClick={() => this.setState({view: ViewType.PuzzleSelect})}>
@@ -308,7 +308,7 @@ class App extends React.Component<{}, GameState> {
             <BlocklyComp {...this.state} />
           </div>
 
-          {(this.state.view === ViewType.PuzzlePause) &&
+          {(this.state.view === ViewType.PuzzlePause) && (this.state.reset) &&
             <div className='congrats-box'>
               <h4 style={{color: 'white' }}>Good job!</h4>
               <button className='congrats-button-back' onClick={() => { this.continue(); this.get_granted_blocks() }}>
@@ -330,7 +330,7 @@ class App extends React.Component<{}, GameState> {
           </div>
 
           <div className="run-button-container">
-              <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
+              <Run gamestate={this.state} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
           </div>
 
         </div>

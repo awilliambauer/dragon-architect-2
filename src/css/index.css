@@ -834,6 +834,10 @@ input[type=range]::-webkit-slider-runnable-track {
     box-shadow: 3px 3px 0 1px #12333f;
 }
 
+.congrats-box .run-button-back[value="run"] {
+    display: none;
+}
+
 .congrats-button-back {
     display: block;
     font-weight: bold;
