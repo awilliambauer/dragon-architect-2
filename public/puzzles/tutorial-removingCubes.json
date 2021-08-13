@@ -3,7 +3,7 @@
     "format_version": 1,
     "tag": "tutorial-removingCubes",
     "library": {
-        "required": ["move2", "place"],
+        "required": ["move2", "place", "remove"],
         "granted": ["remove"]
     },
     "world": {

@@ -245,7 +245,7 @@ class App extends React.Component<{}, GameState> {
             <div className='header-name'><h1>Dragon Architect</h1></div>
             <div className="puzzle-selection-name-and-button">
               <div className="current-puzzle-name">
-                <p>Current Puzzle: {JSON.stringify(this.state.puzzle?.name)}</p>
+                <h5>Current Puzzle: <h2>{JSON.stringify(this.state.puzzle?.name)}</h2></h5>
               </div>
               <div className='puzzle-select-toggle'>
                   <button className='puzzle-select-toggle-button-back' onClick={() => this.setState({view: ViewType.PuzzleSelect})}>

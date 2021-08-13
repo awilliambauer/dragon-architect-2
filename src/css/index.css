@@ -918,6 +918,13 @@ input[type=range]::-webkit-slider-runnable-track {
     right: 10px;
 }
 
+.current-puzzle-name {
+    background-color: rgb(43, 189, 226);
+    border-radius: 12px;
+    padding: 8px;
+    height: 60%;
+}
+
 .puzzle-selection-name-and-button {
     display: flex;
     justify-content: right;

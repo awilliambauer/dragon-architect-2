@@ -4,7 +4,7 @@
     "tag": "tutorial-placingCubes",
     "library": {
         "restricted": ["blocks"],
-        "required": ["move2"],
+        "required": ["move2", "place"],
         "granted": ["place", "time_slider", "speed_slider", "gallery"]
     },
     "world": {
