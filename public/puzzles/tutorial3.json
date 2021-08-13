@@ -5,7 +5,7 @@
     "library": {
         "restricted": ["blocks"],
         "required": ["move2"],
-        "granted": []
+        "granted": ["place"]
     },
     "world": {
         "pos": [0, 0, 0],
