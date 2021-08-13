@@ -37,7 +37,6 @@ export default class PuzzleManager {
     packs: PuzzlePack[]
     current_puzzle: PuzzleIndex
     completed_puzzle: Map<string, PuzzleSpec[]> //the map of completed puzzles
-    granted_blocks: Array<string>
 
     constructor() {
         this.packs = []
@@ -47,7 +46,6 @@ export default class PuzzleManager {
             puz_index: 0
         }
         this.completed_puzzle = new Map<string, PuzzleSpec[]>();//key = name of PuzzlePack, value = a puzzle
-        this.granted_blocks = new Array<string>();
     }
 
     //adds current puzzle to completed_puzzle
@@ -147,6 +145,38 @@ export default class PuzzleManager {
             }
         }
         return this.get_current_seq().puzzles[this.current_puzzle.puz_index];
+    }
+
+    get_granted_blocks(devMode: boolean) {
+        let granted_blocks: string[] = [];
+        if (devMode) {
+            for (let pack of this.packs) {
+                for (let seq of pack.seqs) {
+                    for (let puzzle of seq.puzzles) {
+                        let blocks = puzzle.library.granted;
+                        for (let block of blocks) {
+                            if (!granted_blocks.includes(block))
+                                granted_blocks.push(block);
+                        }
+                    }
+                }
+            }
+        } else {
+            for (let pack of this.completed_puzzle.keys()) {
+                let puzzles = this.completed_puzzle.get(pack);
+
+                if (puzzles) {
+                    for (let puzzle of puzzles) {
+                        let blocks = puzzle.library.granted;
+                        for (let block of blocks) {
+                            if (!granted_blocks.includes(block))
+                                granted_blocks.push(block);
+                        }
+                    }
+                }
+            }
+        }
+        return granted_blocks
     }
 
     load_packs(pack_list: { packs: string[] }) {

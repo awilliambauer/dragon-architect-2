@@ -14,8 +14,6 @@ import "./FontAwesomeIcons";
 import PuzzleSelect from './PuzzleSelect';
 
 
-const allGranted = ['move2', 'place', 'remove', 'up', 'down', 'repeat', 'defproc'];
-
 export type GameState = {
   program: Program
   world: WorldState
@@ -23,7 +21,7 @@ export type GameState = {
   simulator: IncrementalSimulator
   reset: boolean
   lastSavedWorld: WorldState | undefined
-  // grantedBlocks: Array<string>
+  devMode: boolean
   view: ViewType
   puzzle_manager: PuzzleManager
 }
@@ -51,7 +49,8 @@ class App extends React.Component<{}, GameState> {
       simulator: new IncrementalSimulator(new WorldState(), EMPTY_PROGRAM),
       lastSavedWorld: undefined,
       view: ViewType.Loading,
-      puzzle_manager: new PuzzleManager()
+      puzzle_manager: new PuzzleManager(),
+      devMode: false
     }
   }
 
@@ -121,36 +120,10 @@ class App extends React.Component<{}, GameState> {
     })
   }
 
-  activate_dev_mode() {
-    // this.setState({
-    //   grantedBlocks: allGranted
-    // })
-    
-    console.log(this.state.puzzle_manager.granted_blocks);
-    this.state.puzzle_manager.granted_blocks = allGranted;
+  toggle_dev_mode() {
     this.setState({
-      puzzle_manager: this.state.puzzle_manager //this line is necessary
-    })
-    console.log(this.state.puzzle_manager.granted_blocks);
-  }
-
-  get_granted_blocks() {
-    for (let pack of this.state.puzzle_manager.completed_puzzle.keys()) {
-      let puzzles = this.state.puzzle_manager.completed_puzzle.get(pack);
-
-      if (puzzles) {
-        for (let puzzle of puzzles) {
-          let blocks = puzzle.library.granted;
-          for (let block of blocks) {
-            if (!this.state.puzzle_manager.granted_blocks.includes(block))
-              this.state.puzzle_manager.granted_blocks.push(block);
-          }
-        }
-      }
-    }
-    this.setState({
-      puzzle_manager: this.state.puzzle_manager
-    })
+      devMode: !this.state.devMode
+    });
   }
 
   componentDidMount() {
@@ -178,7 +151,6 @@ class App extends React.Component<{}, GameState> {
           simulator: new IncrementalSimulator(this.state.world, ast)
         }, () => this.state.simulator.set_running())
       }
-      this.get_granted_blocks();
     }
     else { // reset 
       this.setState({
@@ -191,8 +163,6 @@ class App extends React.Component<{}, GameState> {
     this.setState({
       reset: !this.state.reset
     });
-    this.get_granted_blocks();
-
   }
 
   // when user clicks the "continue" button after completing a puzzle
@@ -272,9 +242,9 @@ class App extends React.Component<{}, GameState> {
             </div>
             <div className="buttons-header-container">
               <div id="dev-mode-button" className='dev-mode'>
-                <button name="dev-mode" className='dev-mode-button-back' onClick={() => this.activate_dev_mode()}>
+                <button name="dev-mode" className='dev-mode-button-back' onClick={() => this.toggle_dev_mode()}>
                   <span className='dev-mode-button-front'>
-                    Dev Mode
+                    Toggle Dev Mode
                   </span>
                   </button>
               </div>
@@ -311,7 +281,7 @@ class App extends React.Component<{}, GameState> {
           {(this.state.view === ViewType.PuzzlePause) && (this.state.reset) &&
             <div className='congrats-box'>
               <h4 style={{color: 'white' }}>Good job!</h4>
-              <button className='congrats-button-back' onClick={() => { this.continue(); this.get_granted_blocks() }}>
+              <button className='congrats-button-back' onClick={() => { this.continue(); }}>
                 <span className='congrats-button-front'>
                   <h2>Next Puzzle</h2>
                 </span>
@@ -330,7 +300,7 @@ class App extends React.Component<{}, GameState> {
           </div>
 
           <div className="run-button-container">
-              <Run gamestate={this.state} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
+              <Run gamestate={this.state} onClick={() => { this.run_program(); }} />
           </div>
 
         </div>

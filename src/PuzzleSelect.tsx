@@ -32,8 +32,7 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
                                         return (
                                             <button className="puzzle-select-button-back" id={puzzle.tag}
                                                 value={String(this.props.gameState.puzzle_manager.find_completed_puzzle()?.includes(puzzle.name))}
-                                                onClick={event => this.openPuzzle(event)}
-                                                disabled={!this.props.gameState.puzzle_manager.find_completed_puzzle().includes(puzzle.name)}>
+                                                onClick={event => this.openPuzzle(event)}>
                                                     <span className='puzzle-select-button-front' title={String(this.props.gameState.puzzle_manager.find_completed_puzzle()?.includes(puzzle.name))}>
                                                         {puzzle.name}
                                                     </span>

@@ -481,11 +481,11 @@ div #camera-controls .game-control_category {
 }
 
 .ZoomIn:hover {
-    transform: scale(1.5);
+    transform: scale(1.2);
 }
 
 .ZoomIn:active {
-    transform: scale(1.25);
+    transform: scale(1.1);
 }
 
 .ZoomOut {
@@ -495,11 +495,11 @@ div #camera-controls .game-control_category {
 }
 
 .ZoomOut:hover {
-    transform: scale(1.5);
+    transform: scale(1.2);
 }
 
 .ZoomOut:active {
-    transform: scale(1.25);
+    transform: scale(1.1);
 }
 
 .RotateLeft {
@@ -509,11 +509,11 @@ div #camera-controls .game-control_category {
 }
 
 .RotateLeft:hover {
-    transform: scale(1.5);
+    transform: scale(1.2);
 }
 
 .RotateLeft:active {
-    transform: scale(1.25);
+    transform: scale(1.1);
 }
 
 .RotateRight {
@@ -523,11 +523,11 @@ div #camera-controls .game-control_category {
 }
 
 .RotateRight:hover {
-    transform: scale(1.5);
+    transform: scale(1.2);
 }
 
 .RotateRight:active {
-    transform: scale(1.25);
+    transform: scale(1.1);
 }
 
 .TiltUp {
@@ -537,11 +537,11 @@ div #camera-controls .game-control_category {
 }
 
 .TiltUp:hover {
-    transform: scale(1.5);
+    transform: scale(1.2);
 }
 
 .TiltUp:active {
-    transform: scale(1.25);
+    transform: scale(1.1);
 }
 
 .TiltDown {
@@ -551,11 +551,11 @@ div #camera-controls .game-control_category {
 }
 
 .TiltDown:hover {
-    transform: scale(1.5);
+    transform: scale(1.2);
 }
 
 .TiltDown:active {
-    transform: scale(1.25);
+    transform: scale(1.1);
 }
 
 .camera-controls_text{
@@ -636,7 +636,7 @@ div #camera-controls .game-control_category {
 }
 
 .run-button-back[value="reset"] {
-    background-color: #ff0000;
+    background-color: #808080;
 }
 
 .run-button-front[title="run"] {
@@ -644,7 +644,7 @@ div #camera-controls .game-control_category {
 }
 
 .run-button-front[title="reset"] {
-    background-color: #f06565;
+    background-color: #a5a5a5;
 }
 
 .control-btn, .control-icon-btn {
@@ -1056,7 +1056,7 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 .puzzle-select-button-back[value="false"] {
-    background-color: #ff0000;
+    background-color: #b4b4b4;
 }
 
 .puzzle-select-button-front[title="true"] {
@@ -1064,7 +1064,7 @@ input[type=range]::-webkit-slider-runnable-track {
 }
 
 .puzzle-select-button-front[title="false"] {
-    background-color: #f06565;
+    background-color: #dadada;
 }
 
 button[value="true"] {
