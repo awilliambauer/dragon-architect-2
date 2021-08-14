@@ -206,7 +206,7 @@ class App extends React.Component<{}, GameState> {
     else if (this.state.view === ViewType.PuzzleSelect) {
       return (
         <PuzzleSelect gameState={this.state} 
-          onClickHome={(puzzle_tag: string) => {
+          onClickHome={(puzzle_tag) => {
             this.setState({view: ViewType.Normal});
             this.load_puzzle(puzzle_tag)
           }}

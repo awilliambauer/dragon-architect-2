@@ -14,12 +14,12 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
         super(props);
     }
 
-    openPuzzle(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        this.props.onClickToPuzzle(`puzzles/${event.currentTarget.id}.json`);
-    }
-
     returnHome(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         this.props.onClickHome(`puzzles/${event.currentTarget.id}.json`);
+    }
+
+    openPuzzle(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+        this.props.onClickToPuzzle(`puzzles/${event.currentTarget.id}.json`);
     }
 
     render() {
@@ -30,7 +30,7 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
                 <h3>Select Which Puzzle You Would Like to Go To!</h3>
                 </div>
                 <div className='home-button-container'>
-                    <button className='home-button-back' onClick={this.returnHome}>
+                    <button className='home-button-back' onClick={event => this.returnHome(event)}>
                         <span className='home-button-front'>
                             Home
                         </span>
