@@ -7,94 +7,59 @@ type CameraVals = {
 }
 
 // Creates button for zooming in
-class CameraZoomIn extends React.Component<CameraVals> {
-    constructor(props: CameraVals) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <div>
-                <button className="ZoomIn" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="search-plus" style={{ color: 'white' }} /></h1></button>
-            </div>
-        );
-    };
+function CameraZoomIn(props: CameraVals) {
+    return (
+        <div>
+            <button className="ZoomIn" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="search-plus" style={{ color: 'white' }} /></h1></button>
+        </div>
+    );
 };
 
 // Creates button for zooming out
-class CameraZoomOut extends React.Component<CameraVals> {
-    constructor(props: CameraVals) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <div>
-                <button className="ZoomOut" onClick={this.props.onClickFunction}> <h1><FontAwesomeIcon icon="search-minus" style={{ color: 'white' }} /></h1></button>
-            </div>
-        );
-    };
+function CameraZoomOut(props: CameraVals) {
+    return (
+        <div>
+            <button className="ZoomOut" onClick={props.onClickFunction}> <h1><FontAwesomeIcon icon="search-minus" style={{ color: 'white' }} /></h1></button>
+        </div>
+    );
 };
 
 // Creates button for tilting up
-class CameraTiltUp extends React.Component<CameraVals> {
-    constructor(props: CameraVals) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <div>
-                <button className="TiltUp" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-up" style={{ color: 'white' }} /></h1></button>
-            </div>
-        );
-    };
+function CameraTiltUp(props: CameraVals) {
+    return (
+        <div>
+            <button className="TiltUp" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-up" style={{ color: 'white' }} /></h1></button>
+        </div>
+    );
 };
 
 // Creates button for tilting down
-class CameraTiltDown extends React.Component<CameraVals> {
-    constructor(props: CameraVals) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <div>
-                <button className="TiltDown" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-down" style={{ color: 'white' }} /></h1></button>
-            </div>
-        );
-    };
+function CameraTiltDown(props: CameraVals) {
+    return (
+        <div>
+            <button className="TiltDown" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-down" style={{ color: 'white' }} /></h1></button>
+        </div>
+    );
 };
 
 
 // Creates button for rotating right
-class CameraRotateRight extends React.Component<CameraVals> {
-    constructor(props: CameraVals) {
-        super(props);
-    }
-
-    render() {
-        return (
-            <div>
-                <button className="RotateRight" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="redo" style={{ color: 'white' }} /></h1></button>
-            </div>
-        );
-    };
+function CameraRotateRight(props:CameraVals) {
+    return (
+        <div>
+            <button className="RotateRight" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="redo" style={{ color: 'white' }} /></h1></button>
+        </div>
+    );
 };
 
 // Creates button for rotating left
-class CameraRotateLeft extends React.Component<CameraVals> {
-    constructor(props: CameraVals) {
-        super(props);
-    }
+function CameraRotateLeft(props: CameraVals) {
+    return (
+        <div>
+            <button className="RotateLeft" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="undo" style={{ color: 'white' }} /></h1></button>
+        </div>
+    );
 
-    render() {
-        return (
-            <div>
-                <button className="RotateLeft" onClick={this.props.onClickFunction}><h1><FontAwesomeIcon icon="undo" style={{ color: 'white' }} /></h1></button>
-            </div>
-        );
-    };
 };
 
 export {

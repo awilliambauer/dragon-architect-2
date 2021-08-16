@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameState, ViewType } from './App';
+import { GameState } from './App';
 import "./css/index.css"
 
 interface PuzzleSelectProps {
@@ -9,10 +9,6 @@ interface PuzzleSelectProps {
 }
 
 export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
-
-    constructor(props: PuzzleSelectProps) {
-        super(props);
-    }
 
     returnHome(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         this.props.onClickHome(`puzzles/${event.currentTarget.id}.json`);

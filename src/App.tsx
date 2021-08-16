@@ -1,9 +1,8 @@
 import React from 'react';
-import * as THREE from 'three';
 import BlocklyComp, { blocks_to_text, text_to_blocks } from './BlocklyComp';
 import Display from './Display';
 import WorldState from './WorldState';
-import run, { load_stdlib, IncrementalSimulator, SimulatorState } from './Simulator';
+import { load_stdlib, IncrementalSimulator } from './Simulator';
 import parse, { EMPTY_PROGRAM, Program, SyntaxError } from './Parser';
 import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
 import { Run } from './RunButton';
@@ -260,7 +259,7 @@ class App extends React.Component<{}, GameState> {
             <div className='header-name'><h1>Dragon Architect</h1></div>
             <div className="puzzle-selection-name-and-button">
               <div className="current-puzzle-name">
-                <h5>Current Puzzle: <h4>{JSON.stringify(this.state.puzzle?.name)}</h4></h5>
+                <h5>Current Puzzle: {JSON.stringify(this.state.puzzle?.name)}</h5>
               </div>
               <div className='puzzle-select-toggle'>
                   <button className='puzzle-select-toggle-button-back' onClick={() => this.setState({view: ViewType.PuzzleSelect})}>

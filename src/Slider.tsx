@@ -1,12 +1,4 @@
-import React, { ChangeEventHandler } from 'react';
-import * as THREE from 'three';
-import { GameState } from './App';
-import { Material } from 'three';
-import { GoalInfo, GoalInfoType } from './PuzzleState';
-import Blockly from 'blockly';
-import mainStuff from 'three';
-import styled from 'styled-components';
-import Display from './Display';
+import React from 'react';
 
 
 
@@ -15,9 +7,6 @@ type SliderVals = {
 }
 
 export default class Slider extends React.Component<SliderVals> {
-    constructor(props: SliderVals) {
-        super(props);
-    }
 
     render() {
         return (

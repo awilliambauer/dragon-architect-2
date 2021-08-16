@@ -1,4 +1,4 @@
-import _, { eq } from "lodash"
+import _ from "lodash"
 import { PuzzleSpec } from "./PuzzleState"
 
 type PuzzleConnection = {
@@ -153,13 +153,14 @@ export default class PuzzleManager {
     }
 
     next_puzzle(): PuzzleSpec | undefined {
-        this.current_puzzle.puz_index++;
+        this.current_puzzle.puz_index = this.current_puzzle.puz_index+1;
         // check if we've reached the end of the current sequence
-        if (this.current_puzzle.puz_index == this.get_current_seq().puzzles.length) {
+        if (this.current_puzzle.puz_index === this.get_current_seq().puzzles.length) {
             this.current_puzzle.puz_index = 0;
             this.current_puzzle.seq_index++;
             // check if we've reached the end of the current pack
-            if (this.current_puzzle.seq_index == this.get_current_pack().seqs.length) {
+            if (this.current_puzzle.seq_index === this.get_current_pack().seqs.length) {
+                console.log("PENIS")
                 return;
             }
         }

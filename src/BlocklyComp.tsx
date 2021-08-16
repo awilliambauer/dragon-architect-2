@@ -2,8 +2,7 @@ import Blockly, { mainWorkspace } from 'blockly'; //newly added mainWorkspace
 import React from 'react';
 import _ from 'lodash';
 import parse, {
-    Procedure, FileLocation, Expression,
-    ExpressionType, Invocation, Meta, Ident, Program,
+    ExpressionType,
     SyntaxError, Statement, StatementType, Repeat, Execute, Command, TopLevelStatement
 } from './Parser';
 import { GameState } from './App';
@@ -13,10 +12,8 @@ const COLOR_MOVE_1 = '#0075A6';
 const COLOR_MOVE_2 = '#B84B26';
 const COLOR_BLOCK = '#978B63';
 // const COLOR_LOOPS = '#00711C';
-const COLOR_PROCS = '#7C478B';
 // const COLOR_UNUSED_1 = '#B63551';
 // const COLOR_UNUSED_2 = '#A88217';
-const COLOR_TEASER = '#707070';
 // Blockly.FieldColour.COLOURS
 
 // class KoboldLangOps {
@@ -28,7 +25,7 @@ const COLOR_TEASER = '#707070';
 
 const KoboldConvert = new Map<string, (block: Blockly.Block) => string>();
 
-const allGranted = ['move2', 'place', 'remove', 'up', 'down', 'repeat', 'defproc'];
+// const allGranted = ['move2', 'place', 'remove', 'up', 'down', 'repeat', 'defproc'];
 
 // little helper functions for the recursive xmlHelper() function
 export function breakStmt(stmt: Statement) {
