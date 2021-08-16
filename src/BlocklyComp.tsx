@@ -164,7 +164,7 @@ export function text_to_blocks(code: string) {
         let dom = Blockly.Xml.textToDom(xml);
         Blockly.getMainWorkspace().clear();
         Blockly.Xml.domToWorkspace(dom, mainWorkspace);
-
+        console.log(program.body[0].meta.attributes.get("frozen"));
         if (program.body[0].meta.attributes.get("frozen") === "all") {
             freeze_all_blocks(program.body[0].meta.attributes.has("freezeArgs"));
         }

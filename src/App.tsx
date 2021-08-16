@@ -30,8 +30,9 @@ export enum ViewType {
   Loading = "loading",
   Normal = "normal",
   PuzzleSelect = "puzzleSelect",
-  SequencePause = "sequencePause", //
-  PuzzlePause = "puzzlePause"
+  SequencePause = "sequencePause",
+  PuzzlePause = "puzzlePause",
+  LearnMore = "learnMore"
 }
 
 
@@ -54,9 +55,13 @@ class App extends React.Component<{}, GameState> {
     }
   }
 
-  check_local() {
-    window.localStorage.setItem("player_progress", "empty");
-    console.log(window.localStorage.getItem("player_progress"));
+  learn_more(pack: number) {
+    this.state.puzzle_manager.set_pack(pack);
+    this.setState({
+      view: ViewType.Normal
+    });
+    this.load_puzzle(`puzzles/${this.state.puzzle_manager.get_current_puzzle().tag}.json`);
+    
   }
 
   save_progress() {
@@ -77,13 +82,11 @@ class App extends React.Component<{}, GameState> {
   }
 
   load_last_sandbox() {
-    console.log("calling load-last-sandbox");
     let program = window.localStorage.getItem("sandbox");
     if (program) {
       text_to_blocks(program);
     }
-    
-    return window.localStorage.getItem("sandbox");
+    // return window.localStorage.getItem("sandbox");
   }
 
   load_puzzle(puzzle_file: string) {
@@ -139,6 +142,7 @@ class App extends React.Component<{}, GameState> {
   }
 
   toggle_dev_mode() {
+    this.load_sandbox();
     this.setState({
       devMode: !this.state.devMode
     });
@@ -190,7 +194,7 @@ class App extends React.Component<{}, GameState> {
     });
     let puzzle = this.state.puzzle_manager.next_puzzle();
     if (puzzle) {
-      console.log(`puzzles/${puzzle.tag}.json`);
+      // console.log(`puzzles/${puzzle.tag}.json`);
       this.load_puzzle(`puzzles/${puzzle.tag}.json`);
     } else {
       this.load_sandbox();
@@ -225,6 +229,23 @@ class App extends React.Component<{}, GameState> {
               view: ViewType.Normal
             });
           }} />
+      )
+    }
+
+    else if (this.state.view === ViewType.LearnMore) {
+      return (
+        <div className="LearnMore">
+          <header id="header">
+            <div><h1>Choose a pack:</h1></div>
+          </header>
+
+          <button className="standard" onClick={() => this.learn_more(0)}>
+          Standard
+          </button>
+          <button className="test" onClick={() => this.learn_more(1)}>
+          Test
+          </button>
+        </div>
       )
     }
 
@@ -272,6 +293,15 @@ class App extends React.Component<{}, GameState> {
                   </span>
                   </button>
               </div>
+
+              <div id="learn-more" className='learn-more-container'>
+                <button name="learn-more" className='learn-more-button-back' onClick={() => this.setState({view: ViewType.LearnMore})}>
+                  <span className='learn-more-button-front'>
+                    Learn More
+                  </span>
+                </button>
+              </div>
+
               <div id="save-progress" className='save-progress-container'>
                 <button name="save-progress" className='save-progress-button-back' onClick={() => this.save_progress()}>
                   <span className='save-progress-button-front'>
@@ -297,7 +327,7 @@ class App extends React.Component<{}, GameState> {
               </div>
 
               <div id="load-sandbox" className='load-sandbox-container'>
-                <button name="load-sandbox" className='load-sandbox-button-back' onClick={() => console.log(this.load_last_sandbox())}>
+                <button name="load-sandbox" className='load-sandbox-button-back' onClick={() => this.load_last_sandbox()}>
                   <span className='load-sandbox-button-front'>
                     Load Sandbox
                   </span>
@@ -310,19 +340,9 @@ class App extends React.Component<{}, GameState> {
             <BlocklyComp {...this.state} />
           </div>
 
-          {/* {(this.state.view === ViewType.SequencePause) && (this.state.reset) && console.log("here") &&
-            <div className='congrats-box'>
-              <h4 style={{color: 'white' }}>Good job! You just finished all puzzles in this sequence!</h4>
-              <button onClick={() => { this.load_sandbox(); }}>
-                
-                  <h2>Next Puzzle</h2>
-                
-              </button>
-            </div>} */}
-
           {(this.state.view === ViewType.SequencePause) && (this.state.reset) &&
             <div className='congrats-box'>
-              <h5 style={{color: 'white' }}>You just finished all puzzles in this sequence!</h5>
+              <h4 style={{color: 'white' }}>You just finished all puzzles in this sequence!</h4>
               <button className='congrats-button-back' onClick={() => { this.load_sandbox(); }}>
                 <span className='congrats-button-front'>
                   <h2>Go To Sandbox</h2>
