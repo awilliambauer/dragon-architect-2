@@ -29,8 +29,8 @@ export type GameState = {
 export enum ViewType {
   Loading = "loading",
   Normal = "normal",
-  PuzzleSelect = "puzzleSelect", //
-  Progress = "progress", //
+  PuzzleSelect = "puzzleSelect",
+  SequencePause = "sequencePause", //
   PuzzlePause = "puzzlePause"
 }
 
@@ -125,9 +125,17 @@ class App extends React.Component<{}, GameState> {
   win_puzzle() {
     this.state.puzzle_manager.complete_puzzle();
     //this.puzzle_manager.print_completed_puzzle();
-    this.setState({
-      view: ViewType.PuzzlePause
-    })
+
+    if (this.state.puzzle_manager.check_complete_pack()) {
+      this.setState({
+        view: ViewType.SequencePause
+      });
+      // this.load_sandbox();
+    } else {
+      this.setState({
+        view: ViewType.PuzzlePause
+      })
+    }
   }
 
   toggle_dev_mode() {
@@ -187,6 +195,7 @@ class App extends React.Component<{}, GameState> {
     } else {
       this.load_sandbox();
     }
+    
   }
 
   // called when a new pack is selected via the drop-down
@@ -300,6 +309,27 @@ class App extends React.Component<{}, GameState> {
           <div id="main-view-code">
             <BlocklyComp {...this.state} />
           </div>
+
+          {/* {(this.state.view === ViewType.SequencePause) && (this.state.reset) && console.log("here") &&
+            <div className='congrats-box'>
+              <h4 style={{color: 'white' }}>Good job! You just finished all puzzles in this sequence!</h4>
+              <button onClick={() => { this.load_sandbox(); }}>
+                
+                  <h2>Next Puzzle</h2>
+                
+              </button>
+            </div>} */}
+
+          {(this.state.view === ViewType.SequencePause) && (this.state.reset) &&
+            <div className='congrats-box'>
+              <h5 style={{color: 'white' }}>You just finished all puzzles in this sequence!</h5>
+              <button className='congrats-button-back' onClick={() => { this.load_sandbox(); }}>
+                <span className='congrats-button-front'>
+                  <h2>Go To Sandbox</h2>
+                </span>
+              </button>
+            </div>}
+
 
           {(this.state.view === ViewType.PuzzlePause) && (this.state.reset) &&
             <div className='congrats-box'>

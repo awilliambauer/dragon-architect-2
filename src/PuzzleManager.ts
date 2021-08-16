@@ -48,6 +48,25 @@ export default class PuzzleManager {
         this.completed_puzzle = new Map<string, PuzzleSpec[]>();//key = name of PuzzlePack, value = a puzzle
     }
 
+    //checks if current puzzle is the last puzzle completed in a sequence
+    check_complete_pack() {
+        let current_sequence = this.get_current_seq().puzzles;
+        let current_pack = this.get_current_pack().name;
+        for (let puzzle of current_sequence) {
+            let puzzles = this.completed_puzzle.get(current_pack);
+            if (puzzles) {
+                if (!puzzles.includes(puzzle)) {
+                    return false;
+                }
+            }
+            else {
+                console.log("?????");
+                return false;
+            }
+        }
+        return true;
+    }
+
     //adds current puzzle to completed_puzzle
     complete_puzzle() {
         let puzzlePackName = this.get_current_pack().name;
