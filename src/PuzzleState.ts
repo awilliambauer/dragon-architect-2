@@ -199,18 +199,21 @@ export default class PuzzleState {
         }
     }
 
+    // return true if the current game state matches the goals
+    // assumptions: RunOnly, MinCube, DragonPos will be the only goal 
+    //              if they are present
+    /* criteria
+        simulator must be finished
+        loop over goals
+            switch on goal.kind
+                RunOnly: true
+                MinCube: check gamestate.world.cube_map for correct number of cubes
+                AddCube: check that this cube exists
+                RemoveCube: check that this cube does not exist
+                DragonPos: check dragon's position
+        check that no extra cubes have been placed
+    */
     is_complete(gamestate: GameState): boolean {
-        // return true if the current game state matches the goals
-        /* criteria
-            simulator must be finished
-            loop over goals
-                switch on goal.kind
-                    RunOnly: true
-                    MinCube: check gamestate.world.cube_map for correct number of cubes
-                    AddCube: check that this cube exists
-                    RemoveCube: check that this cube does not exist
-                    DragonPos: check dragon's position
-        */
         if (!gamestate.simulator.is_finished()) {
             return false;
         }
@@ -237,20 +240,10 @@ export default class PuzzleState {
                     break;
                 case GoalInfoType.DragonPos:
                     let dragonPosRequired = goal.position as THREE.Vector3;
-                    if (!gamestate.world.dragon_pos.equals(dragonPosRequired)) {
-                        return false;
-                    }
-                    else {
-                        return true;
-                    }
+                    return gamestate.world.dragon_pos.equals(dragonPosRequired);
             }
         }
-        if (gamestate.world.cube_map.size > this.goals.length) {
-            return false;
-        } else {
-            return true;
-        }
-        
+        return gamestate.world.cube_map.size <= this.goals.length
     }
 
     static make_from_file(filename: string, win_callback: () => void) {
