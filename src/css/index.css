@@ -55,6 +55,7 @@ body {
     -webkit-flex-direction: column;
     font-weight: 400;
     line-height: 1.5;
+    margin: 0;
 }
 
 /* header */
@@ -83,6 +84,7 @@ header > div, header > div > div {
     align-items: center;
     -webkit-align-items: center;
     height: 100%;
+    margin: 8px;
 }
 
 header > div * {
