@@ -52,7 +52,7 @@ class App extends React.Component<{}, GameState> {
       puzzle_manager: new PuzzleManager(),
       devMode: false
     }
-    this.clean_progress();
+    // this.clean_progress();
     this.load_last_progress();
   }
 
