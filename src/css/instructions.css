@@ -117,11 +117,15 @@
 
 .instructions-png {
     height: 70px;
+    transform: scale(.7);
     vertical-align: middle;
+    margin: -10px;
 }
 
 .instructions-svg {
     vertical-align: middle;
+    transform: scale(.7);
+    margin: -10px;
 }
 
 @-webkit-keyframes speechBubble {
