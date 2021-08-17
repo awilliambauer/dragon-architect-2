@@ -156,7 +156,6 @@ class App extends React.Component<{}, GameState> {
   }
 
   toggle_dev_mode() {
-    this.load_sandbox();
     this.setState({
       devMode: !this.state.devMode
     });
