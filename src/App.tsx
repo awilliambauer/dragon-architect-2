@@ -52,6 +52,7 @@ class App extends React.Component<{}, GameState> {
       puzzle_manager: new PuzzleManager(),
       devMode: false
     }
+    this.load_last_progress();
   }
 
   learn_more(pack: number) {
@@ -66,14 +67,26 @@ class App extends React.Component<{}, GameState> {
   save_progress() {
     let progress = JSON.stringify([...this.state.puzzle_manager.completed_puzzle]);
     window.localStorage.setItem("progress", progress);
+
+    let next_puzzle = JSON.stringify([this.state.puzzle_manager.next_puzzle()]);
+    window.localStorage.setItem("puzzle", next_puzzle);
   }
 
   load_last_progress() {
     // return window.localStorage.getItem("progress");
     let progress_string = window.localStorage.getItem("progress");
     if (progress_string) {
-      this.state.puzzle_manager.completed_puzzle  = new Map(JSON.parse(progress_string))
+      this.state.puzzle_manager.completed_puzzle = new Map(JSON.parse(progress_string))
     }
+
+    // let puzzle_string = window.localStorage.getItem("puzzle");
+    // if (puzzle_string) {
+    //   // console.log(`puzzles/${puzzle.tag}.json`);
+      
+    //   this.load_puzzle(`puzzles/${(new Map(JSON.parse(puzzle_string))).tag}.json`);
+    // } else {
+    //   this.load_sandbox();
+    // }
   }
 
   save_sandbox() {
@@ -85,7 +98,6 @@ class App extends React.Component<{}, GameState> {
     if (program) {
       text_to_blocks(program);
     }
-    // return window.localStorage.getItem("sandbox");
   }
 
   load_puzzle(puzzle_file: string) {
@@ -121,6 +133,7 @@ class App extends React.Component<{}, GameState> {
       reset: false,
       lastSavedWorld: undefined
     })
+    this.load_last_sandbox();
   }
 
   // when the user completes a puzzle
@@ -138,6 +151,7 @@ class App extends React.Component<{}, GameState> {
         view: ViewType.PuzzlePause
       })
     }
+    this.save_progress();
   }
 
   toggle_dev_mode() {
@@ -170,7 +184,9 @@ class App extends React.Component<{}, GameState> {
       } else {
         this.setState({
           simulator: new IncrementalSimulator(this.state.world, ast)
-        }, () => this.state.simulator.set_running())
+        }, () => this.state.simulator.set_running());
+        if (this.state.puzzle === SANDBOX_STATE )
+        this.save_sandbox();
       }
     }
     else { // reset 
@@ -301,37 +317,38 @@ class App extends React.Component<{}, GameState> {
                 </button>
               </div>
 
-              <div id="save-progress" className='save-progress-container'>
+              {/* <div id="save-progress" className='save-progress-container'>
                 <button name="save-progress" className='save-progress-button-back' onClick={() => this.save_progress()}>
                   <span className='save-progress-button-front'>
                     Save Progress
                   </span>
                 </button>
-              </div>
+              </div> */}
 
-              <div id="load-progress" className='load-progress-container'>
+              {/* <div id="load-progress" className='load-progress-container'>
                 <button name="load-progress" className='load-progress-button-back' onClick={() => this.load_last_progress()}>
                   <span className='load-progress-button-front'>
                     Load Progress
                   </span>
                 </button>
-              </div>
+              </div> */}
               
-              <div id="save-sandbox" className='save-sandbox-container'>
+              {/* <div id="save-sandbox" className='save-sandbox-container'>
                 <button name="save-sandbox" className='save-sandbox-button-back' onClick={() => this.save_sandbox()}>
                   <span className='save-sandbox-button-front'>
                     Save Sandbox
                   </span>
                 </button>
-              </div>
+              </div> */}
 
-              <div id="load-sandbox" className='load-sandbox-container'>
+              {/* <div id="load-sandbox" className='load-sandbox-container'>
                 <button name="load-sandbox" className='load-sandbox-button-back' onClick={() => this.load_last_sandbox()}>
                   <span className='load-sandbox-button-front'>
                     Load Sandbox
                   </span>
                 </button>
-              </div>
+              </div> */}
+
             </div>
           </div>
 

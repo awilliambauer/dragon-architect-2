@@ -160,7 +160,6 @@ export default class PuzzleManager {
             this.current_puzzle.seq_index++;
             // check if we've reached the end of the current pack
             if (this.current_puzzle.seq_index === this.get_current_pack().seqs.length) {
-                console.log("PENIS")
                 return;
             }
         }
