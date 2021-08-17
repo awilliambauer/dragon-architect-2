@@ -68,7 +68,7 @@ class App extends React.Component<{}, GameState> {
     let progress = JSON.stringify([...this.state.puzzle_manager.completed_puzzle]);
     window.localStorage.setItem("progress", progress);
 
-    let next_puzzle = JSON.stringify([this.state.puzzle_manager.next_puzzle()]);
+    let next_puzzle = JSON.stringify([this.state.puzzle_manager.next_puzzle]);
     window.localStorage.setItem("puzzle", next_puzzle);
   }
 
@@ -133,6 +133,7 @@ class App extends React.Component<{}, GameState> {
       reset: false,
       lastSavedWorld: undefined
     })
+
     this.load_last_sandbox();
   }
 
@@ -254,11 +255,15 @@ class App extends React.Component<{}, GameState> {
             <div><h1>Choose a pack:</h1></div>
           </header>
 
-          <button className="standard" onClick={() => this.learn_more(0)}>
-          Standard
+          <button className="standard-back" onClick={() => this.learn_more(0)}>
+            <span className="standard-front">
+              Standard
+            </span>
           </button>
-          <button className="test" onClick={() => this.learn_more(1)}>
-          Test
+          <button className="test-back" onClick={() => this.learn_more(1)}>
+            <span className="test-front">
+              Test
+            </span>
           </button>
         </div>
       )
@@ -280,9 +285,16 @@ class App extends React.Component<{}, GameState> {
               <div className='puzzle-select-toggle'>
                   <button className='puzzle-select-toggle-button-back' onClick={() => this.setState({view: ViewType.PuzzleSelect})}>
                     <span className='puzzle-select-toggle-button-front'>
-                      Go to puzzle select
+                      Puzzle Select
                     </span>
                   </button>
+              </div>
+              <div className='sandbox-toggle'>
+                <button className='sandbox-toggle-button-back' onClick={() => { this.load_sandbox(); }}>
+                  <span className='sandbox-toggle-button-front'>
+                    Sandbox Mode
+                  </span>
+                </button>
               </div>
             </div>
             {/* </div> */}
@@ -357,8 +369,8 @@ class App extends React.Component<{}, GameState> {
           </div>
 
           {(this.state.view === ViewType.SequencePause) && (this.state.reset) &&
-            <div className='congrats-box'>
-              <h4 style={{color: 'white' }}>You just finished all puzzles in this sequence!</h4>
+            <div className='sandbox-congrats-box'>
+              <h4>You finished all puzzles in this sequence!</h4>
               <button className='congrats-button-back' onClick={() => { this.load_sandbox(); }}>
                 <span className='congrats-button-front'>
                   <h2>Go To Sandbox</h2>
@@ -369,7 +381,7 @@ class App extends React.Component<{}, GameState> {
 
           {(this.state.view === ViewType.PuzzlePause) &&
             <div className='congrats-box'>
-              <h4 style={{color: 'white' }}>Good job!</h4>
+              <h4>Good job!</h4>
               <button className='congrats-button-back' onClick={() => { this.continue(); }}>
                 <span className='congrats-button-front'>
                   <h2>Next Puzzle</h2>
