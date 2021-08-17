@@ -226,6 +226,15 @@ class App extends React.Component<{}, GameState> {
     this.load_puzzle(`puzzles/${this.state.puzzle_manager.get_current_puzzle().tag}.json`);
   }
 
+  current_puzzle() {
+    if (this.state.puzzle === SANDBOX_STATE) {
+      return "Sandbox";
+    }
+    else {
+      return JSON.stringify(this.state.puzzle?.name);
+    }
+  }
+
   render() {
 
     if (this.state.view === ViewType.Loading) {
@@ -278,7 +287,7 @@ class App extends React.Component<{}, GameState> {
             <div className='header-name'><h1>Dragon Architect</h1></div>
             <div className="puzzle-selection-name-and-button">
               <div className="current-puzzle-name">
-                <h5>Current Puzzle: {JSON.stringify(this.state.puzzle?.name)}</h5>
+                <h5>Current Puzzle: {this.current_puzzle()}</h5>
               </div>
               <div className='puzzle-select-toggle'>
                   <button className='puzzle-select-toggle-button-back' onClick={() => this.setState({view: ViewType.PuzzleSelect})}>
