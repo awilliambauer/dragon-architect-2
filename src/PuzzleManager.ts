@@ -60,7 +60,6 @@ export default class PuzzleManager {
                 }
             }
             else {
-                console.log("?????");
                 return false;
             }
         }
@@ -195,6 +194,13 @@ export default class PuzzleManager {
                 }
             }
         }
+        // include anything required or granted by the current puzzle
+        if (this.get_current_puzzle()) {
+            for (let block of this.get_current_puzzle().library.required.concat(this.get_current_puzzle().library.granted)) {
+                if (!granted_blocks.includes(block))
+                    granted_blocks.push(block);
+            }
+        }
         return granted_blocks
     }
 
@@ -233,7 +239,7 @@ export default class PuzzleManager {
     // but it does work
     initialize() {
         return fetch("packs/packs.json")
-            .then(response => response.json())
+            .then(response => {console.log(response); return response.json()})
             .then(this.load_packs)
             .then(pack_promises => Promise.all(pack_promises))
             .then(packs => this.packs = packs)

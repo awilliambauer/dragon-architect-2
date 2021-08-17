@@ -68,8 +68,9 @@ class App extends React.Component<{}, GameState> {
     let progress = JSON.stringify([...this.state.puzzle_manager.completed_puzzle]);
     window.localStorage.setItem("progress", progress);
 
-    let next_puzzle = JSON.stringify([this.state.puzzle_manager.next_puzzle]);
-    window.localStorage.setItem("puzzle", next_puzzle);
+    // commenting this out for now, as it breaks puzzle progression (next_puzzle() advances to the next puzzle, causing a double advance)
+    // let next_puzzle = JSON.stringify([this.state.puzzle_manager.next_puzzle()]);
+    // window.localStorage.setItem("puzzle", next_puzzle);
   }
 
   load_last_progress() {
@@ -133,7 +134,8 @@ class App extends React.Component<{}, GameState> {
       reset: false,
       lastSavedWorld: undefined
     })
-
+    // HACK: make the puz_index invalid, so that get_current_puzzle() returns undefined
+    this.state.puzzle_manager.current_puzzle.puz_index = -1;
     this.load_last_sandbox();
   }
 
@@ -272,10 +274,6 @@ class App extends React.Component<{}, GameState> {
       return (
         <div className="App">
           <header id="header" className="navbar">
-            {/* <div id="header-items"> */}
-            {/* <div className="run-button">
-              <Run reset={this.state.reset} onClick={() => { this.run_program(); this.get_granted_blocks() }} />
-            </div> */}
             <div className='header-name'><h1>Dragon Architect</h1></div>
             <div className="puzzle-selection-name-and-button">
               <div className="current-puzzle-name">
@@ -298,7 +296,7 @@ class App extends React.Component<{}, GameState> {
             </div>
             {/* </div> */}
           </header>
-          <div className='dev-controls-header'>
+          {process.env.NODE_ENV !== 'production' && <div className='dev-controls-header'>
             <div className='pack-container'>
               <label htmlFor="pack-select" className='pack-label' style={{ color: 'white' }}>Select a pack:</label>
               <select name="pack-select" id="pack-select" className='pack-select' onChange={event => this.on_change_pack(event)}>
@@ -361,7 +359,7 @@ class App extends React.Component<{}, GameState> {
               </div> */}
 
             </div>
-          </div>
+          </div>}
 
           <div id="main-view-code">
             <BlocklyComp {...this.state} />
