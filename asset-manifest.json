@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/dragon-architect-2/static/css/main.d1cc755b.chunk.css",
-    "main.js": "/dragon-architect-2/static/js/main.9bff06b2.chunk.js",
-    "main.js.map": "/dragon-architect-2/static/js/main.9bff06b2.chunk.js.map",
+    "main.js": "/dragon-architect-2/static/js/main.9808cb2b.chunk.js",
+    "main.js.map": "/dragon-architect-2/static/js/main.9808cb2b.chunk.js.map",
     "runtime-main.js": "/dragon-architect-2/static/js/runtime-main.fabd99a4.js",
     "runtime-main.js.map": "/dragon-architect-2/static/js/runtime-main.fabd99a4.js.map",
     "static/js/2.0ec4a1a5.chunk.js": "/dragon-architect-2/static/js/2.0ec4a1a5.chunk.js",
@@ -15,6 +15,6 @@
     "static/js/runtime-main.fabd99a4.js",
     "static/js/2.0ec4a1a5.chunk.js",
     "static/css/main.d1cc755b.chunk.css",
-    "static/js/main.9bff06b2.chunk.js"
+    "static/js/main.9808cb2b.chunk.js"
   ]
 }
