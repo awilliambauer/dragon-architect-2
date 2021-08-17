@@ -350,7 +350,7 @@ class App extends React.Component<{}, GameState> {
             </div>}
 
 
-          {(this.state.view === ViewType.PuzzlePause) && (this.state.reset) &&
+          {(this.state.view === ViewType.PuzzlePause) &&
             <div className='congrats-box'>
               <h4 style={{color: 'white' }}>Good job!</h4>
               <button className='congrats-button-back' onClick={() => { this.continue(); }}>

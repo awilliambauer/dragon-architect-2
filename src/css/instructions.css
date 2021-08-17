@@ -115,8 +115,12 @@
     box-sizing: content-box;
 }
 
-.instructions-img {
-    height: 38px;
+.instructions-png {
+    height: 70px;
+    vertical-align: middle;
+}
+
+.instructions-svg {
     vertical-align: middle;
 }
 

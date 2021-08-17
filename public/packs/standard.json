@@ -36,8 +36,7 @@
             "puzzles": [
                 "up-whatIsUp",
                 "up-whatIsDown",
-                "up-bridge",
-                "up-rotateCamera"
+                "up-bridge"
             ],
             "connections": [
                 {
@@ -47,10 +46,6 @@
                 {
                     "start": "up-whatIsDown",
                     "dest": "up-bridge"
-                },
-                {
-                    "start": "up-bridge",
-                    "dest": "up-rotateCamera"
                 }
             ]
         },

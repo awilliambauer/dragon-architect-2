@@ -11,9 +11,6 @@
         "pos": [0, 0, 0], 
         "dir": [0, -1, 0]
     },
-    "instructions": {
-        "text": "Solve the challenge by filling in the blueprint!",
-        "detail": "It's hard to see where the cubes should go from this angle! Play with {camera} to get a better view."
-    },
+    "instructions": "Solve the challenge by filling in the blueprint! It's hard to see where the cubes should go from this angle! Play with {camera} to get a better view.",
     "logging_id": "be92dcde-caea-4d27-b80b-3bc0cc7fed8a"
 }
