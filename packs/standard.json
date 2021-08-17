@@ -1,0 +1,106 @@
+{
+    "name": "standard",
+    "seqs": [
+        {
+            "name": "Tutorial Puzzles",
+            "tag": "tutorial",
+            "puzzles": [
+                "tutorial1",
+                "tutorial2",
+                "tutorial3",
+                "tutorial-placingCubes",
+                "tutorial-removingCubes"
+            ],
+            "connections": [
+                {
+                    "start": "tutorial1",
+                    "dest": "tutorial2"
+                },
+                {
+                    "start": "tutorial2",
+                    "dest": "tutorial3"
+                },
+                {
+                    "start": "tutorial3",
+                    "dest": "tutorial-placingCubes"
+                },
+                {
+                    "start": "tutorial-placingCubes",
+                    "dest": "tutorial-removingCubes"
+                }
+            ]
+        },
+        {
+            "name": "Up Puzzles",
+            "tag": "up",
+            "puzzles": [
+                "up-whatIsUp",
+                "up-whatIsDown",
+                "up-bridge"
+            ],
+            "connections": [
+                {
+                    "start": "up-whatIsUp",
+                    "dest": "up-whatIsDown"
+                },
+                {
+                    "start": "up-whatIsDown",
+                    "dest": "up-bridge"
+                }
+            ]
+        },
+        {
+            "name": "Repeat Puzzles",
+            "tag": "repeat",
+            "puzzles": [
+                "repeat-arguments",
+                "repeat-repeatArgs",
+                "repeat-repeatFixedLoops",
+                "repeat-repeatFixedProgram",
+                "repeat-repeatNested",
+                "repeat-repeatTower"
+            ],
+            "connections": [
+                {
+                    "start": "repeat-arguments",
+                    "dest": "repeat-repeatArgs"
+                },
+                {
+                    "start": "repeat-repeatArgs",
+                    "dest": "repeat-repeatNested"
+                },
+                {
+                    "start": "repeat-repeatNested",
+                    "dest": "repeat-repeatFixedProgram"
+                },
+                {
+                    "start": "repeat-repeatFixedProgram",
+                    "dest": "repeat-repeatFixedLoops"
+                },
+                {
+                    "start": "repeat-repeatFixedLoops",
+                    "dest": "repeat-repeatTower"
+                }
+            ]
+        },
+        {
+            "name": "Procedure Puzzles",
+            "tag": "procedure",
+            "puzzles": [
+                "procedures-square",
+                "procedures-call",
+                "procedures-def"
+            ],
+            "connections": [
+                {
+                    "start": "procedures-square",
+                    "dest": "procedures-call"
+                },
+                {
+                    "start": "procedures-call",
+                    "dest": "procedures-def"
+                }
+            ]
+        }
+    ]
+}

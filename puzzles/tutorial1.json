@@ -1,0 +1,18 @@
+{
+    "name": "Tutorial Part 1",
+    "format_version": 1,
+    "tag": "tutorial1",
+    "library": {
+        "restricted": ["blocks"],
+        "required": [],
+        "granted": ["move2"]
+    },
+    "world": {
+        "pos": [0, 0, 0],
+        "dir": [1, 0, 0]
+    },
+    "program": "puzzles/code/tutorial1.kobold",
+    "goal": "run_only",
+    "instructions": "Click {run} to run the program!",
+    "logging_id": "a5d73c72-bc34-4820-a17b-5aff7374b461"
+}

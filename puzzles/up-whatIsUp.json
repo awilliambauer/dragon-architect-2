@@ -1,0 +1,18 @@
+{
+    "name": "What is Up?",
+    "format_version": 1,
+    "tag": "up-whatIsUp",
+    "library": {
+        "required": ["move2"],
+        "granted": ["up"]
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [1, 0, 0]
+    },
+    "program": "puzzles/code/up-whatIsUp.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/up-whatIsUp-solution.kobold",
+    "instructions": "Help me get to the {pinkboxUp}! To tell me to go up, use {up}. Be sure to use {rotate} and {scroll} if you need to change the camera angle.",
+    "logging_id": "a9f31eea-a109-4c79-954a-8cc0957ee745"
+}

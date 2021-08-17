@@ -1,0 +1,19 @@
+{
+    "name": "Tutorial Part 3",
+    "format_version": 1,
+    "tag": "tutorial3",
+    "library": {
+        "restricted": ["blocks"],
+        "required": ["move2"],
+        "granted": ["place"]
+    },
+    "world": {
+        "pos": [0, 0, 0],
+        "dir": [1, 0, 0]
+    },
+    "program": "puzzles/code/tutorial3.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/tutorial3-solution.kobold",
+    "logging_id": "cac44413-3a0d-4a3c-8647-d12ccd698020",
+    "instructions": "Help me get to {pinkboxGround}! A {right} tells me to turn right."
+}

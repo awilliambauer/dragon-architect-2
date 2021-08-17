@@ -1,0 +1,23 @@
+{
+    "name": "A Bit of Repeat",
+    "component": "PuzRepeatFixedProgram",
+    "tag": "repeat-repeatFixedProgram",
+    "format_version": 1,
+    "library": {
+        "restricted": ["blocks"],
+        "required": [],
+        "granted": []
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [0, -1, 0]
+    },
+    "tutorial": {
+        "highlighted": ["controls_repeat"]
+    },
+    "program": "puzzles/code/repeat-repeatFixedProgram.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/repeat-repeatFixedProgram-solution.kobold",
+    "instructions": "Help me fill in the blueprint by changing<br>{repeat} to {repeat4}! <br>{repeat4} tells me to do everything inside 4 times.",
+    "logging_id": "8ead7f35-82f0-44f2-9f80-56b3cd220100"
+}

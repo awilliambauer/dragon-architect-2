@@ -1,0 +1,18 @@
+{
+    "name": "What is Down?",
+    "format_version": 1,
+    "tag": "up-whatIsDown",
+    "library": {
+        "required": ["move2"],
+        "granted": ["down"]
+    },
+    "world": {
+        "pos": [0, -2, 5], 
+        "dir": [0, 1, 0]
+    },
+    "program": "puzzles/code/up-whatIsDown.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/up-whatIsDown-solution.kobold",
+    "instructions": "Help me get to the {pinkboxGround}! {down} tells me to go down",
+    "logging_id": "b8619792-bda0-4e38-a233-0fa91225b296"
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" class="blocklySvg" height="35px" version="1.1" width="60px"><defs><style type="text/css"><![CDATA[
+.blocklySvg { overflow: hidden; background-color: rgb(255, 255, 255, 0.0); }
+.blocklyPathLight { fill: none; stroke-width: 2px; stroke-linecap: round; }
+.blocklyText { cursor: default; font-family: sans-serif; font-size: 11pt; fill: rgb(255, 255, 255); }]]></style></defs><g><rect fill-opacity="0" width="61.56751251220703" height="30" x="13" y="5"/><g class="blocklyDraggable"><path class="blocklyPathDark" transform="translate(1, 1)" fill="#5b533b" d="m 0,8 A 8,8 0 0,1 8,0 H 15 l 6,4 3,0 6,-4 H 40 H 55 v 25 H 30 l -6,4 -3,0 -6,-4 H 8 a 8,8 0 0,1 -8,-8 z
+"/><path class="blocklyPath" fill="#978B63" d="m 0,8 A 8,8 0 0,1 8,0 H 15 l 6,4 3,0 6,-4 H 40 H 55 v 25 H 30 l -6,4 -3,0 -6,-4 H 8 a 8,8 0 0,1 -8,-8 z
+"/><path class="blocklyPathLight" stroke="#b6ae92" d="m 1,7 A 7,7 0 0,1 8,1 H 15 l 6.5,4 2,0 6.5,-4 H 40 M 39,1 H 55 M 3.050252531694167,21.949747468305834 A 7,7 0 0,1 1,17 V 8
+"/><text class="blocklyText" transform="translate(10, 18)">Tower</text></g></g><g/></svg>

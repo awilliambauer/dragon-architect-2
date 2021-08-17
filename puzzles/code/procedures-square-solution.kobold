@@ -1,0 +1,6 @@
+Forward(1)
+repeat 4 times
+    repeat 6 times
+        Forward(1)
+        PlaceCube(0)
+    Right()

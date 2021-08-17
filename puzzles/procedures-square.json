@@ -1,0 +1,19 @@
+{
+    "name": "A Square Deal",
+    "format_version": 1,
+    "tag": "procedures-square",
+    "library": {
+        "restricted": ["defproc_noargs", "defproc"],
+        "required": ["set"],
+        "granted": []
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [0, -1, 0]
+    },
+    "program": "puzzles/code/procedures-square.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/procedures-square-solution.kobold",
+    "instructions": "Put blocks inside {square} to have me build a square.",
+    "logging_id": "ff93d5bd-b26f-4614-90a2-0d420b3f105a"
+}

@@ -1,0 +1,18 @@
+{
+    "name": "A Towering Achievement",
+    "format_version": 1,
+    "tag": "repeat-repeatTower",
+    "library": {
+        "required": ["move2", "place", "up"],
+        "granted": ["repeat"]
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [0, -1, 0]
+    },
+    "program": "puzzles/code/repeat-repeatTower.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/repeat-repeatTower-solution.kobold",
+    "instructions": "I want to build this tower! The tower has 5 layers and each layer is a 5 by 5 square.",
+    "logging_id": "7f8b0b15-5ffb-4340-8166-5502e4bfb999"
+}

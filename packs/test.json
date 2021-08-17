@@ -1,0 +1,19 @@
+{
+    "name": "test",
+    "seqs": [
+        {
+            "name": "Test Pack",
+            "tag": "test",
+            "puzzles": [
+                "tutorial-placingCubes",
+                "up-whatIsUp"
+            ],
+            "connections": [
+                {
+                    "start": "tutorial-placingCubes",
+                    "dest": "up-whatIsUp"
+                }
+            ]
+        }
+    ]
+}

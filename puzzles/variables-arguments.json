@@ -1,0 +1,17 @@
+{
+    "name": "Variables Arguments",
+    "format_version": 1,
+    "tag": "variables-arguments",
+    "library": {
+        "required": ["blocks"]
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [0, -1, 0]
+    },
+    "program": "puzzles/code/variables-arguments.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/variables-arguments-solution.kobold",
+    "instructions": "Variables hold values that you want to use later. {variable} defines a variable. {x} holds the variable's value and can be given to blocks like {forwardx}. Change the number to complete my program.",
+    "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
+}

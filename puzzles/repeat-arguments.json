@@ -1,0 +1,19 @@
+{
+    "name": "Winning Arguments",
+    "format_version": 1,
+    "tag": "repeat-arguments",
+    "library": {
+        "restricted": ["blocks"],
+        "required": [],
+        "granted": []
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [0, -1, 0]
+    },
+    "program": "puzzles/code/repeat-arguments.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/repeat-arguments-solution.kobold",
+    "instructions": "The number in each {forward} tells me how many spaces to move. Change the numbers to complete my program. Be sure to use the given starter blocks, you can't delete them or add any others.",
+    "logging_id": "4eb72775-33a8-463b-92a7-beabad0fe369"
+}

@@ -1,0 +1,20 @@
+{
+    "name": "Nested Repeats",
+    "component": "PuzRepeatFixedLoops",
+    "tag": "repeat-repeatFixedLoops",
+    "format_version": 1,
+    "library": {
+        "restricted": ["blocks"],
+        "required": ["move2", "place"],
+        "granted": []
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [0, -1, 0]
+    },
+    "program": "puzzles/code/repeat-repeatFixedLoops.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/repeat-repeatFixedLoops-solution.kobold",
+    "instructions": "Help me fill in the blueprint by adding a {forward} and a {placecube} to my program! \nTry adding those code blocks inside {repeat9}.",
+    "logging_id": "8026a7ae-4242-4321-a395-0cd0c67aee09"
+}

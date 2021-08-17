@@ -1,0 +1,19 @@
+{
+    "name": "Tutorial Part 2",
+    "format_version": 1,
+    "tag": "tutorial2",
+    "library": {
+        "restricted": ["blocks"],
+        "required": ["move2"],
+        "granted": []
+    },
+    "world": {
+        "pos": [0, 0, 0],
+        "dir": [1, 0, 0]
+    },
+    "program": "puzzles/code/tutorial2.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/tutorial2-solution.kobold",
+    "logging_id": "74d2a231-6dbd-4414-99b2-ba818f5b63b8",
+    "instructions": "I need to get to the {pinkboxGround}. Another {forward} may help."
+}

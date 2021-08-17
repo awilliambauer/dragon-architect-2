@@ -1,0 +1,2 @@
+define call()
+    Up(1)

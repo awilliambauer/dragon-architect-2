@@ -1,0 +1,6 @@
+{
+    "packs": [
+        "standard.json",
+        "test.json"
+    ]
+}

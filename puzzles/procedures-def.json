@@ -1,0 +1,19 @@
+{
+    "name": "Standard Operating Procedure",
+    "format_version": 1,
+    "tag": "procedures-def",
+    "library": {
+        "restricted": [],
+        "required": ["set"],
+        "granted": ["defproc"]
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [0, -1, 0]
+    },
+    "program": "puzzles/code/procedures-def.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/procedures-def-solution.kobold",
+    "instructions": "Use a procedure to get me to {pinkboxUp}! You can only place blocks inside of a {procedure}",
+    "logging_id": "c74cf758-09d3-4989-9058-3d73e3ee7b3d"
+}
