@@ -1,4 +1,3 @@
-import { ViewType } from "./App";
 import { GameState } from './App';
 
 type RunProps = {

@@ -1,3 +1,4 @@
+/* eslint-disable */
 export function mapHasVector3(map: Map<THREE.Vector3, any>, vec: THREE.Vector3): boolean {
     for (let [key, _val] of map) {
         if (key.equals(vec)) {
@@ -24,3 +25,4 @@ export function mapDeleteVector3(map: Map<THREE.Vector3, any>, vec: THREE.Vector
     }
     return false;
 }
+/* eslint-enable */

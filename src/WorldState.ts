@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { SimCommand, RuntimeError, RuntimeErrorCode, runtime_error, 
     ValueType } from './Simulator';
+/* eslint-disable */
 import _ from 'lodash';
 import { mapDeleteVector3, mapHasVector3 } from './Util';
 

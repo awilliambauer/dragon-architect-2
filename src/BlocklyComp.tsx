@@ -161,7 +161,7 @@ export function text_to_blocks(code: string) {
         let dom = Blockly.Xml.textToDom(xml);
         Blockly.getMainWorkspace().clear();
         Blockly.Xml.domToWorkspace(dom, mainWorkspace);
-        console.log(program.body[0].meta.attributes.get("frozen"));
+        //(program.body[0].meta.attributes.get("frozen"));
         if (program.body[0].meta.attributes.get("frozen") === "all") {
             freeze_all_blocks(program.body[0].meta.attributes.has("freezeArgs"));
         }
@@ -186,7 +186,7 @@ function print_block(indent: string, block: Blockly.Block) {
 export function print_blocks() {
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
     _.forEach(top, (block) => {
-        console.log("top");
+        //console.log("top");
         print_block("", block);
     });
 }
@@ -418,7 +418,7 @@ function customBlocklyInit() {
 
     //procedure (built-in)
     KoboldConvert.set("procedures_defnoreturn", (block: Blockly.Block) => {
-        let [name, args, _hasReturn] = (block as Blockly.ProcedureBlock).getProcedureDef();
+        let [name, args] = (block as Blockly.ProcedureBlock).getProcedureDef();
         return `define ${name}(${args})`;
     });
 

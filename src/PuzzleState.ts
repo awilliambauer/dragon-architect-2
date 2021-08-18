@@ -1,4 +1,6 @@
+/* eslint-disable */
 import _ from "lodash"
+/* eslint-enable */
 import * as THREE from "three"
 import { GameState } from "./App"
 import parse, { SyntaxError } from "./Parser"
@@ -145,21 +147,21 @@ function make_goals_from_world(end: WorldState, start: WorldState): GoalInfo[] {
     let goals = []
 
     // check for cubes added, position only
-    for (let [cubePos, _cubeColor] of end.cube_map) {
-        if (!mapHasVector3(start.cube_map, cubePos)) {
+    for (let cubePos of end.cube_map) {
+        if (!mapHasVector3(start.cube_map, cubePos[0])) {
             goals.push({
                 kind: GoalInfoType.AddCube,
-                position: cubePos
+                position: cubePos[0]
             });
         }
     }
 
     // check for cubes removed, position only
-    for (let [cubePos, _cubeColor] of start.cube_map) {
-        if (!mapHasVector3(end.cube_map, cubePos)) {
+    for (let cubePos of start.cube_map) {
+        if (!mapHasVector3(end.cube_map, cubePos[0])) {
             goals.push({
                 kind: GoalInfoType.RemoveCube,
-                position: cubePos
+                position: cubePos[0]
             });
         }
     }
@@ -197,7 +199,7 @@ export default class PuzzleState {
         let str = "";
         str += " instructions: " + this.instructions;
         str += " granted: " + this.library.granted;
-        console.log("print_puzzleState: " + str);
+        //console.log("print_puzzleState: " + str);
     }
 
     check_completed(gamestate: GameState) {
