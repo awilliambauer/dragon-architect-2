@@ -6,6 +6,7 @@ import { load_stdlib, IncrementalSimulator } from './Simulator';
 import parse, { EMPTY_PROGRAM, Program, SyntaxError } from './Parser';
 import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
 import { Run } from './RunButton';
+import { InstructionsGoal } from './InstructionsGoal';
 import _ from 'lodash';
 import PuzzleManager from './PuzzleManager';
 import "./css/index.css"
@@ -52,6 +53,7 @@ class App extends React.Component<{}, GameState> {
       puzzle_manager: new PuzzleManager(),
       devMode: false
     }
+    // this.clean_progress();
     this.load_last_progress();
   }
 
@@ -73,6 +75,10 @@ class App extends React.Component<{}, GameState> {
     // window.localStorage.setItem("puzzle", next_puzzle);
   }
 
+  clean_progress() {
+    window.localStorage.removeItem("progress");
+  }
+
   load_last_progress() {
     // return window.localStorage.getItem("progress");
     let progress_string = window.localStorage.getItem("progress");
@@ -89,6 +95,7 @@ class App extends React.Component<{}, GameState> {
     //   this.load_sandbox();
     // }
   }
+
 
   save_sandbox() {
     window.localStorage.setItem("sandbox", blocks_to_text());
@@ -225,6 +232,22 @@ class App extends React.Component<{}, GameState> {
     this.load_puzzle(`puzzles/${this.state.puzzle_manager.get_current_puzzle().tag}.json`);
   }
 
+  current_puzzle() {
+    if (this.state.puzzle === SANDBOX_STATE) {
+      return "Sandbox";
+    }
+    else {
+      return JSON.stringify(this.state.puzzle?.name);
+    }
+  }
+
+  // instructions_goal() {
+  //   if (this.state.puzzle === SANDBOX_STATE) {
+  //     return "Welcome to Sandbox mode! Create anything you like!";
+  //   } 
+  //   return new dangerouslySetInnerHTML={{ __html: this.state.puzzle?.instructions }};
+  // }
+
   render() {
 
     if (this.state.view === ViewType.Loading) {
@@ -277,7 +300,7 @@ class App extends React.Component<{}, GameState> {
             <div className='header-name'><h1>Dragon Architect</h1></div>
             <div className="puzzle-selection-name-and-button">
               <div className="current-puzzle-name">
-                <h5>Current Puzzle: {JSON.stringify(this.state.puzzle?.name)}</h5>
+                <h5>Current Puzzle: {this.current_puzzle()}</h5>
               </div>
               <div className='puzzle-select-toggle'>
                   <button className='puzzle-select-toggle-button-back' onClick={() => this.setState({view: ViewType.PuzzleSelect})}>
@@ -326,13 +349,13 @@ class App extends React.Component<{}, GameState> {
                 </button>
               </div>
 
-              {/* <div id="save-progress" className='save-progress-container'>
-                <button name="save-progress" className='save-progress-button-back' onClick={() => this.save_progress()}>
+              <div id="save-progress" className='save-progress-container'>
+                <button name="save-progress" className='save-progress-button-back' onClick={() => this.clean_progress()}>
                   <span className='save-progress-button-front'>
-                    Save Progress
+                    Clean Progress
                   </span>
                 </button>
-              </div> */}
+              </div>
 
               {/* <div id="load-progress" className='load-progress-container'>
                 <button name="load-progress" className='load-progress-button-back' onClick={() => this.load_last_progress()}>
@@ -390,9 +413,10 @@ class App extends React.Component<{}, GameState> {
             <Display {...this.state} />
             <div id="instructions-display" className="goal-section instructions">
               <div id="instructions-goal">
-                {this.state.puzzle &&
+                {/* {this.state.puzzle &&
                   <p dangerouslySetInnerHTML={{ __html: this.state.puzzle?.instructions }} />
-                }
+                } */}
+                <InstructionsGoal gamestate={this.state} />
               </div>
             </div>
           </div>
