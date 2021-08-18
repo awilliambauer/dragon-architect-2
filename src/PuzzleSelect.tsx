@@ -1,20 +1,29 @@
 import React from 'react';
+import { GameState } from './App';
 import "./css/index.css"
 import { PuzzlePack } from './PuzzleManager';
 import { PuzzleSpec } from './PuzzleState';
+import { SANDBOX_STATE } from './PuzzleState';
 
-type PuzzleSelectProps = {
-    current_pack: PuzzlePack
-    current_puzzle: PuzzleSpec
-    completed_puzzles: string[]
-    onClickToPuzzle: (e: string) => void
-    onClickHome: (e: string) => void
+interface PuzzleSelectProps {
+    gameState: GameState;
+    current_pack: PuzzlePack;
+    current_puzzle: PuzzleSpec;
+    completed_puzzles: string[];
+    onClickToPuzzle: (e: string) => void;
+    onClickHome: (e: string) => void;
+    loadLastSandbox: () => void;
 }
 
 export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
 
     returnHome(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        this.props.onClickHome(`puzzles/${this.props.current_puzzle.tag}.json`);
+        if (this.props.gameState.puzzle !== SANDBOX_STATE) {
+            this.props.onClickHome(`puzzles/${this.props.current_puzzle.tag}.json`);
+        }
+        else {
+            this.props.loadLastSandbox();
+        }
     }
 
     openPuzzle(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {

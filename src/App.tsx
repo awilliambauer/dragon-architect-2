@@ -78,7 +78,7 @@ class App extends React.Component<{}, GameState> {
   clean_progress() {
     window.localStorage.removeItem("progress");
     this.puzzle_manager.completed_puzzle.clear();
-    console.log(this.puzzle_manager.get_granted_blocks(false));
+    //console.log(this.puzzle_manager.get_granted_blocks(false));
   }
 
   load_last_progress() {
@@ -260,6 +260,7 @@ class App extends React.Component<{}, GameState> {
     else if (this.state.view === ViewType.PuzzleSelect) {
       return (
         <PuzzleSelect
+          gameState={{...this.state}}
           current_pack={this.puzzle_manager.get_current_pack()}
           current_puzzle={this.puzzle_manager.get_current_puzzle()}
           completed_puzzles={this.puzzle_manager.find_completed_puzzle()}
@@ -274,7 +275,14 @@ class App extends React.Component<{}, GameState> {
               view: ViewType.Normal
             });
             this.load_puzzle(puzzle_tag);
-          }} />
+          }} 
+          loadLastSandbox={() => {
+            this.setState({
+              view: ViewType.Normal
+            });
+            this.load_sandbox();
+          }}
+          />
       )
     }
 

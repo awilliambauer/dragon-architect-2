@@ -7,6 +7,7 @@
  */
 import { BADQUERY } from "dns"
 import _ from "lodash"
+/* eslint-enable */
 import { PuzzleSpec } from "./PuzzleState"
 
 type PuzzleConnection = {

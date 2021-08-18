@@ -1,6 +1,5 @@
-import { ViewType } from "./App";
 import { GameState } from './App';
-import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
+import { SANDBOX_STATE } from './PuzzleState';
 
 type InstructionsProps = {
     gamestate: GameState
