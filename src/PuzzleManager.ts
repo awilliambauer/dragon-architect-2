@@ -14,7 +14,7 @@ type PuzzleSequence = {
     connections: PuzzleConnection[] // connections between puzzles (i.e., edges in a graph)
 }
 
-type PuzzlePack = {
+export type PuzzlePack = {
     name: string
     seqs: PuzzleSequence[] // a pack consists of some number of puzzle sequences
 }
@@ -98,6 +98,10 @@ export default class PuzzleManager {
         return completed_puzzle_array;
     }
 
+    set_completed_puzzle(cp: Map<string, PuzzleSpec[]>) {
+        this.completed_puzzle = cp;
+    }
+
     set_pack(index: number) {
         if (index !== this.current_puzzle.pack_index) {
             this.current_puzzle = {
@@ -152,7 +156,7 @@ export default class PuzzleManager {
     }
 
     next_puzzle(): PuzzleSpec | undefined {
-        this.current_puzzle.puz_index = this.current_puzzle.puz_index+1;
+        this.current_puzzle.puz_index = this.current_puzzle.puz_index + 1;
         // check if we've reached the end of the current sequence
         if (this.current_puzzle.puz_index === this.get_current_seq().puzzles.length) {
             this.current_puzzle.puz_index = 0;
@@ -239,7 +243,7 @@ export default class PuzzleManager {
     // but it does work
     initialize() {
         return fetch("packs/packs.json")
-            .then(response => {console.log(response); return response.json()})
+            .then(response => { return response.json() })
             .then(this.load_packs)
             .then(pack_promises => Promise.all(pack_promises))
             .then(packs => this.packs = packs)

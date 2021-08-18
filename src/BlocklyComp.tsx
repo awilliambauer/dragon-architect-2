@@ -427,10 +427,10 @@ function customBlocklyInit() {
     });
 }
 
-export default class BlocklyComp extends React.Component<GameState> {
+export default class BlocklyComp extends React.Component<GameState & {granted_blocks: string[]}> {
     workspace?: Blockly.WorkspaceSvg
 
-    constructor(props: GameState) {
+    constructor(props: GameState & { granted_blocks: string[] }) {
         super(props);
         customBlocklyInit();
 
@@ -453,7 +453,7 @@ export default class BlocklyComp extends React.Component<GameState> {
 
     componentDidUpdate() {
         if (this.workspace) {
-            this.updateToolbox(this.workspace, this.props.puzzle_manager.get_granted_blocks(this.props.devMode));
+            this.updateToolbox(this.workspace, this.props.granted_blocks);
         }
     }
 

@@ -23,7 +23,6 @@ export type GameState = {
   lastSavedWorld: WorldState | undefined
   devMode: boolean
   view: ViewType
-  puzzle_manager: PuzzleManager
 }
 
 export enum ViewType {
@@ -38,6 +37,7 @@ export enum ViewType {
 
 
 class App extends React.Component<{}, GameState> {
+  puzzle_manager: PuzzleManager
 
   constructor(props: {}) {
     super(props);
@@ -50,28 +50,28 @@ class App extends React.Component<{}, GameState> {
       simulator: new IncrementalSimulator(new WorldState(), EMPTY_PROGRAM),
       lastSavedWorld: undefined,
       view: ViewType.Loading,
-      puzzle_manager: new PuzzleManager(),
       devMode: false
     }
+    this.puzzle_manager = new PuzzleManager();
     // this.clean_progress();
     this.load_last_progress();
   }
 
   learn_more(pack: number) {
-    this.state.puzzle_manager.set_pack(pack);
+    this.puzzle_manager.set_pack(pack);
     this.setState({
       view: ViewType.Normal
     });
-    this.load_puzzle(`puzzles/${this.state.puzzle_manager.get_current_puzzle().tag}.json`);
-    
+    this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle().tag}.json`);
+
   }
 
   save_progress() {
-    let progress = JSON.stringify([...this.state.puzzle_manager.completed_puzzle]);
+    let progress = JSON.stringify([...this.puzzle_manager.completed_puzzle]);
     window.localStorage.setItem("progress", progress);
 
     // commenting this out for now, as it breaks puzzle progression (next_puzzle() advances to the next puzzle, causing a double advance)
-    // let next_puzzle = JSON.stringify([this.state.puzzle_manager.next_puzzle()]);
+    // let next_puzzle = JSON.stringify([this.puzzle_manager.next_puzzle()]);
     // window.localStorage.setItem("puzzle", next_puzzle);
   }
 
@@ -83,13 +83,13 @@ class App extends React.Component<{}, GameState> {
     // return window.localStorage.getItem("progress");
     let progress_string = window.localStorage.getItem("progress");
     if (progress_string) {
-      this.state.puzzle_manager.completed_puzzle = new Map(JSON.parse(progress_string))
+      this.puzzle_manager.set_completed_puzzle(new Map(JSON.parse(progress_string)));
     }
 
     // let puzzle_string = window.localStorage.getItem("puzzle");
     // if (puzzle_string) {
     //   // console.log(`puzzles/${puzzle.tag}.json`);
-      
+
     //   this.load_puzzle(`puzzles/${(new Map(JSON.parse(puzzle_string))).tag}.json`);
     // } else {
     //   this.load_sandbox();
@@ -115,6 +115,7 @@ class App extends React.Component<{}, GameState> {
       if (ast instanceof SyntaxError) {
         console.error(`Syntax Error: ${ast}`);
       } else {
+        this.puzzle_manager.set_puzzle(p.tag);
         this.setState({
           program: ast,
           world: p.start_world,
@@ -125,7 +126,6 @@ class App extends React.Component<{}, GameState> {
           lastSavedWorld: undefined
         });
         text_to_blocks(p.start_code);
-        this.state.puzzle_manager.set_puzzle(p.tag);
       }
     });
   }
@@ -142,16 +142,16 @@ class App extends React.Component<{}, GameState> {
       lastSavedWorld: undefined
     })
     // HACK: make the puz_index invalid, so that get_current_puzzle() returns undefined
-    this.state.puzzle_manager.current_puzzle.puz_index = -1;
+    this.puzzle_manager.current_puzzle.puz_index = -1;
     this.load_last_sandbox();
   }
 
   // when the user completes a puzzle
   win_puzzle() {
-    this.state.puzzle_manager.complete_puzzle();
+    this.puzzle_manager.complete_puzzle();
     //this.puzzle_manager.print_completed_puzzle();
 
-    if (this.state.puzzle_manager.check_complete_pack()) {
+    if (this.puzzle_manager.check_complete_pack()) {
       this.setState({
         view: ViewType.SequencePause
       });
@@ -171,11 +171,11 @@ class App extends React.Component<{}, GameState> {
   }
 
   componentDidMount() {
-    this.state.puzzle_manager.initialize()
+    this.puzzle_manager.initialize()
       .then(() => {
         this.setState({
           view: ViewType.Normal
-        }, () => this.load_puzzle(`puzzles/${this.state.puzzle_manager.get_current_puzzle().tag}.json`));
+        }, () => this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle().tag}.json`));
       })
   }
 
@@ -194,8 +194,8 @@ class App extends React.Component<{}, GameState> {
         this.setState({
           simulator: new IncrementalSimulator(this.state.world, ast)
         }, () => this.state.simulator.set_running());
-        if (this.state.puzzle === SANDBOX_STATE )
-        this.save_sandbox();
+        if (this.state.puzzle === SANDBOX_STATE)
+          this.save_sandbox();
       }
     }
     else { // reset 
@@ -216,20 +216,19 @@ class App extends React.Component<{}, GameState> {
     this.setState({
       view: ViewType.Normal
     });
-    let puzzle = this.state.puzzle_manager.next_puzzle();
+    let puzzle = this.puzzle_manager.next_puzzle();
     if (puzzle) {
-      // console.log(`puzzles/${puzzle.tag}.json`);
       this.load_puzzle(`puzzles/${puzzle.tag}.json`);
     } else {
       this.load_sandbox();
     }
-    
+
   }
 
   // called when a new pack is selected via the drop-down
   on_change_pack(event: React.ChangeEvent<HTMLSelectElement>) {
-    this.state.puzzle_manager.set_pack(parseInt(event.target.value));
-    this.load_puzzle(`puzzles/${this.state.puzzle_manager.get_current_puzzle().tag}.json`);
+    this.puzzle_manager.set_pack(parseInt(event.target.value));
+    this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle().tag}.json`);
   }
 
   current_puzzle() {
@@ -258,15 +257,15 @@ class App extends React.Component<{}, GameState> {
 
     else if (this.state.view === ViewType.PuzzleSelect) {
       return (
-        <PuzzleSelect gameState={this.state} 
+        <PuzzleSelect
+          current_pack={this.puzzle_manager.get_current_pack()}
+          current_puzzle={this.puzzle_manager.get_current_puzzle()}
+          completed_puzzles={this.puzzle_manager.find_completed_puzzle()}
           onClickHome={(puzzle_tag) => {
             this.setState({
               view: ViewType.Normal
             });
             this.load_puzzle(puzzle_tag);
-            // if (this.state.puzzle) {
-            //   text_to_blocks(this.state.puzzle.start_code)
-            // }
           }}
           onClickToPuzzle={(puzzle_tag) => {
             this.setState({
@@ -308,11 +307,11 @@ class App extends React.Component<{}, GameState> {
                 <h5>Current Puzzle: {this.current_puzzle()}</h5>
               </div>
               <div className='puzzle-select-toggle'>
-                  <button className='puzzle-select-toggle-button-back' onClick={() => this.setState({view: ViewType.PuzzleSelect})}>
-                    <span className='puzzle-select-toggle-button-front'>
-                      Puzzle Select
-                    </span>
-                  </button>
+                <button className='puzzle-select-toggle-button-back' onClick={() => this.setState({ view: ViewType.PuzzleSelect })}>
+                  <span className='puzzle-select-toggle-button-front'>
+                    Puzzle Select
+                  </span>
+                </button>
               </div>
               <div className='sandbox-toggle'>
                 <button className='sandbox-toggle-button-back' onClick={() => { this.load_sandbox(); }}>
@@ -328,13 +327,13 @@ class App extends React.Component<{}, GameState> {
             <div className='pack-container'>
               <label htmlFor="pack-select" className='pack-label' style={{ color: 'white' }}>Select a pack:</label>
               <select name="pack-select" id="pack-select" className='pack-select' onChange={event => this.on_change_pack(event)}>
-                {this.state.puzzle_manager.packs.map((pack, index) => <option key={index} value={index}>{pack.name}</option>)}
+                {this.puzzle_manager.packs.map((pack, index) => <option key={index} value={index}>{pack.name}</option>)}
               </select>
             </div>
             <div className='puzzle-container'>
               <label htmlFor="puzzle-select" className='puzzle-label' style={{ color: 'white' }}>Select a puzzle:</label>
               <select name="puzzle-select" id="puzzle-select" className='puzzle-select' onChange={event => this.load_puzzle(`puzzles/${event.target.value}.json`)}>
-                {this.state.puzzle_manager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
+                {this.puzzle_manager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
               </select>
             </div>
             <div className="buttons-header-container">
@@ -343,11 +342,11 @@ class App extends React.Component<{}, GameState> {
                   <span className='dev-mode-button-front'>
                     Toggle Dev Mode
                   </span>
-                  </button>
+                </button>
               </div>
 
               <div id="learn-more" className='learn-more-container'>
-                <button name="learn-more" className='learn-more-button-back' onClick={() => this.setState({view: ViewType.LearnMore})}>
+                <button name="learn-more" className='learn-more-button-back' onClick={() => this.setState({ view: ViewType.LearnMore })}>
                   <span className='learn-more-button-front'>
                     Learn More
                   </span>
@@ -369,7 +368,7 @@ class App extends React.Component<{}, GameState> {
                   </span>
                 </button>
               </div> */}
-              
+
               {/* <div id="save-sandbox" className='save-sandbox-container'>
                 <button name="save-sandbox" className='save-sandbox-button-back' onClick={() => this.save_sandbox()}>
                   <span className='save-sandbox-button-front'>
@@ -390,7 +389,7 @@ class App extends React.Component<{}, GameState> {
           </div>}
 
           <div id="main-view-code">
-            <BlocklyComp {...this.state} />
+            <BlocklyComp granted_blocks={this.puzzle_manager.get_granted_blocks(this.state.devMode)} {...this.state} />
           </div>
 
           {(this.state.view === ViewType.SequencePause) && (this.state.reset) &&
@@ -418,16 +417,13 @@ class App extends React.Component<{}, GameState> {
             <Display {...this.state} />
             <div id="instructions-display" className="goal-section instructions">
               <div id="instructions-goal">
-                {/* {this.state.puzzle &&
-                  <p dangerouslySetInnerHTML={{ __html: this.state.puzzle?.instructions }} />
-                } */}
                 <InstructionsGoal gamestate={this.state} />
               </div>
             </div>
           </div>
 
           <div className="run-button-container">
-              <Run gamestate={this.state} onClick={() => { this.run_program(); }} />
+            <Run gamestate={this.state} onClick={() => { this.run_program(); }} />
           </div>
 
         </div>
