@@ -1,3 +1,10 @@
+/* FILENAME:    PuzzleState.ts
+ * DESCRIPTION: 
+ *      This file contains the PuzzleState class that tracks the state of the puzzle,
+ *      sets up the environment for a puzzle (or a sandbox) and checks if puzzle has been completed
+ * DATE:    08/19/2021
+ * AUTHOR:      Aaron Bauer    Katrina Li    Teagan Johnson
+ */
 import _ from "lodash"
 import * as THREE from "three"
 import { GameState } from "./App"
@@ -178,6 +185,12 @@ function make_goals_from_world(end: WorldState, start: WorldState): GoalInfo[] {
     return goals;
 }
 
+/* 
+ * The PuzzleState will track the state of the puzzle including the current
+ * toolbox, instructions, the GoalInfo, start_world and start_code of the puzzle
+ * It will set up a puzzle (or a sandbox) and check if puzzle has been completed
+ */
+
 export default class PuzzleState {
     start_code: string = ""
     start_world: WorldState = new WorldState()
@@ -191,14 +204,6 @@ export default class PuzzleState {
     name: string = ""
     tag: string = ""
     win_callback: () => void = () => { }
-
-
-    print_puzzleState() {
-        let str = "";
-        str += " instructions: " + this.instructions;
-        str += " granted: " + this.library.granted;
-        console.log("print_puzzleState: " + str);
-    }
 
     check_completed(gamestate: GameState) {
         if (this.is_complete(gamestate)) {
@@ -253,6 +258,7 @@ export default class PuzzleState {
         return gamestate.world.cube_map.size <= this.goals.length
     }
 
+    // create and initiate puzzles from puzzle files in ./public/puzzle, called in ./App.tsx
     static make_from_file(filename: string, win_callback: () => void) {
         let state = new PuzzleState();
         state.win_callback = win_callback;
@@ -277,7 +283,7 @@ export default class PuzzleState {
         }
 
 
-        /// set up the puzzle's solution, potentially reading it from a file
+        // set up the puzzle's solution, potentially reading it from a file
         let fetchSolution = (data: PuzzleSpec) => {
             return new Promise<PuzzleSpec>((resolve, reject) => {
                 if (data.goal === GoalType.Solution) {
@@ -321,6 +327,7 @@ export default class PuzzleState {
             });
         }
 
+        // return the puzzle, its program and solution
         return new Promise<PuzzleState>(resolve => {
             fetch(filename)
                 .then(response => { return response.json() })

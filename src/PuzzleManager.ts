@@ -1,3 +1,11 @@
+/* FILENAME:    PuzzleManager.ts
+ * DESCRIPTION: 
+ *      This file contains the PuzzleManager class that loads
+ *      and store puzzles in pack jsons, then tracks the current puzzle via various indexes
+ * DATE:    08/19/2021
+ * AUTHOR:      Aaron Bauer    Katrina Li    Teagan Johnson
+ */
+import { BADQUERY } from "dns"
 import _ from "lodash"
 import { PuzzleSpec } from "./PuzzleState"
 
@@ -14,11 +22,13 @@ type PuzzleSequence = {
     connections: PuzzleConnection[] // connections between puzzles (i.e., edges in a graph)
 }
 
+// a pack consists of a name and some number of puzzle sequences
 export type PuzzlePack = {
     name: string
-    seqs: PuzzleSequence[] // a pack consists of some number of puzzle sequences
+    seqs: PuzzleSequence[] 
 }
 
+// a puzzle have its pack, sequence and its own puzzle index
 type PuzzleIndex = {
     pack_index: number
     seq_index: number
@@ -155,6 +165,7 @@ export default class PuzzleManager {
         return this.packs[this.current_puzzle.pack_index];
     }
 
+    // returns the next puzzle in the sequence, or the first puzzle in the next sequence
     next_puzzle(): PuzzleSpec | undefined {
         this.current_puzzle.puz_index = this.current_puzzle.puz_index + 1;
         // check if we've reached the end of the current sequence
@@ -169,6 +180,7 @@ export default class PuzzleManager {
         return this.get_current_seq().puzzles[this.current_puzzle.puz_index];
     }
 
+    // return the granted blocks which should be put in the toolbox for a puzzle
     get_granted_blocks(devMode: boolean) {
         let granted_blocks: string[] = [];
         if (devMode) {
@@ -205,7 +217,7 @@ export default class PuzzleManager {
                     granted_blocks.push(block);
             }
         }
-        return granted_blocks
+        return granted_blocks;
     }
 
     load_packs(pack_list: { packs: string[] }) {
@@ -222,6 +234,7 @@ export default class PuzzleManager {
         });
     }
 
+    // loads each puzzle in each sequence in each pack
     load_all_puzzles() {
         let promises: Promise<PuzzleSpec>[] = [];
         for (let pack of this.packs) {
@@ -239,6 +252,7 @@ export default class PuzzleManager {
         return Promise.all(promises);
     }
 
+    // when PuzzleManager is initialized, it loads all the puzzles
     // the nested promise structure is a little wonky, and doesn't handle errors as gracefully as I'd like
     // but it does work
     initialize() {
