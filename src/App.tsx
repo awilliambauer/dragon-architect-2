@@ -6,6 +6,7 @@ import { load_stdlib, IncrementalSimulator } from './Simulator';
 import parse, { EMPTY_PROGRAM, Program, SyntaxError } from './Parser';
 import PuzzleState, { SANDBOX_STATE } from './PuzzleState';
 import { Run } from './RunButton';
+import { InstructionsGoal } from './InstructionsGoal';
 import _ from 'lodash';
 import PuzzleManager from './PuzzleManager';
 import "./css/index.css"
@@ -241,6 +242,13 @@ class App extends React.Component<{}, GameState> {
     }
   }
 
+  // instructions_goal() {
+  //   if (this.state.puzzle === SANDBOX_STATE) {
+  //     return "Welcome to Sandbox mode! Create anything you like!";
+  //   } 
+  //   return new dangerouslySetInnerHTML={{ __html: this.state.puzzle?.instructions }};
+  // }
+
   render() {
 
     if (this.state.view === ViewType.Loading) {
@@ -406,9 +414,10 @@ class App extends React.Component<{}, GameState> {
             <Display {...this.state} />
             <div id="instructions-display" className="goal-section instructions">
               <div id="instructions-goal">
-                {this.state.puzzle &&
+                {/* {this.state.puzzle &&
                   <p dangerouslySetInnerHTML={{ __html: this.state.puzzle?.instructions }} />
-                }
+                } */}
+                <InstructionsGoal gamestate={this.state} />
               </div>
             </div>
           </div>
