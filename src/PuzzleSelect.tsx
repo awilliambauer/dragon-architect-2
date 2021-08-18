@@ -11,7 +11,7 @@ interface PuzzleSelectProps {
 export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
 
     returnHome(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        this.props.onClickHome(`puzzles/${event.currentTarget.id}.json`);
+        this.props.onClickHome(`puzzles/${this.props.gameState.puzzle_manager.get_current_puzzle().tag}.json`);
     }
 
     openPuzzle(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {

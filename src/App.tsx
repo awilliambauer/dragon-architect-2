@@ -260,14 +260,19 @@ class App extends React.Component<{}, GameState> {
       return (
         <PuzzleSelect gameState={this.state} 
           onClickHome={(puzzle_tag) => {
-            this.setState({view: ViewType.Normal});
-            this.load_puzzle(puzzle_tag)
-          }}
-          onClickToPuzzle={(puzzle_tag) => {
-            this.load_puzzle(puzzle_tag)
             this.setState({
               view: ViewType.Normal
             });
+            this.load_puzzle(puzzle_tag);
+            // if (this.state.puzzle) {
+            //   text_to_blocks(this.state.puzzle.start_code)
+            // }
+          }}
+          onClickToPuzzle={(puzzle_tag) => {
+            this.setState({
+              view: ViewType.Normal
+            });
+            this.load_puzzle(puzzle_tag);
           }} />
       )
     }
