@@ -77,6 +77,8 @@ class App extends React.Component<{}, GameState> {
 
   clean_progress() {
     window.localStorage.removeItem("progress");
+    this.puzzle_manager.completed_puzzle.clear();
+    console.log(this.puzzle_manager.get_granted_blocks(false));
   }
 
   load_last_progress() {
