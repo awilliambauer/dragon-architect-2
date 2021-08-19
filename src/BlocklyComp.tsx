@@ -1,3 +1,10 @@
+/* FILENAME:    BlocklyComp.tsx
+ * DESCRIPTION: 
+ *      This file defines and generates all the blocks the user can use, and also creates and keeps
+ *      track of the workspace and toolbox of the blocks.
+ * DATE:    08/19/2021
+ * AUTHOR:      Aaron Bauer    Katrina Li    Teagan Johnson
+ */
 import Blockly, { mainWorkspace } from 'blockly'; //newly added mainWorkspace
 import React from 'react';
 import _ from 'lodash';
@@ -8,27 +15,20 @@ import parse, {
 import { GameState } from './App';
 import './BlocklyExtensions';
 
+//colors for blocks
 const COLOR_MOVE_1 = '#0075A6';
 const COLOR_MOVE_2 = '#B84B26';
 const COLOR_BLOCK = '#978B63';
 const skip_blocks = ["math_number"];
-// const COLOR_LOOPS = '#00711C';
-// const COLOR_UNUSED_1 = '#B63551';
-// const COLOR_UNUSED_2 = '#A88217';
-// Blockly.FieldColour.COLOURS
-
-// class KoboldLangOps {
-//     block_to_kobold: Map<string, ()>
-// }
-
-// var restricted_list = ["remove","repeat","defproc"];
-
 
 const KoboldConvert = new Map<string, (block: Blockly.Block) => string>();
 
-// const allGranted = ['move2', 'place', 'remove', 'up', 'down', 'repeat', 'defproc'];
-
-// little helper functions for the recursive xmlHelper() function
+/* breakStmt(), breakStmtRep() and breakStmtRepNum() are 
+ * little helper functions for the recursive xmlHelper() function.
+ * breakStmt() returns an Invocation (a block) based on different StatementTypes that the input statement has.
+ * breakStmtRep() returns the inner statements for a repeat statement.
+ * breakStmtRepNum() returns the number of iterations a repeat statement intends to have.
+ */
 export function breakStmt(stmt: Statement) {
     switch (stmt.kind) {
         case StatementType.Command:
@@ -53,26 +53,22 @@ export function breakStmtRepNum(stmt: Statement) {
 }
 
 
-// a recursive function that turns parsed code strings to a huge xml string
+// a recursive function that turns parsed code strings to an xml string
 export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: string) {
 
     if (program.length === 0) {
         return "";
     }
-    //for (let s of program){
 
     switch (program[0].kind) {
         case "procedure": //block is a procedure
             let xmlPro = "";
             let pro = program[0].body;
-
             xmlPro = xmlHelper(pro, xmlPro);
-
             xmlPro = '<block type = "procedures_defnoreturn"><field name="NAME">' + program[0].name +
                 '</field><statement name="STACK">' + xmlPro;
             xmlPro += '</statement></block>';
             xml = xml + xmlPro;
-
             break;
 
         default: // block is a statement (repeat, execute or command)
@@ -83,74 +79,52 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
                         return '<block type="' + block.name + '"></block>';
                     }
                     xml = '<block type="' + block.name + '"><next>' + xmlHelper(program.slice(1), "") + '</next></block>';
-                }
-
-                else if (block.name === 'PlaceCube') {
+                
+                } else if (block.name === 'PlaceCube') {
                     let expr = block.args;
                     let color = 0;
                     if (expr[0].kind === ExpressionType.Number) {
                         color = expr[0].expression as number;
                     }
-
                     if (program.length === 1) {
                         return '<block type="' + block.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field></block>';
                     }
                     xml = '<block type="' + block.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field><next>' +
                         xmlHelper(program.slice(1), "") + '</next></block>';
-
-                }
-
-                else {
+                
+                } else { // forward, up, or down blocks
                     let expr = block.args;
                     if (expr[0].kind === ExpressionType.Number) {
-
                         if (program.length === 1) {
                             return '<block type="' + block.name + '"><value name="VALUE">' + makeShadowNum(expr[0].expression as number) +
                                 '</value></block>';
                         }
-
                         xml = '<block type="' + block.name + '"><value name="VALUE">' + makeShadowNum(expr[0].expression as number) +
                             '</value><next>' + xmlHelper(program.slice(1), "") + '</next></block>';
-
                     }
                 }
-            }
-            else { //block is a repeat
+            
+            } else { //block is a repeat
                 let xmlRep = "";
                 let rep = breakStmtRep(program[0] as Statement);
-
-                // xmlRep = xmlHelper([rep[rep.length-1]],"", true);//false
-
-                // for(let r = rep.length-2;r>=0;r--){
-                //     xmlRep = xmlHelper([rep[r]],xmlRep, true);
-                //     //console.log(xml);
-                // }
-
                 xmlRep = xmlHelper(rep, xmlRep);
-
 
                 xmlRep = '<block type="controls_repeat_ext"><value name="TIMES"><shadow type="math_number"><field name="NUM">'
                     + breakStmtRepNum(program[0] as Statement) + '</field></shadow></value><statement name="DO">' + xmlRep;
-
-
                 xmlRep += '</statement>';
                 if (program.length > 1) {
                     xml = xml + xmlRep + '<next>' + xmlHelper(program.slice(1), "") + '</next></block>';
-                }
-                else {
+                } else {
                     xml = xml + xmlRep + '</block>';
                 }
-
 
             }
 
     }
-
-
-
     return xml;
 }
 
+// convert text code to blocks in workspace. Used for kobold files and reloading the user's sandbox
 export function text_to_blocks(code: string) {
     let xml = '<xml>';
     let program = parse(code);
@@ -169,6 +143,7 @@ export function text_to_blocks(code: string) {
     }
 }
 
+// print a single block. The parameter indent is set up for the purpose of recursion.
 function print_block(indent: string, block: Blockly.Block) {
     let convert_fn = KoboldConvert.get(block.type);
     if (convert_fn) {
@@ -184,6 +159,7 @@ function print_block(indent: string, block: Blockly.Block) {
     }
 }
 
+// print all the blocks in workspace
 export function print_blocks() {
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
     _.forEach(top, (block) => {
@@ -192,8 +168,7 @@ export function print_blocks() {
     });
 }
 
-
-
+// convert a block in workspace to code text. The parameter str and indent are set up for the purpose of recursion.
 export function block_to_text(str: string, indent: string, block: Blockly.Block): string {
     let convert_fn = KoboldConvert.get(block.type);
     let children = block.getNested();
@@ -213,6 +188,7 @@ export function block_to_text(str: string, indent: string, block: Blockly.Block)
     return str;
 }
 
+// convert all the blocks in workspace to code text.
 export function blocks_to_text(): string {
     let text = "";
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
@@ -230,6 +206,7 @@ function shade_hex_color(color: string, percent: number) {
     return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
 }
 
+// a recursive function that freezes a stack of blocks
 function freeze_stack(block: Blockly.Block, freeze_args: boolean) {
     block.setMovable(false);
     block.setDeletable(false);
@@ -242,12 +219,14 @@ function freeze_stack(block: Blockly.Block, freeze_args: boolean) {
     }
 }
 
+// a recursive functino that freezes blocks of all stacks
 function freeze_all_blocks(freeze_args: boolean) {
     let top = Blockly.getMainWorkspace().getTopBlocks(true);
     _.forEach(top, block => freeze_stack(block, freeze_args));
 }
 
-
+// returns a string of shadow type and field element (in an xml string) of an inner number block
+// based on the number and id of the number block
 function makeShadowNum(num: number, id?: string) {
     if (id) {
         return '<shadow type="math_number" id="' + id + '"><field name="NUM">' + num + '</field></shadow>';
@@ -281,7 +260,7 @@ const COMMANDS = {
 
 };
 
-
+// define and initialize custom blocks
 function customBlocklyInit() {
     Blockly.FieldColour.COLOURS = ["#1ca84f", "#a870b7", "#ff1a6d", "#00bcf4", "#ffc911", "#ff6e3d", "#000000", "#ffffff"];
 
@@ -429,49 +408,48 @@ function customBlocklyInit() {
     });
 }
 
+
+/*
+ * The BlocklyComp class defines and generates all the blocks in the toolbox and workspace
+ */
 export default class BlocklyComp extends React.Component<GameState & {granted_blocks: string[]}> {
     workspace?: Blockly.WorkspaceSvg
 
     constructor(props: GameState & { granted_blocks: string[] }) {
         super(props);
         customBlocklyInit();
-
     }
 
-
     render() {
-
         return (
             <div id="blocklyDiv" style={{ width: '100%' }}></div>
-            
         )
     }
 
+    // sets up the workspace (also the toolbox)
     componentDidMount() {
         this.workspace = Blockly.inject('blocklyDiv',
             { toolbox: document.getElementById('toolbox')!, renderer: 'thrasos' });
         this.updateToolbox(this.workspace, []); // the initial toolbox, empty but we can add any block here
     }
 
+    // called when there is a change in granted_blocks passed by the state of App
     componentDidUpdate() {
         if (this.workspace) {
             this.updateToolbox(this.workspace, this.props.granted_blocks);
         }
     }
 
+    // update the toolbox in the workspace based on the array of granted blocks
     updateToolbox(workspace: Blockly.WorkspaceSvg, granted_blocks: string[]) {
         let toolXML = '<xml id="toolbox" style="display: none">';
-        // console.log("updating toolbox: this.props.grantedBlocks = " + granted_blocks);
         _.forEach(COMMANDS, (data, name) => {
-
             if (!_.includes(this.props.puzzle?.library.restricted, name) && _.includes(granted_blocks, name)) {
                 toolXML += data.block;
             }
         });
 
         toolXML += '</xml>';
-
         workspace.updateToolbox(toolXML);
-
     }
 }
