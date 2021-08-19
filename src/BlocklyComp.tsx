@@ -11,6 +11,7 @@ import './BlocklyExtensions';
 const COLOR_MOVE_1 = '#0075A6';
 const COLOR_MOVE_2 = '#B84B26';
 const COLOR_BLOCK = '#978B63';
+const skip_blocks = ["math_number"];
 // const COLOR_LOOPS = '#00711C';
 // const COLOR_UNUSED_1 = '#B63551';
 // const COLOR_UNUSED_2 = '#A88217';
@@ -198,7 +199,7 @@ export function block_to_text(str: string, indent: string, block: Blockly.Block)
     let children = block.getNested();
     if (convert_fn) {
         str += indent + convert_fn(block) + "\n";
-    } else if (!KoboldConvert.has(block.type)) {
+    } else if (!KoboldConvert.has(block.type) && !skip_blocks.includes(block.type)) {
         console.error(`No KoboldConvert function found for ${block.type}`);
     }
     if (children.length > 0) {

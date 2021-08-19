@@ -1,3 +1,11 @@
+/* FILENAME:    Parser.ts
+ * DESCRIPTION: 
+ *      This file takes in raw text, puts it through the lexer and creates a list of tokens.
+ *      The list of tokens is put into the parser which creates a program.
+ * DATE:    08/19/2021
+ * AUTHOR:      Teagan Johnson   Aaron Bauer    Katrina Li
+ */
+
 import _ from 'lodash';
 
 /*

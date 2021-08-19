@@ -1,4 +1,11 @@
-// Overview: This file contains code that displays the dragon and cubes
+/* FILENAME:    Display.tsx
+ * DESCRIPTION: 
+ *      This file controls the display portion of the App.
+ *      In Display.tsx, THREE.js is used to create and control the animated screen and camera.
+ *      Display.tsx has two child files: CameraPositioning.tsx and Slider.tsx.
+ * DATE:    08/19/2021
+ * AUTHOR:      Teagan Johnson   Aaron Bauer    Katrina Li
+ */
 import React from 'react';
 import * as THREE from 'three';
 import { GameState } from './App';

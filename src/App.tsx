@@ -264,6 +264,7 @@ class App extends React.Component<{}, GameState> {
           current_pack={this.puzzle_manager.get_current_pack()}
           current_puzzle={this.puzzle_manager.get_current_puzzle()}
           completed_puzzles={this.puzzle_manager.find_completed_puzzle()}
+          granted_blocks={this.puzzle_manager.get_granted_blocks(this.state.devMode)}
           onClickHome={(puzzle_tag) => {
             this.setState({
               view: ViewType.Normal

@@ -10,6 +10,7 @@ interface PuzzleSelectProps {
     current_pack: PuzzlePack;
     current_puzzle: PuzzleSpec;
     completed_puzzles: string[];
+    granted_blocks: string[];
     onClickToPuzzle: (e: string) => void;
     onClickHome: (e: string) => void;
     loadLastSandbox: () => void;
