@@ -1,3 +1,10 @@
+/* FILENAME:    App.tsx
+ * DESCRIPTION: 
+ *      This file manages all other source and puzzle files. It sets up different components 
+ *      in the page, its state contains info about all puzzles, simulator, world and ViewType.
+ * DATE:    08/19/2021
+ * AUTHOR:      Aaron Bauer    Katrina Li    Teagan Johnson
+ */
 import React from 'react';
 import BlocklyComp, { blocks_to_text, text_to_blocks } from './BlocklyComp';
 import Display from './Display';
@@ -29,12 +36,17 @@ export enum ViewType {
   Loading = "loading",
   Normal = "normal",
   PuzzleSelect = "puzzleSelect",
-  SequencePause = "sequencePause",
-  PuzzlePause = "puzzlePause",
-  LearnMore = "learnMore"
+  SequencePause = "sequencePause", // when a user finished solving the last puzzle in a sequence
+  PuzzlePause = "puzzlePause", // when a user finished solving a puzzle, shows a congratulation box
+  LearnMore = "learnMore" // lets the user switch between puzzle packs
 }
 
-
+/* 
+ * The App sets up different components in the page. Its state contains info about all puzzles
+ * (with extra info about the current one), simulator, world and ViewType.
+ * It also passes the entire state to Display and BlocklyComp (large components), as well as
+ * PuzzleSelect, Runbutton and InstructionsGoal (small components)
+ */
 
 class App extends React.Component<{}, GameState> {
   puzzle_manager: PuzzleManager
@@ -57,6 +69,7 @@ class App extends React.Component<{}, GameState> {
     this.load_last_progress();
   }
 
+  // the learn more button, lets the user access a different puzzle pack
   learn_more(pack: number) {
     this.puzzle_manager.set_pack(pack);
     this.setState({
@@ -66,6 +79,7 @@ class App extends React.Component<{}, GameState> {
 
   }
 
+  // stores which puzzles the user finishes in localStorage
   save_progress() {
     let progress = JSON.stringify([...this.puzzle_manager.completed_puzzle]);
     window.localStorage.setItem("progress", progress);
@@ -75,12 +89,16 @@ class App extends React.Component<{}, GameState> {
     // window.localStorage.setItem("puzzle", next_puzzle);
   }
 
+  // used for developing purposes, cleans the user's progress in local storage
   clean_progress() {
     window.localStorage.removeItem("progress");
     this.puzzle_manager.completed_puzzle.clear();
     //console.log(this.puzzle_manager.get_granted_blocks(false));
   }
 
+
+  // search for the user's progress in local storage. If the user had completed a puzzle before,
+  // mark it as completed again
   load_last_progress() {
     // return window.localStorage.getItem("progress");
     let progress_string = window.localStorage.getItem("progress");
@@ -98,11 +116,12 @@ class App extends React.Component<{}, GameState> {
     // }
   }
 
-
+  // stores the blocks that the user puts in sandbox mode
   save_sandbox() {
     window.localStorage.setItem("sandbox", blocks_to_text());
   }
 
+  // check whether the user run in sandbox mode before, if so, load the blocks that had been run
   load_last_sandbox() {
     let program = window.localStorage.getItem("sandbox");
     if (program) {
@@ -110,6 +129,7 @@ class App extends React.Component<{}, GameState> {
     }
   }
 
+  // initiates PuzzleState and puzzle manager, sets the current puzzle, change the state according to puzzle
   load_puzzle(puzzle_file: string) {
     PuzzleState.make_from_file(puzzle_file, () => this.win_puzzle()).then(p => {
       let sim = new IncrementalSimulator(p.start_world, EMPTY_PROGRAM);
@@ -132,6 +152,7 @@ class App extends React.Component<{}, GameState> {
     });
   }
 
+  // set the simulator and state to sandbox mode
   load_sandbox() {
     let world = new WorldState();
     world.mark_dirty();
@@ -166,6 +187,7 @@ class App extends React.Component<{}, GameState> {
     this.save_progress();
   }
 
+  // only used for developers
   toggle_dev_mode() {
     this.setState({
       devMode: !this.state.devMode
@@ -233,6 +255,7 @@ class App extends React.Component<{}, GameState> {
     this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle().tag}.json`);
   }
 
+  // return a string that would show in a 'Current puzzle' box at the top right corner
   current_puzzle() {
     if (this.state.puzzle === SANDBOX_STATE) {
       return "Sandbox";
@@ -242,12 +265,6 @@ class App extends React.Component<{}, GameState> {
     }
   }
 
-  // instructions_goal() {
-  //   if (this.state.puzzle === SANDBOX_STATE) {
-  //     return "Welcome to Sandbox mode! Create anything you like!";
-  //   } 
-  //   return new dangerouslySetInnerHTML={{ __html: this.state.puzzle?.instructions }};
-  // }
 
   render() {
 
@@ -370,30 +387,6 @@ class App extends React.Component<{}, GameState> {
                   </span>
                 </button>
               </div>
-
-              {/* <div id="load-progress" className='load-progress-container'>
-                <button name="load-progress" className='load-progress-button-back' onClick={() => this.load_last_progress()}>
-                  <span className='load-progress-button-front'>
-                    Load Progress
-                  </span>
-                </button>
-              </div> */}
-
-              {/* <div id="save-sandbox" className='save-sandbox-container'>
-                <button name="save-sandbox" className='save-sandbox-button-back' onClick={() => this.save_sandbox()}>
-                  <span className='save-sandbox-button-front'>
-                    Save Sandbox
-                  </span>
-                </button>
-              </div> */}
-
-              {/* <div id="load-sandbox" className='load-sandbox-container'>
-                <button name="load-sandbox" className='load-sandbox-button-back' onClick={() => this.load_last_sandbox()}>
-                  <span className='load-sandbox-button-front'>
-                    Load Sandbox
-                  </span>
-                </button>
-              </div> */}
 
             </div>
           </div>}
