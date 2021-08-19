@@ -5,7 +5,7 @@
  * DATE:    08/19/2021
  * AUTHOR:      Aaron Bauer    Katrina Li    Teagan Johnson
  */
-import { BADQUERY } from "dns"
+/* eslint-disable */
 import _ from "lodash"
 /* eslint-enable */
 import { PuzzleSpec } from "./PuzzleState"

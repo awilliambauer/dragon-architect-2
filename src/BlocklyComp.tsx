@@ -19,6 +19,7 @@ import './BlocklyExtensions';
 const COLOR_MOVE_1 = '#0075A6';
 const COLOR_MOVE_2 = '#B84B26';
 const COLOR_BLOCK = '#978B63';
+const skip_blocks = ["math_number"];
 
 const KoboldConvert = new Map<string, (block: Blockly.Block) => string>();
 
@@ -173,7 +174,7 @@ export function block_to_text(str: string, indent: string, block: Blockly.Block)
     let children = block.getNested();
     if (convert_fn) {
         str += indent + convert_fn(block) + "\n";
-    } else if (!KoboldConvert.has(block.type)) {
+    } else if (!KoboldConvert.has(block.type) && !skip_blocks.includes(block.type)) {
         console.error(`No KoboldConvert function found for ${block.type}`);
     }
     if (children.length > 0) {
@@ -199,8 +200,9 @@ export function blocks_to_text(): string {
 
 // return a new hex color string that lightens (positive) or darkens (negative) the 
 // original color by `percent` (`percent` should be between 0 and 1)
+// from: https://github.com/PimpTrizkit/PJs/wiki/12.-Shade,-Blend-and-Convert-a-Web-Color-(pSBC.js)#stackoverflow-archive-begin
 function shade_hex_color(color: string, percent: number) {
-    var f = parseInt(color.slice(1), 16), t = percent < 0 ? 0 : 255, p = percent < 0 ? percent * -1 : percent, R = f >> 16, G = f >> 8 & 0x00FF, B = f & 0x0000FF;
+    var f = parseInt(color.slice(1), 16), t = percent < 0 ? 0 : 255, p = percent < 0 ? percent * -1 : percent, R = f >> 16, G = (f >> 8) & 0x00FF, B = f & 0x0000FF;
     return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
 }
 

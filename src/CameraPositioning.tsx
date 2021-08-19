@@ -1,3 +1,11 @@
+/* FILENAME:    CameraPositioning.tsx
+ * DESCRIPTION: 
+ *      This file contains the camera control functions.
+ *      The 6 camera control functions are contained in this file and used in Display.tsx.
+ *      Child of Display.tsx
+ * DATE:    08/19/2021
+ * AUTHOR:      Teagan Johnson   Aaron Bauer    Katrina Li
+ */
 import React from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

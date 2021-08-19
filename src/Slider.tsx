@@ -1,6 +1,11 @@
+/* FILENAME:    Slider.tsx
+ * DESCRIPTION: 
+ *      This file contains the slider range that is used to control dragon speed.
+ *      Child of Display.tsx
+ * DATE:    08/19/2021
+ * AUTHOR:      Teagan Johnson   Aaron Bauer    Katrina Li
+ */
 import React from 'react';
-
-
 
 type SliderVals = {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
