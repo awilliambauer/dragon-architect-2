@@ -139,6 +139,7 @@ class App extends React.Component<{}, GameState> {
     this.setState({
       world: world,
       puzzle: SANDBOX_STATE,
+      devMode: true,
       simulator: sim,
       reset: false,
       lastSavedWorld: undefined
@@ -267,13 +268,15 @@ class App extends React.Component<{}, GameState> {
           granted_blocks={this.puzzle_manager.get_granted_blocks(this.state.devMode)}
           onClickHome={(puzzle_tag) => {
             this.setState({
-              view: ViewType.Normal
+              view: ViewType.Normal,
+              devMode: false
             });
             this.load_puzzle(puzzle_tag);
           }}
           onClickToPuzzle={(puzzle_tag) => {
             this.setState({
-              view: ViewType.Normal
+              view: ViewType.Normal,
+              devMode: false
             });
             this.load_puzzle(puzzle_tag);
           }} 
