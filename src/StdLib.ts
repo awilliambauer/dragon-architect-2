@@ -1,3 +1,9 @@
+/* FILENAME:    StdLib.ts
+ * DESCRIPTION: 
+ *      This file defines the code text for each block
+ * DATE:    08/19/2021
+ * AUTHOR:      Aaron Bauer
+ */
 export const StdLibText = `
 define Forward(x)
     repeat x times

@@ -1,3 +1,10 @@
+/* FILENAME:    Util.ts
+ * DESCRIPTION: 
+ *      This file contains three functions that checks/gets/deletes the vector in the map
+ * DATE:    08/19/2021
+ * AUTHOR:      Aaron Bauer    Teagan Johnson
+ */
+
 /* eslint-disable */
 export function mapHasVector3(map: Map<THREE.Vector3, any>, vec: THREE.Vector3): boolean {
     for (let [key, _val] of map) {
