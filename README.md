@@ -2,6 +2,12 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Overview
+
+This project is an educational programming game which teaches a user to control a dragon to complete sequences of puzzles. 
+This project uses the Blockly library to set up different blocks of instructions the user can drag from the left side toolbox, and put in the middle workspace to use. 
+A sandbox world is set at the right side to visually present what the dragon does, according to the stack of blocks the user sets in their workspace.
+
 ## Available Scripts
 
 In the project directory, you can run:
