@@ -5,10 +5,12 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Table of Contents
 1. [ Overview ](#overview)
 2. [ Prerequisites ](#prereqs)
-3. [ "src" File Structure ](#files)
-4. [ More Info About React ](#availableScripts)
-5. [ Authors and Acknowledgement ](#authAck)
-6. [ Learn More ](#learnMore)
+3. [ Folder Structure ](#files)
+4. [ How to Edit... ](#howTo)
+5. [ "src" File Structure ](#files)
+6. [ More Info About React ](#availableScripts)
+7. [ Authors and Acknowledgement ](#authAck)
+8. [ Learn More ](#learnMore)
 
 <a name="overview"></a>
 ## Overview
@@ -30,31 +32,78 @@ The following open source packages are used in this project:
 * Yarn
 
 <a name="files"></a>
-### "src" File Structure
+### Folder Structure
 
 The "src" folder is the folder containing most of the typescript (which controls most of the page mechanics and animations). To get a detailed description of each file, go into each file on github and look at the first couple of lines. App.tsx is the parent file while the files below it are its child files. Some child files have their own respective child files.
+* "node_modules"
+  * "public"
+    * "media"
+      * Contains many images and sounds
+    * "packs"
+      * packs.json
+      * standard.json
+      * test.json
+    * "puzzles"
+      * "code"
+        * There are lots of ".kobold" files in the "code" folder. (Kobold is the name of Dragon Architect's programming language)
+      * The rest of the files are .json files
+    * index.html
+    * manifest.json
+    * robots.txt
+    * "src"
+      * "css"
+        * index.css
+        * instructions.css
+      * App.tsx (NOT A FOLDER. Just sub-bulleted to show parent/child file relationship)
+        * BlocklyComp.tsx
+          * BlocklyExtensions.ts
+        * Display.tsx
+          * CameraPositioning.tsx
+          * FontAwesomeIcons.tsx
+          * Slider.tsx
+        * Parser.ts
+          * Parser.test.ts
+        * Simulator.ts
+          * Simulator.test.ts
+        * index.tsx
+        * InstructionsGoal.tsx
+        * PuzzleManager.ts
+        * PuzzleSelect.tsx
+        * PuzzleState.ts
+        * react-app-env.d.ts
+        * RunButton.tsx
+        * StdLib.ts
+        * Util.ts
+        * WorldState.ts
+    * .gitingnore
+    * package.json
+    * README.md
+    * tsconfig.json
+    * yarn-error.log
+    * yarn.lock
 
-* App.tsx
-  * BlocklyComp.tsx
-    * BlocklyExtensions.ts
-  * Display.tsx
-    * CameraPositioning.tsx
-    * FontAwesomeIcons.tsx
-    * Slider.tsx
-  * Parser.ts
-    * Parser.test.ts
-  * Simulator.ts
-    * Simulator.test.ts
-  * index.tsx
-  * InstructionsGoal.tsx
-  * PuzzleManager.ts
-  * PuzzleSelect.tsx
-  * PuzzleState.ts
-  * react-app-env.d.ts
-  * RunButton.tsx
-  * StdLib.ts
-  * Util.ts
-  * WorldState.ts
+<a name="howTo"></a>
+### How to edit...
+
+We'll discuss how you can edit or change certain things in Dragon Architect.
+
+#### Adding Puzzles
+To add new puzzles:
+1. First, add a new .json file to the "puzzles" folder. Copy the format of the other .json files (ex. tutorial-removingCubes.json)
+2. Create the starting code file in the "code" folder. Copy the format of the other .kobold files (ex. tutorial-removingCubes.kobold)
+3. If the new puzzle has a solution, add another file in the "code" folder. Copy the format of the other -solution.kobold files (ex. tutorial-removingCubes-solution.kobold)
+4. MAKE SURE your parent .json file has the correct "program", "goal", and "solution" properties. "program" is the starting code (given the file you created in the "code" folder), "goal" is the type of puzzle (ex. solution, dragonPosition, etc.), "solution" is the solution to the puzzle (given the second file you created in the "code" folder).
+5. To add your new files, you can either create a new pack or you can add to a previous pack:
+  * Create a new pack:
+    * create a new .json file in the "packs" folder.
+    * Replicate it with standard.json
+    * Add your new puzzle(s) into the new .json file, and add the name of the new .json file to the packs.json file.
+  * Add to existing pack:
+    * Add your puzzle(s) to an existing pack (ex. standard.json), format the names of your puzzles the same way as the other puzzles in the file.
+#### Changing The Interface
+To change the interface:
+1. All of the main interface design is in index.css, in the "css" folder. The instructions interface design is in the instructions.css file.
+2. Use the inspect element button on your browser, find the className of the element you want to edit, and go to that class name in the index.css file.
 
 <a name="availableScripts"></a>
 ## More Info About React
