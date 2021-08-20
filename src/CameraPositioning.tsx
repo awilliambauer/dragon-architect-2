@@ -18,7 +18,7 @@ type CameraVals = {
 function CameraZoomIn(props: CameraVals) {
     return (
         <div>
-            <button className="ZoomIn" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="search-plus"/></h1></button>
+            <button className="ZoomIn" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="search-plus" /></h1></button>
         </div>
     );
 };
@@ -27,7 +27,7 @@ function CameraZoomIn(props: CameraVals) {
 function CameraZoomOut(props: CameraVals) {
     return (
         <div>
-            <button className="ZoomOut" onClick={props.onClickFunction}> <h1><FontAwesomeIcon icon="search-minus"/></h1></button>
+            <button className="ZoomOut" onClick={props.onClickFunction}> <h1><FontAwesomeIcon icon="search-minus" /></h1></button>
         </div>
     );
 };
@@ -36,7 +36,7 @@ function CameraZoomOut(props: CameraVals) {
 function CameraTiltUp(props: CameraVals) {
     return (
         <div>
-            <button className="TiltUp" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-up"/></h1></button>
+            <button className="TiltUp" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-up" /></h1></button>
         </div>
     );
 };
@@ -45,17 +45,17 @@ function CameraTiltUp(props: CameraVals) {
 function CameraTiltDown(props: CameraVals) {
     return (
         <div>
-            <button className="TiltDown" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-down"/></h1></button>
+            <button className="TiltDown" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-down" /></h1></button>
         </div>
     );
 };
 
 
 // Creates button for rotating right
-function CameraRotateRight(props:CameraVals) {
+function CameraRotateRight(props: CameraVals) {
     return (
         <div>
-            <button className="RotateRight" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="redo"/></h1></button>
+            <button className="RotateRight" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="redo" /></h1></button>
         </div>
     );
 };
@@ -64,7 +64,7 @@ function CameraRotateRight(props:CameraVals) {
 function CameraRotateLeft(props: CameraVals) {
     return (
         <div>
-            <button className="RotateLeft" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="undo"/></h1></button>
+            <button className="RotateLeft" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="undo" /></h1></button>
         </div>
     );
 

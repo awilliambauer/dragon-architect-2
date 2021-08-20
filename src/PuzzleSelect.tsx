@@ -45,8 +45,8 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
         return (
             <div className="select-puzzle-screen">
                 <div className='puzzle-select-title'>
-                <h1>Puzzle Select</h1>
-                <h3>Select Which Puzzle You Would Like to Go To!</h3>
+                    <h1>Puzzle Select</h1>
+                    <h3>Select Which Puzzle You Would Like to Go To!</h3>
                 </div>
                 <div className='home-button-container'>
                     <button className='home-button-back' onClick={event => this.returnHome(event)}>
@@ -55,7 +55,7 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
                         </span>
                     </button>
                 </div>
-                
+
                 <div className="select-puzzle-buttons-container">
                     {this.props.current_pack.seqs.map(seq => {
                         return (
@@ -68,8 +68,8 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
                                                 value={String(this.props.completed_puzzles.includes(puzzle.name))}
                                                 onClick={event => this.openPuzzle(event)}>
                                                 <span className='puzzle-select-button-front' title={String(this.props.completed_puzzles.includes(puzzle.name))}>
-                                                        {puzzle.name}
-                                                    </span>
+                                                    {puzzle.name}
+                                                </span>
                                             </button>
                                         )
                                     })}

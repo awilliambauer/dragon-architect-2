@@ -69,7 +69,7 @@ const IMG_FILE_MAP = new Map([
 // replace each word inside {} with the corresponding html produced by makeImgHtml (if applicable)
 function process_instruction_string(str: string) {
     return "Goal: " + str.replace(/{(\w+)}/g, (match, id) => {
-        if (IMG_FILE_MAP.get(id)!.substring(IMG_FILE_MAP.get(id)!.length-3) === "png") {
+        if (IMG_FILE_MAP.get(id)!.substring(IMG_FILE_MAP.get(id)!.length - 3) === "png") {
             return IMG_FILE_MAP.has(id)
                 ? `<object class="instructions-png" data="${IMG_FILE_MAP.get(id)}"></object>`
                 : match;

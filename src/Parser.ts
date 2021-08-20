@@ -424,7 +424,7 @@ export class Parser {
 
     new_meta(start: FileLocation, attributes?: Map<string, string>): Meta {
         const loc = new FileLocation(start.start, this.last_location.end);
-        return { location: loc, attributes: attributes ? attributes : new Map()};
+        return { location: loc, attributes: attributes ? attributes : new Map() };
     }
 
     match_ident(): string | SyntaxError {

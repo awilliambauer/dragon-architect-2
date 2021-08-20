@@ -64,11 +64,11 @@ test("stdlib-Down", () => {
     expect(prog instanceof SyntaxError).toBe(false);
     let ws = new WorldState();
     let ws_expected = new WorldState();
-    
+
     // don't go through the floor
     expect(run(ws, prog as Program) instanceof RuntimeError).toBe(false);
     expect(_.isEqual(ws, ws_expected)).toBe(true);
-    
+
     // but do go down
     ws.dragon_pos = new THREE.Vector3(0, 0, 10);
     expect(run(ws, prog as Program) instanceof RuntimeError).toBe(false);

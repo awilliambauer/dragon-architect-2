@@ -5,8 +5,10 @@
  * AUTHOR:      Aaron Bauer    Teagan Johnson    Katrina Li
  */
 import * as THREE from 'three';
-import { SimCommand, RuntimeError, RuntimeErrorCode, runtime_error, 
-    ValueType } from './Simulator';
+import {
+    SimCommand, RuntimeError, RuntimeErrorCode, runtime_error,
+    ValueType
+} from './Simulator';
 /* eslint-disable */
 import _ from 'lodash';
 import { mapDeleteVector3, mapHasVector3 } from './Util';
@@ -16,7 +18,7 @@ export const DOWN = new THREE.Vector3(0, 0, -1);
 
 function extract_single_int_arg(command: SimCommand): number | RuntimeError {
     if (command.args.length > 1) {
-        return runtime_error(RuntimeErrorCode.CustomError, 
+        return runtime_error(RuntimeErrorCode.CustomError,
             `Expected 1 argument to ${command.name}`, command.meta);
     }
     if (command.args[0] && command.args[0].kind === ValueType.Number) {
@@ -58,19 +60,19 @@ export default class WorldState {
             case "down":
                 if (this.dragon_pos.z === 0) {
                     return;  // dragon should not be able to pass below the plane, 
-                             // return early here to avoid marking as dirty state that did not change
+                    // return early here to avoid marking as dirty state that did not change
                 }
                 this.dragon_pos.add(DOWN);
                 break;
             case "left":
-                this.dragon_dir = new THREE.Vector3(-this.dragon_dir.y, 
-                                                    this.dragon_dir.x,
-                                                    this.dragon_dir.z);
+                this.dragon_dir = new THREE.Vector3(-this.dragon_dir.y,
+                    this.dragon_dir.x,
+                    this.dragon_dir.z);
                 break;
             case "right":
-                this.dragon_dir = new THREE.Vector3(this.dragon_dir.y, 
-                                                    -this.dragon_dir.x,
-                                                    this.dragon_dir.z);
+                this.dragon_dir = new THREE.Vector3(this.dragon_dir.y,
+                    -this.dragon_dir.x,
+                    this.dragon_dir.z);
                 break;
             case "cube":
                 let color_id = extract_single_int_arg(command);
@@ -90,7 +92,7 @@ export default class WorldState {
                 }
                 break;
             default:
-                return runtime_error(RuntimeErrorCode.CustomError, 
+                return runtime_error(RuntimeErrorCode.CustomError,
                     `Unknown command ${command.name}`, command.meta);
         }
         this.mark_dirty();

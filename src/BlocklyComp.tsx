@@ -79,7 +79,7 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
                         return '<block type="' + block.name + '"></block>';
                     }
                     xml = '<block type="' + block.name + '"><next>' + xmlHelper(program.slice(1), "") + '</next></block>';
-                
+
                 } else if (block.name === 'PlaceCube') {
                     let expr = block.args;
                     let color = 0;
@@ -91,7 +91,7 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
                     }
                     xml = '<block type="' + block.name + '"><field name="VALUE">' + Blockly.FieldColour.COLOURS[color] + '</field><next>' +
                         xmlHelper(program.slice(1), "") + '</next></block>';
-                
+
                 } else { // forward, up, or down blocks
                     let expr = block.args;
                     if (expr[0].kind === ExpressionType.Number) {
@@ -103,7 +103,7 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
                             '</value><next>' + xmlHelper(program.slice(1), "") + '</next></block>';
                     }
                 }
-            
+
             } else { //block is a repeat
                 let xmlRep = "";
                 let rep = breakStmtRep(program[0] as Statement);
@@ -138,7 +138,7 @@ export function text_to_blocks(code: string) {
         Blockly.getMainWorkspace().clear();
         Blockly.Xml.domToWorkspace(dom, mainWorkspace);
         //(program.body[0].meta.attributes.get("frozen"));
-        if (code === ''){
+        if (code === '') {
             return;
         }
         if (program.body[0].meta.attributes.get("frozen") === "all") {
@@ -416,7 +416,7 @@ function customBlocklyInit() {
 /*
  * The BlocklyComp class defines and generates all the blocks in the toolbox and workspace
  */
-export default class BlocklyComp extends React.Component<GameState & {granted_blocks: string[]}> {
+export default class BlocklyComp extends React.Component<GameState & { granted_blocks: string[] }> {
     workspace?: Blockly.WorkspaceSvg
 
     constructor(props: GameState & { granted_blocks: string[] }) {

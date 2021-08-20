@@ -58,13 +58,13 @@ test("lexer-stdlib", () => {
 test("parse-empty", () => {
     let result = parse(``);
     // console.log(JSON.stringify(result, null, 2));
-        expect(result instanceof SyntaxError).toBe(false);
+    expect(result instanceof SyntaxError).toBe(false);
 });
 
 test("parse-basic-error", () => {
     let result = parse(`x`);
     // console.log(JSON.stringify(result, null, 2));
-        expect(result instanceof SyntaxError).toBe(true);
+    expect(result instanceof SyntaxError).toBe(true);
 })
 
 test("parse-basic", () => {

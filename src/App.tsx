@@ -125,7 +125,7 @@ class App extends React.Component<{}, GameState> {
     let program = window.localStorage.getItem("sandbox");
     if (program) {
       console.log("program: " + program);
-      this.setState({program: parse(program) as Program}, () => {
+      this.setState({ program: parse(program) as Program }, () => {
         text_to_blocks(program!);
       });
     }
@@ -286,7 +286,7 @@ class App extends React.Component<{}, GameState> {
     else if (this.state.view === ViewType.PuzzleSelect) {
       return (
         <PuzzleSelect
-          gameState={{...this.state}}
+          gameState={{ ...this.state }}
           current_pack={this.puzzle_manager.get_current_pack()}
           current_puzzle={this.puzzle_manager.get_current_puzzle()}
           completed_puzzles={this.puzzle_manager.find_completed_puzzle()}
@@ -304,14 +304,14 @@ class App extends React.Component<{}, GameState> {
               devMode: false
             });
             this.load_puzzle(puzzle_tag);
-          }} 
+          }}
           loadLastSandbox={() => {
             this.setState({
               view: ViewType.Normal
             });
             this.load_last_sandbox();
           }}
-          />
+        />
       )
     }
 

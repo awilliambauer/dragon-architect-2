@@ -26,7 +26,7 @@ type PuzzleSequence = {
 // a pack consists of a name and some number of puzzle sequences
 export type PuzzlePack = {
     name: string
-    seqs: PuzzleSequence[] 
+    seqs: PuzzleSequence[]
 }
 
 // a puzzle have its pack, sequence and its own puzzle index
