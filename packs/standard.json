@@ -84,21 +84,36 @@
             ]
         },
         {
-            "name": "Procedure Puzzles",
-            "tag": "procedure",
+            "name": "Challenge Puzzles",
+            "tag": "challenge",
             "puzzles": [
-                "procedures-square",
-                "procedures-call",
-                "procedures-def"
+                "challenge-castlemania",
+                "challenge-home",
+                "challenge-nameGame",
+                "challenge-overTheRainbow",
+                "challenge-treeOfLife",
+                "challenge-zoology"
             ],
             "connections": [
                 {
-                    "start": "procedures-square",
-                    "dest": "procedures-call"
+                    "start": "challenge-castlemania",
+                    "dest": "challenge-home"
                 },
                 {
-                    "start": "procedures-call",
-                    "dest": "procedures-def"
+                    "start": "challenge-home",
+                    "dest": "challenge-nameGame"
+                },
+                {
+                    "start": "challenge-nameGame",
+                    "dest": "challenge-overTheRainbow"
+                },
+                {
+                    "start": "challenge-overTheRainbow",
+                    "dest": "challenge-treeOfLife"
+                },
+                {
+                    "start": "challenge-treeOfLife",
+                    "dest": "challenge-zoology"
                 }
             ]
         }
