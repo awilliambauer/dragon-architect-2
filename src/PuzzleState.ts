@@ -228,7 +228,7 @@ export default class PuzzleState {
         check that no extra cubes have been placed
     */
     is_complete(gamestate: GameState): boolean {
-        if (!gamestate.simulator.is_finished()) {
+        if (!gamestate.simulator.is_finished() || this.goals.length == 0) {
             return false;
         }
         let posRequired;

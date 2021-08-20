@@ -42,7 +42,6 @@ Blockly.Block.prototype.getNested = function () {
 /**
  * Makes a block unmoveable, undeletetable, and disables its context menu
  * May make any fields on the block uneditable
- * IF YOU CALL THIS, YOU MUST SUBSEQUENTLY CALL <Block>.updateColour TO GET THE CORRECT COLORS
  */
 Blockly.Block.prototype.freeze = function (doFreezeArgs: boolean) {
     this.frozen = true;

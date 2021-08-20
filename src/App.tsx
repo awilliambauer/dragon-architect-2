@@ -124,9 +124,10 @@ class App extends React.Component<{}, GameState> {
   load_last_sandbox() {
     let program = window.localStorage.getItem("sandbox");
     if (program) {
-      // console.log("program: " + program);
-      text_to_blocks(program);
-      this.setState({program: parse(program) as Program});
+      console.log("program: " + program);
+      this.setState({program: parse(program) as Program}, () => {
+        text_to_blocks(program!);
+      });
     }
     else {
       text_to_blocks('');
@@ -166,6 +167,7 @@ class App extends React.Component<{}, GameState> {
       world: world,
       puzzle: SANDBOX_STATE,
       simulator: sim,
+      view: ViewType.Normal,
       reset: false,
       lastSavedWorld: undefined
     })

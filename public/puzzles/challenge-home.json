@@ -1,7 +1,7 @@
 {
-    "name": "Homemaker",
+    "name": "There's No Place Like Home",
     "format_version": 1,
-    "tag": "challenge-homemaker",
+    "tag": "challenge-home",
     "library": {
         "restricted": ["up", "defproc", "defproc_noargs"],
         "required": ["set"],

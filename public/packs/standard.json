@@ -84,30 +84,11 @@
             ]
         },
         {
-            "name": "Procedure Puzzles",
-            "tag": "procedure",
-            "puzzles": [
-                "procedures-square",
-                "procedures-call",
-                "procedures-def"
-            ],
-            "connections": [
-                {
-                    "start": "procedures-square",
-                    "dest": "procedures-call"
-                },
-                {
-                    "start": "procedures-call",
-                    "dest": "procedures-def"
-                }
-            ]
-        },
-        {
             "name": "Challenge Puzzles",
             "tag": "challenge",
             "puzzles": [
                 "challenge-castlemania",
-                "challenge-homemaker",
+                "challenge-home",
                 "challenge-nameGame",
                 "challenge-overTheRainbow",
                 "challenge-treeOfLife",
@@ -116,10 +97,10 @@
             "connections": [
                 {
                     "start": "challenge-castlemania",
-                    "dest": "challenge-homemaker"
+                    "dest": "challenge-home"
                 },
                 {
-                    "start": "challenge-homemaker",
+                    "start": "challenge-home",
                     "dest": "challenge-nameGame"
                 },
                 {
