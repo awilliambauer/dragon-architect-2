@@ -93,7 +93,6 @@ class App extends React.Component<{}, GameState> {
   clean_progress() {
     window.localStorage.removeItem("progress");
     this.puzzle_manager.completed_puzzle.clear();
-    //console.log(this.puzzle_manager.get_granted_blocks(false));
   }
 
 
@@ -125,7 +124,12 @@ class App extends React.Component<{}, GameState> {
   load_last_sandbox() {
     let program = window.localStorage.getItem("sandbox");
     if (program) {
+      // console.log("program: " + program);
       text_to_blocks(program);
+      this.setState({program: parse(program) as Program});
+    }
+    else {
+      text_to_blocks('');
     }
   }
 
@@ -154,6 +158,7 @@ class App extends React.Component<{}, GameState> {
 
   // set the simulator and state to sandbox mode
   load_sandbox() {
+    this.load_last_progress();
     let world = new WorldState();
     world.mark_dirty();
     let sim = new IncrementalSimulator(world, parse('') as Program);
@@ -166,6 +171,7 @@ class App extends React.Component<{}, GameState> {
     })
     // HACK: make the puz_index invalid, so that get_current_puzzle() returns undefined
     this.puzzle_manager.current_puzzle.puz_index = -1;
+    this.puzzle_manager.get_granted_blocks(false);
     this.load_last_sandbox();
   }
 
@@ -218,8 +224,9 @@ class App extends React.Component<{}, GameState> {
         this.setState({
           simulator: new IncrementalSimulator(this.state.world, ast)
         }, () => this.state.simulator.set_running());
-        if (this.state.puzzle === SANDBOX_STATE)
+        if (this.state.puzzle === SANDBOX_STATE) {
           this.save_sandbox();
+        }
       }
     }
     else { // reset 
@@ -300,7 +307,7 @@ class App extends React.Component<{}, GameState> {
             this.setState({
               view: ViewType.Normal
             });
-            this.load_sandbox();
+            this.load_last_sandbox();
           }}
           />
       )

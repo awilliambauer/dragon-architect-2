@@ -31,6 +31,7 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
             this.props.onClickHome(`puzzles/${this.props.current_puzzle.tag}.json`);
         }
         else {
+            console.log("loading last sandbox");
             this.props.loadLastSandbox();
         }
     }

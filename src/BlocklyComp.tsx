@@ -13,6 +13,7 @@ import parse, {
     SyntaxError, Statement, StatementType, Repeat, Execute, Command, TopLevelStatement
 } from './Parser';
 import { GameState } from './App';
+import { SANDBOX_STATE } from './PuzzleState';
 import './BlocklyExtensions';
 
 //colors for blocks
@@ -126,6 +127,7 @@ export function xmlHelper(program: TopLevelStatement[] | Statement[], xml: strin
 
 // convert text code to blocks in workspace. Used for kobold files and reloading the user's sandbox
 export function text_to_blocks(code: string) {
+    // console.log("processing string: " + code);
     let xml = '<xml>';
     let program = parse(code);
     if (program instanceof SyntaxError) {
@@ -137,6 +139,9 @@ export function text_to_blocks(code: string) {
         Blockly.getMainWorkspace().clear();
         Blockly.Xml.domToWorkspace(dom, mainWorkspace);
         //(program.body[0].meta.attributes.get("frozen"));
+        if (code === ''){
+            return;
+        }
         if (program.body[0].meta.attributes.get("frozen") === "all") {
             freeze_all_blocks(program.body[0].meta.attributes.has("freezeArgs"));
         }
@@ -428,13 +433,15 @@ export default class BlocklyComp extends React.Component<GameState & {granted_bl
 
     // sets up the workspace (also the toolbox)
     componentDidMount() {
+        console.log("mount");
         this.workspace = Blockly.inject('blocklyDiv',
             { toolbox: document.getElementById('toolbox')!, renderer: 'thrasos' });
-        this.updateToolbox(this.workspace, []); // the initial toolbox, empty but we can add any block here
+        this.updateToolbox(this.workspace, this.props.granted_blocks); // the initial toolbox, empty but we can add any block here
     }
 
     // called when there is a change in granted_blocks passed by the state of App
     componentDidUpdate() {
+        console.log("update");
         if (this.workspace) {
             this.updateToolbox(this.workspace, this.props.granted_blocks);
         }
@@ -442,6 +449,7 @@ export default class BlocklyComp extends React.Component<GameState & {granted_bl
 
     // update the toolbox in the workspace based on the array of granted blocks
     updateToolbox(workspace: Blockly.WorkspaceSvg, granted_blocks: string[]) {
+        // console.log("updating toolbox");
         let toolXML = '<xml id="toolbox" style="display: none">';
         _.forEach(COMMANDS, (data, name) => {
             if (!_.includes(this.props.puzzle?.library.restricted, name) && _.includes(granted_blocks, name)) {

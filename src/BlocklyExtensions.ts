@@ -1,3 +1,9 @@
+/* FILENAME:    BlocklyExtensions.ts
+ * DESCRIPTION: 
+ *      This file defines and customizes the block interface that would be used in blocklycomps
+ * DATE:    08/19/2021
+ * AUTHOR:      Aaron Bauer
+ */
 import * as Blockly from 'blockly/core';
 
 declare module "blockly" {

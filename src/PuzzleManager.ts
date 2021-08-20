@@ -183,6 +183,7 @@ export default class PuzzleManager {
 
     // return the granted blocks which should be put in the toolbox for a puzzle
     get_granted_blocks(devMode: boolean) {
+        console.log("called ggb");
         let granted_blocks: string[] = [];
         if (devMode) {
             for (let pack of this.packs) {
@@ -218,6 +219,7 @@ export default class PuzzleManager {
                     granted_blocks.push(block);
             }
         }
+        console.log("granted blocks: " + granted_blocks);
         return granted_blocks;
     }
 
