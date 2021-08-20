@@ -9,7 +9,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-// Type that holds all methods that are passed in. Each one has a question mark in case it's not called
+// Type that holds the onClick method
 type CameraVals = {
     onClickFunction: (e: React.MouseEvent<HTMLElement>) => void;
 }
@@ -18,7 +18,7 @@ type CameraVals = {
 function CameraZoomIn(props: CameraVals) {
     return (
         <div>
-            <button className="ZoomIn" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="search-plus" style={{ color: 'white' }} /></h1></button>
+            <button className="ZoomIn" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="search-plus"/></h1></button>
         </div>
     );
 };
@@ -27,7 +27,7 @@ function CameraZoomIn(props: CameraVals) {
 function CameraZoomOut(props: CameraVals) {
     return (
         <div>
-            <button className="ZoomOut" onClick={props.onClickFunction}> <h1><FontAwesomeIcon icon="search-minus" style={{ color: 'white' }} /></h1></button>
+            <button className="ZoomOut" onClick={props.onClickFunction}> <h1><FontAwesomeIcon icon="search-minus"/></h1></button>
         </div>
     );
 };
@@ -36,7 +36,7 @@ function CameraZoomOut(props: CameraVals) {
 function CameraTiltUp(props: CameraVals) {
     return (
         <div>
-            <button className="TiltUp" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-up" style={{ color: 'white' }} /></h1></button>
+            <button className="TiltUp" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-up"/></h1></button>
         </div>
     );
 };
@@ -45,7 +45,7 @@ function CameraTiltUp(props: CameraVals) {
 function CameraTiltDown(props: CameraVals) {
     return (
         <div>
-            <button className="TiltDown" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-down" style={{ color: 'white' }} /></h1></button>
+            <button className="TiltDown" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="arrow-down"/></h1></button>
         </div>
     );
 };
@@ -55,7 +55,7 @@ function CameraTiltDown(props: CameraVals) {
 function CameraRotateRight(props:CameraVals) {
     return (
         <div>
-            <button className="RotateRight" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="redo" style={{ color: 'white' }} /></h1></button>
+            <button className="RotateRight" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="redo"/></h1></button>
         </div>
     );
 };
@@ -64,7 +64,7 @@ function CameraRotateRight(props:CameraVals) {
 function CameraRotateLeft(props: CameraVals) {
     return (
         <div>
-            <button className="RotateLeft" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="undo" style={{ color: 'white' }} /></h1></button>
+            <button className="RotateLeft" onClick={props.onClickFunction}><h1><FontAwesomeIcon icon="undo"/></h1></button>
         </div>
     );
 

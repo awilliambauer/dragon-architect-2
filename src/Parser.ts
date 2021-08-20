@@ -3,15 +3,10 @@
  *      This file takes in raw text, puts it through the lexer and creates a list of tokens.
  *      The list of tokens is put into the parser which creates a program.
  * DATE:    08/19/2021
- * AUTHOR:      Teagan Johnson   Aaron Bauer    Katrina Li
+ * AUTHOR:      Aaron Bauer    Teagan Johnson    Katrina Li
  */
 
 import _ from 'lodash';
-
-/*
-raw text -> lexer -> list of tokens
-list of tokens -> parser -> program (abstract syntax tree, list of statements)
-*/
 
 // TODO split lexer and parser into separate files
 

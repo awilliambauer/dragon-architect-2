@@ -316,12 +316,12 @@ export default class Display extends React.Component<GameState> {
         this.geometries.zCuePlane.translateZ(-zOffset + 0.1); // offset a bit to avoid z-fighting
     };
 
-    // Turns degrees to radians (useful for camera rotations and tilts)
+    // Turns degrees to radians given degrees (useful for camera rotations and tilts)
     degreesToRadians(deg: number) {
         return deg / 180 * Math.PI;
     };
 
-    // Remove cube
+    // Removes cube given the mesh and the color
     removeCube(cube: THREE.Mesh, color: string) {
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
             this.mainStuff.scene.remove(cube); // Remove from scene
@@ -340,7 +340,7 @@ export default class Display extends React.Component<GameState> {
         }
     }
 
-    // Add cube
+    // Adds cube given the position and the material
     addCube(cubePosition: THREE.Vector3, material: THREE.MeshLambertMaterial) {
         if (!mapHasVector3(this.cubeOptMaps.filled, cubePosition)) { // If this cube position does not exist (is undefined) in filled
             let existingCube = this.cubeOptMaps.available.get(`#${material.color.getHexString()}`)?.pop(); // Remove the last cube mesh from available list
@@ -360,7 +360,7 @@ export default class Display extends React.Component<GameState> {
         }
     }
 
-    // Removes puzzle cube
+    // Removes puzzle cube given cube mesh
     removePuzzleCube(cube: THREE.Mesh<THREE.BufferGeometry>) {
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
             this.mainStuff.scene.remove(cube); // Remove from scene
@@ -371,7 +371,7 @@ export default class Display extends React.Component<GameState> {
         }
     }
 
-    // Removes puzzle cube
+    // Removes dragon cube given cube mesh
     removeDragonCube(cube: THREE.Mesh<THREE.BufferGeometry>) {
         if (!mapHasVector3(this.props.world.cube_map, cube.position)) { // If the cube doesn't have a position property
             this.mainStuff.scene.remove(cube); // Remove from scene
@@ -382,6 +382,7 @@ export default class Display extends React.Component<GameState> {
         }
     }
 
+    // Adds puzzle cube given cube position
     addPuzzleCube(cubePosition: THREE.Vector3) {
         let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, this.geometries.cubeGoalMat) // ...Create a new cube mesh
         newCube.position.copy(cubePosition).add(this.cameraPos.cubeOffset);
@@ -389,7 +390,7 @@ export default class Display extends React.Component<GameState> {
         this.mainStuff.scene.add(newCube);
     }
 
-    // This adds a dragon position cube (only difference is the offSet - it's 1 z-value higher for the dragon)
+    // Adds dragon cube given cube position
     addDragonCube(cubePosition: THREE.Vector3) {
         let newCube: THREE.Mesh = new THREE.Mesh(this.geometries.cubeGeo, this.geometries.dragonGoalMat) // ...Create a new cube mesh
         newCube.position.copy(cubePosition).add(this.cameraPos.dragonOffset);
@@ -398,7 +399,7 @@ export default class Display extends React.Component<GameState> {
     }
 
     // Simulate function
-    // This function will activate the simulation every X seconds
+    // This function will activate the simulation every "delta" seconds
     simulate(delta: number) {
         // Checks to see if the simulator is running (if there are still animations left to do)
         if (this.props.simulator.is_running()) {
@@ -415,7 +416,7 @@ export default class Display extends React.Component<GameState> {
 
     // This function will update the display (what you see on the screen) using the this.dirty flag
     updateDisplay() {
-        // Dragon final position and animation times
+        // Update dragon final position and animation times
         this.finalValues.finalDragPos.copy(this.props.world.dragon_pos).add(this.cameraPos.dragonOffset);
         this.finalValues.finalDragQ.setFromUnitVectors(new THREE.Vector3(1, 0, 0), this.props.world.dragon_dir); // 1,0,0 is default direction
         // Hack to avoid weird dip when rotating to face -x direction
@@ -462,7 +463,7 @@ export default class Display extends React.Component<GameState> {
             this.props.puzzle.goals.forEach((goal: GoalInfo) => { // Iterate through each cube that should be placed for the puzzle
                 if (goal.kind === GoalInfoType.AddCube) { // If goal.kind is AddCube...
                     if (goal.position) { //  And if there is a goal.position...
-                        this.addPuzzleCube(goal.position); // Use addCube()
+                        this.addPuzzleCube(goal.position); // Add puzzle cube
                     }
                 }
                 if (goal.kind === GoalInfoType.DragonPos) {
@@ -471,7 +472,7 @@ export default class Display extends React.Component<GameState> {
                     }
                 }
             });
-            this.puzzleInit = this.props.puzzle.name; // Set puzzleInit to true to show that puzzle cubes have been placed
+            this.puzzleInit = this.props.puzzle.name; // Set puzzleInit to the puzzle name to show that this puzzle has been initialized
 
         }
 
@@ -504,7 +505,7 @@ export default class Display extends React.Component<GameState> {
             // tDelta represents the time that has passed since the last time getDelta() was called
             let tDelta = this.clockStuff.clock.getDelta();
 
-            // Animation :)
+            // Animation
             this.simulate(tDelta);
 
             // Update display

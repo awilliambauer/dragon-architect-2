@@ -1,3 +1,10 @@
+/* FILENAME:    PuzzleSelect.tsx
+ * DESCRIPTION: 
+ *      This file creates the puzzle select screen and its buttons
+ * DATE:    08/19/2021
+ * AUTHOR:      Teagan Johnson    Aaron Bauer    Katrina Li
+ */
+
 import React from 'react';
 import { GameState } from './App';
 import "./css/index.css"
@@ -18,6 +25,7 @@ interface PuzzleSelectProps {
 
 export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
 
+    // Returns to the game screen. Returns to either sandbox or a specific puzzle level
     returnHome(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         if (this.props.gameState.puzzle !== SANDBOX_STATE) {
             this.props.onClickHome(`puzzles/${this.props.current_puzzle.tag}.json`);
@@ -27,6 +35,7 @@ export default class PuzzleSelect extends React.Component<PuzzleSelectProps> {
         }
     }
 
+    // Opens a new puzzle if clicked
     openPuzzle(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         this.props.onClickToPuzzle(`puzzles/${event.currentTarget.id}.json`);
     }

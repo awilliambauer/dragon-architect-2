@@ -1,6 +1,7 @@
 /* FILENAME:    FontAwesomeIcons.tsx
  * DESCRIPTION: 
- *      This file imports the 6 camera control icons into one file
+ *      This file imports the 6 camera control icons into one file.
+ *      Without this file, we would have to import each icon into every file that uses them
  * DATE:    08/19/2021
  * AUTHOR:      Teagan Johnson   Aaron Bauer    Katrina Li
  */

@@ -478,6 +478,7 @@ div #camera-controls .game-control_category {
 
 .ZoomIn {
     background-color: Transparent;
+    color: white;
     border: none;
     cursor: pointer;
     transform: scale();
@@ -497,6 +498,7 @@ div #camera-controls .game-control_category {
 
 .ZoomOut {
     background-color: Transparent;
+    color: white;
     border: none;
     cursor: pointer;
     transform: scale();
@@ -516,6 +518,7 @@ div #camera-controls .game-control_category {
 
 .RotateLeft {
     background-color: Transparent;
+    color: white;
     border: none;
     cursor: pointer;
     transform: scale();
@@ -535,6 +538,7 @@ div #camera-controls .game-control_category {
 
 .RotateRight {
     background-color: Transparent;
+    color: white;
     border: none;
     cursor: pointer;
     transform: scale();
@@ -554,6 +558,7 @@ div #camera-controls .game-control_category {
 
 .TiltUp {
     background-color: Transparent;
+    color: white;
     border: none;
     cursor: pointer;
     transform: scale();
@@ -573,6 +578,7 @@ div #camera-controls .game-control_category {
 
 .TiltDown {
     background-color: Transparent;
+    color: white;
     border: none;
     cursor: pointer;
     transform: scale();
@@ -1573,7 +1579,7 @@ button[value="false"] {
 }
 
 .pack-label {
-    color: 'white';
+    color: white;
 }
 
 .puzzle-container {
@@ -1582,7 +1588,7 @@ button[value="false"] {
 }
 
 .puzzle-label {
-    color: 'white';
+    color: white;
 }
 
 .pack-select {
@@ -1735,6 +1741,8 @@ button[value="false"] {
 
 .slider-container {
     background-color: transparent;
+    color: black;
+    direction: rtl;
     display: flex;
     flex-flow: column;
     justify-content: flex-start;

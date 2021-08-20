@@ -7,6 +7,7 @@
  */
 import { GameState } from './App';
 
+// Props of the run button include the gamestate and the on click function
 type RunProps = {
     gamestate: GameState
     onClick: () => void

@@ -101,6 +101,40 @@
                     "dest": "procedures-def"
                 }
             ]
+        },
+        {
+            "name": "Challenge Puzzles",
+            "tag": "challenge",
+            "puzzles": [
+                "challenge-castlemania",
+                "challenge-homemaker",
+                "challenge-nameGame",
+                "challenge-overTheRainbow",
+                "challenge-treeOfLife",
+                "challenge-zoology"
+            ],
+            "connections": [
+                {
+                    "start": "challenge-castlemania",
+                    "dest": "challenge-homemaker"
+                },
+                {
+                    "start": "challenge-homemaker",
+                    "dest": "challenge-nameGame"
+                },
+                {
+                    "start": "challenge-nameGame",
+                    "dest": "challenge-overTheRainbow"
+                },
+                {
+                    "start": "challenge-overTheRainbow",
+                    "dest": "challenge-treeOfLife"
+                },
+                {
+                    "start": "challenge-treeOfLife",
+                    "dest": "challenge-zoology"
+                }
+            ]
         }
     ]
 }

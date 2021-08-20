@@ -1,0 +1,18 @@
+{
+    "name": "Homemaker",
+    "format_version": 1,
+    "tag": "challenge-homemaker",
+    "library": {
+        "restricted": ["up", "defproc", "defproc_noargs"],
+        "required": ["set"],
+        "granted": []
+    },
+    "world": {
+        "pos": [0, 0, 0], 
+        "dir": [0, -1, 0]
+    },
+    "instructions": "Create a home! There is no set solution, just have fun.",
+    "program": "puzzles/code/challenge-start.kobold",
+    "goal": "solution",
+    "solution": "puzzles/code/challenge-solution.kobold"
+}

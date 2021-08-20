@@ -12,10 +12,9 @@ type SliderVals = {
 }
 
 export default class Slider extends React.Component<SliderVals> {
-
     render() {
         return (
-            <div className="slider-container" style={{ color: "black", direction: "rtl" }}>
+            <div className="slider-container">
                 <div className="slider-buttons-container">
                     <div className="slider-left-header">
                         <h6>Fast</h6>

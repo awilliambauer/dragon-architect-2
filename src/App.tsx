@@ -356,13 +356,13 @@ class App extends React.Component<{}, GameState> {
           </header>
           {process.env.NODE_ENV !== 'production' && <div className='dev-controls-header'>
             <div className='pack-container'>
-              <label htmlFor="pack-select" className='pack-label' style={{ color: 'white' }}>Select a pack:</label>
+              <label htmlFor="pack-select" className='pack-label'>Select a pack:</label>
               <select name="pack-select" id="pack-select" className='pack-select' onChange={event => this.on_change_pack(event)}>
                 {this.puzzle_manager.packs.map((pack, index) => <option key={index} value={index}>{pack.name}</option>)}
               </select>
             </div>
             <div className='puzzle-container'>
-              <label htmlFor="puzzle-select" className='puzzle-label' style={{ color: 'white' }}>Select a puzzle:</label>
+              <label htmlFor="puzzle-select" className='puzzle-label'>Select a puzzle:</label>
               <select name="puzzle-select" id="puzzle-select" className='puzzle-select' onChange={event => this.load_puzzle(`puzzles/${event.target.value}.json`)}>
                 {this.puzzle_manager.get_all_puzzles().map(puzzle => <option key={puzzle} value={puzzle}>{puzzle}</option>)}
               </select>
