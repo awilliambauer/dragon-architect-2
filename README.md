@@ -2,13 +2,62 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Table of Contents
+1. [ Overview ](#overview)
+2. [ Prerequisites ](#prereqs)
+3. [ "src" File Structure ](#files)
+4. [ More Info About React ](#availableScripts)
+5. [ Authors and Acknowledgement ](#authAck)
+6. [ Learn More ](#learnMore)
+
+<a name="overview"></a>
 ## Overview
 
-This project is an educational programming game which teaches a user to control a dragon to complete sequences of puzzles. 
-This project uses the Blockly library to set up different blocks of instructions the user can drag from the left side toolbox, and put in the middle workspace to use. 
-A sandbox world is set at the right side to visually present what the dragon does, according to the stack of blocks the user sets in their workspace.
+This project is an educational programming game that teaches users basic coding concepts while controlling an animated dragon.
+Dragon Architect uses the Blockly library to set up different blocks of instructions that the user can drag and drop to control the dragon.
+The left side of the screen is dedicated to Blockly and the user's "code". On the right side, an animated world is displayed to represent what the dragon does given the block commands.
 
-## Available Scripts
+Dragon Architect was created with the hope to study the most effective teaching and learning patterns for computer science. In the future, this game will be used with test subjects to study the learning habits of students that are not familiar with coding.
+
+<a name="prereqs"></a>
+### Prerequisites
+
+The following open source packages are used in this project:
+* Blockly
+* FontAwesome icons
+* React.js
+* THREE.js
+* Yarn
+
+<a name="files"></a>
+### "src" File Structure
+
+The "src" folder is the folder containing most of the typescript (which controls most of the page mechanics and animations). To get a detailed description of each file, go into each file on github and look at the first couple of lines. App.tsx is the parent file while the files below it are its child files. Some child files have their own respective child files.
+
+* App.tsx
+  * BlocklyComp.tsx
+    * BlocklyExtensions.ts
+  * Display.tsx
+    * CameraPositioning.tsx
+    * FontAwesomeIcons.tsx
+    * Slider.tsx
+  * Parser.ts
+    * Parser.test.ts
+  * Simulator.ts
+    * Simulator.test.ts
+  * index.tsx
+  * InstructionsGoal.tsx
+  * PuzzleManager.ts
+  * PuzzleSelect.tsx
+  * PuzzleState.ts
+  * react-app-env.d.ts
+  * RunButton.tsx
+  * StdLib.ts
+  * Util.ts
+  * WorldState.ts
+
+<a name="availableScripts"></a>
+## More Info About React
 
 In the project directory, you can run:
 
@@ -45,8 +94,17 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
+<a name="authAck"></a>
+## Authors and Acknowledgement
+
+This project was created under the supervision of Aaron Bauer. Aaron Bauer, Teagan Johnson, and Katrina Li made contributions to the project, along with the original Dragon Architect group.
+
+<a name="learnMore"></a>
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
+
+Email:
+* Teagan Johnson: johnsont4@carleton.edu
