@@ -1,3 +1,4 @@
+@frozen=all
 repeat 10 times
     Forward(2)
     Right()

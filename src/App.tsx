@@ -160,7 +160,6 @@ class App extends React.Component<{}, GameState> {
     this.setState({
       world: world,
       puzzle: SANDBOX_STATE,
-      devMode: true,
       simulator: sim,
       reset: false,
       lastSavedWorld: undefined
