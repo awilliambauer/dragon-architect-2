@@ -1,3 +1,9 @@
+/* FILENAME:    Simulator.ts
+ * DESCRIPTION: 
+ *      This file contains different kinds of simulators that help simulate the animations
+ * DATE:    08/19/2021
+ * AUTHOR:      Aaron Bauer    Teagan Johnson    Katrina Li
+ */
 import _ from 'lodash';
 import parse, {
     Procedure, FileLocation, Expression,

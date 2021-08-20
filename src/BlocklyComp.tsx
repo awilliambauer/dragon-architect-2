@@ -13,7 +13,6 @@ import parse, {
     SyntaxError, Statement, StatementType, Repeat, Execute, Command, TopLevelStatement
 } from './Parser';
 import { GameState } from './App';
-import { SANDBOX_STATE } from './PuzzleState';
 import './BlocklyExtensions';
 
 //colors for blocks

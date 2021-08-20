@@ -1,3 +1,9 @@
+/* FILENAME:    WorldState.tx
+ * DESCRIPTION: 
+ *      This file contains the state of Dragon Architect
+ * DATE:    08/19/2021
+ * AUTHOR:      Aaron Bauer    Teagan Johnson    Katrina Li
+ */
 import * as THREE from 'three';
 import { SimCommand, RuntimeError, RuntimeErrorCode, runtime_error, 
     ValueType } from './Simulator';
