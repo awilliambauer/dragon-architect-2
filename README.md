@@ -35,6 +35,9 @@ The following open source packages are used in this project:
 ### Folder Structure
 
 The "src" folder is the folder containing most of the typescript (which controls most of the page mechanics and animations). To get a detailed description of each file, go into each file on github and look at the first couple of lines. App.tsx is the parent file while the files below it are its child files. Some child files have their own respective child files.
+
+<details>
+<summary>Folders!</summary>
 * "node_modules"
   * "public"
     * "media"
@@ -81,6 +84,7 @@ The "src" folder is the folder containing most of the typescript (which controls
     * tsconfig.json
     * yarn-error.log
     * yarn.lock
+</details>
 
 <a name="howTo"></a>
 ### How to edit...
