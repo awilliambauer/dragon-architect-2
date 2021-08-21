@@ -3,6 +3,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Table of Contents
+0. [ Tags ](#tags)
 1. [ Overview ](#overview)
 2. [ Prerequisites ](#prereqs)
 3. [ Folder Structure ](#files)
@@ -12,12 +13,17 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 7. [ Authors and Acknowledgement ](#authAck)
 8. [ Learn More ](#learnMore)
 
+<a name="tags"></a>
+## Tags
+
+Education, Game, React, Blockly
+
 <a name="overview"></a>
 ## Overview
 
 This project is an educational programming game that teaches users basic coding concepts while controlling an animated dragon.
 Dragon Architect uses the Blockly library to set up different blocks of instructions that the user can drag and drop to control the dragon.
-The left side of the screen is dedicated to Blockly and the user's "code". On the right side, an animated world is displayed to represent what the dragon does given the block commands.
+The left side of the screen is dedicated to Blockly and the user's "code". On the right side, an animated world is displayed to represent what the dragon does given the block commands that users put in the workspace on the left side.
 
 Dragon Architect was created with the hope to study the most effective teaching and learning patterns for computer science. In the future, this game will be used with test subjects to study the learning habits of students that are not familiar with coding.
 
@@ -34,7 +40,7 @@ The following open source packages are used in this project:
 <a name="files"></a>
 ### Folder Structure
 
-The "src" folder is the folder containing most of the typescript (which controls most of the page mechanics and animations). To get a detailed description of each file, go into each file on github and look at the first couple of lines. App.tsx is the parent file while the files below it are its child files. Some child files have their own respective child files.
+The "src" folder (source folder) is the folder containing most of the typescript (which controls most of the page mechanics and animations). To get a detailed description of each file, go into each file on github and look at the first couple of lines. App.tsx and index.tsx are the parent files while the files below them are their child files. Some child files have their own respective child files.
 
 <details>
 <summary>Folders!</summary>
@@ -68,7 +74,7 @@ The "src" folder is the folder containing most of the typescript (which controls
           * Parser.test.ts
         * Simulator.ts
           * Simulator.test.ts
-        * index.tsx
+      * index.tsx (NOT A FOLDER. Just sub-bulleted to show parent/child file relationship)
         * InstructionsGoal.tsx
         * PuzzleManager.ts
         * PuzzleSelect.tsx
@@ -93,17 +99,26 @@ We'll discuss how you can edit or change certain things in Dragon Architect.
 
 #### Adding Puzzles
 To add new puzzles:
-1. First, add a new .json file to the "puzzles" folder. Copy the format of the other .json files (ex. tutorial-removingCubes.json)
-2. Create the starting code file in the "code" folder. Copy the format of the other .kobold files (ex. tutorial-removingCubes.kobold)
-3. If the new puzzle has a solution, add another file in the "code" folder. Copy the format of the other -solution.kobold files (ex. tutorial-removingCubes-solution.kobold)
-4. MAKE SURE your parent .json file has the correct "program", "goal", and "solution" properties. "program" is the starting code (given the file you created in the "code" folder), "goal" is the type of puzzle (ex. solution, dragonPosition, etc.), "solution" is the solution to the puzzle (given the second file you created in the "code" folder).
+1. First, add a new .json file to the ./public/puzzles/ directory. Copy the format of the other .json files (ex. tutorial-removingCubes.json)
+2. Create the starting code file in the ./public/puzzles/code directory. Copy the format of the other .kobold files (ex. tutorial-removingCubes.kobold)
+3. If the new puzzle has a solution, add another file in the ./public/puzzles/code directory. Copy the format of the other -solution.kobold files (ex. tutorial-removingCubes-solution.kobold)
+4. MAKE SURE your parent .json file in the ./public/puzzles/ directory has the correct "program", "goal", and "solution" properties. "program" is the starting code (given the file you created in the "code" folder), "goal" is the type of puzzle (ex. solution, dragonPosition, etc.), "solution" is the solution to the puzzle (given the second file you created in the "code" folder).
 5. To add your new files, you can either create a new pack or you can add to a previous pack:
   * Create a new pack:
-    * create a new .json file in the "packs" folder.
-    * Replicate it with standard.json
+    * create a new .json file in ./public/packs/ directory.
+    * Replicate it with standard.json.
     * Add your new puzzle(s) into the new .json file, and add the name of the new .json file to the packs.json file.
+    * Add a new button in the LearnMore section of ./src/App.tsx so users can switch to your pack after clicking the "Learn More" button.
   * Add to existing pack:
     * Add your puzzle(s) to an existing pack (ex. standard.json), format the names of your puzzles the same way as the other puzzles in the file.
+
+#### Adding Blocks
+To add a new block in the toolbox:
+1. Go to ./src/BlocklyComp.tsx. Go to function "customBlocklyInit()".
+2. Copy the format of other blocks (ex. the "UP" block), change message0, args0, etc. to create your block.
+3. Add its xml version in the "const COMMANDS =" section right above customBlocklyInit().
+4. Add lines in export function xmlHelper() that converts your block to xml string.
+
 #### Changing The Interface
 To change the interface:
 1. All of the main interface design is in index.css, in the "css" folder. The instructions interface design is in the instructions.css file.
