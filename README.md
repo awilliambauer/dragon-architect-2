@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Dragon Architect 2.0
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -91,6 +91,8 @@ The "src" folder (source folder) is the folder containing most of the typescript
     * yarn-error.log
     * yarn.lock
 </details>
+
+![Visualization of the codebase](./diagram.svg)
 
 <a name="howTo"></a>
 ### How to edit...
