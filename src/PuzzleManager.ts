@@ -88,8 +88,10 @@ export default class PuzzleManager {
             this.completed_puzzle.set(puzzlePackName, [this.get_current_puzzle()]);
         } else {
             let puzzleToAdd = this.get_current_puzzle();
-            puzzles.push(puzzleToAdd);
-            this.completed_puzzle.set(puzzlePackName, puzzles);
+            if (!puzzles.includes(puzzleToAdd)) {
+                puzzles.push(puzzleToAdd);
+                this.completed_puzzle.set(puzzlePackName, puzzles);
+            }
         }
 
     }

@@ -19,6 +19,7 @@ import PuzzleManager from './PuzzleManager';
 import "./css/index.css"
 import "./FontAwesomeIcons";
 import PuzzleSelect from './PuzzleSelect';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export type GameState = {
@@ -66,7 +67,16 @@ class App extends React.Component<{}, GameState> {
     }
     this.puzzle_manager = new PuzzleManager();
     // this.clean_progress();
+    this.create_uid();
     this.load_last_progress();
+
+    // fetch('/progress?completed_puzzles=puzzlesgoherebutemptyrn', {
+    //   method: 'POST', 
+    //   headers: {'Content-Type': 'application/json'},
+    //   body: JSON.stringify([...this.puzzle_manager.completed_puzzle])
+    // })
+    // .then(response => response.json())
+    // .then(data => console.log(data))
   }
 
   // the learn more button, lets the user access a different puzzle pack
@@ -79,31 +89,82 @@ class App extends React.Component<{}, GameState> {
 
   }
 
+  create_uid() {
+    //console.log("THIS IS WONDOW STORAGE: ", window.localStorage.getItem("uuid"));
+    if (!window.localStorage.getItem("uuid")) {
+      let uuid = uuidv4();
+      window.localStorage.setItem("uuid", uuid);
+      fetch('/uuid', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({user_id: uuid})
+      })
+    }
+  }
+
+  get_id() {
+    return window.localStorage.getItem("uuid");
+  }
+
   // stores which puzzles the user finishes in localStorage
   save_progress() {
-    let progress = JSON.stringify([...this.puzzle_manager.completed_puzzle]);
-    window.localStorage.setItem("progress", progress);
+    // let progress = JSON.stringify([...this.puzzle_manager.completed_puzzle]);
+    // window.localStorage.setItem("progress", progress);
+    let bod = JSON.stringify({id: this.get_id(), progress: [...this.puzzle_manager.completed_puzzle]});
+    console.log(JSON.parse(bod));
+    fetch('/progress', {
+      method: 'POST', 
+      headers: {'Content-Type': 'application/json'},
+      body: bod
+    })
 
     // commenting this out for now, as it breaks puzzle progression (next_puzzle() advances to the next puzzle, causing a double advance)
     // let next_puzzle = JSON.stringify([this.puzzle_manager.next_puzzle()]);
     // window.localStorage.setItem("puzzle", next_puzzle);
   }
 
+  // print_progress() { 
+  //   let progress = JSON.stringify([...this.puzzle_manager.completed_puzzle]);
+  //   fetch('/progress', {method: 'GET'})
+  //   .then(response => response.json())
+  //   .then(data => console.log(data))
+  // }
+
   // used for developing purposes, cleans the user's progress in local storage
   clean_progress() {
-    window.localStorage.removeItem("progress");
+    // window.localStorage.removeItem("progress");
     this.puzzle_manager.completed_puzzle.clear();
+    window.localStorage.clear();
+    fetch('/clear_table', {
+      method: 'POST', 
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({id: this.get_id(), progress: [...this.puzzle_manager.completed_puzzle]})
+    })
   }
 
 
   // search for the user's progress in local storage. If the user had completed a puzzle before,
   // mark it as completed again
   load_last_progress() {
-    // return window.localStorage.getItem("progress");
-    let progress_string = window.localStorage.getItem("progress");
-    if (progress_string) {
-      this.puzzle_manager.set_completed_puzzle(new Map(JSON.parse(progress_string)));
-    }
+    // // return window.localStorage.getItem("progress");
+    // let progress_string = window.localStorage.getItem("progress");
+    // if (progress_string) {
+    //   this.puzzle_manager.set_completed_puzzle(new Map(JSON.parse(progress_string)));
+    // }
+
+    fetch('/progress', {
+      method: 'GET', 
+      headers: {'Content-Type': 'application/json'}
+      //body: JSON.stringify({id: this.get_id()})
+    }).then(response => response.json())
+    .then(data => {
+      console.log(data);
+      if (data) {
+        this.puzzle_manager.set_completed_puzzle(new Map(JSON.parse(data.progress)));
+        //console.log(this.puzzle_manager.completed_puzzle);
+      }
+    });
+
 
     // let puzzle_string = window.localStorage.getItem("puzzle");
     // if (puzzle_string) {
@@ -200,6 +261,14 @@ class App extends React.Component<{}, GameState> {
     this.setState({
       devMode: !this.state.devMode
     });
+
+    let progress = JSON.stringify([...this.puzzle_manager.completed_puzzle]);
+
+    fetch('/progress', {
+      method: 'POST', 
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({progress: [...this.puzzle_manager.completed_puzzle]})
+    })
   }
 
   componentDidMount() {
@@ -210,7 +279,6 @@ class App extends React.Component<{}, GameState> {
         }, () => this.load_puzzle(`puzzles/${this.puzzle_manager.get_current_puzzle().tag}.json`));
       })
   }
-
 
   // run the user's current block program
   run_program() {

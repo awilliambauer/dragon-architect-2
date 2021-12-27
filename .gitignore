@@ -24,3 +24,8 @@ yarn-error.log*
 
 .vscode
 *.patch
+
+venv
+__pycache__
+
+/api/*.db
