@@ -178,3 +178,4 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 
 Email:
 * Teagan Johnson: johnsont4@carleton.edu
+* Katrina Li: lik@carleton.edu
